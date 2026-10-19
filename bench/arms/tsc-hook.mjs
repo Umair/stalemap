@@ -8,6 +8,7 @@
  * TSC_HOOK_LOG names a JSON-lines file that gets one line per run, `{ file, findings, ms }`, read the
  * same way as the guard's log.
  */
+import { existsSync } from "node:fs";
 import { execFile } from "node:child_process";
 import { appendFileSync, readFileSync } from "node:fs";
 import { join, relative } from "node:path";
@@ -24,7 +25,13 @@ const cwd = input.cwd || process.cwd();
 const file = input.tool_input?.file_path;
 const started = Date.now();
 
-execFile(join(cwd, "node_modules", ".bin", "tsc"), ["--noEmit", "-p", "tsconfig.json"], { cwd, timeout: 50_000, maxBuffer: 8 * 1024 * 1024 }, (err, stdout) => {
+// Run tsc's JS entry with this hook's own Node: `.bin/tsc` would pick whatever `node` comes first on
+// PATH, which can be a different, too old or broken install, and then print nothing.
+const tscEntry = join(cwd, "node_modules", "typescript", "bin", "tsc");
+const [cmd, args] = existsSync(tscEntry)
+  ? [process.execPath, [tscEntry, "--noEmit", "-p", "tsconfig.json"]]
+  : [join(cwd, "node_modules", ".bin", "tsc"), ["--noEmit", "-p", "tsconfig.json"]];
+execFile(cmd, args, { cwd, timeout: 50_000, maxBuffer: 8 * 1024 * 1024 }, (err, stdout) => {
   const errors = String(stdout ?? "")
     .split("\n")
     .map((l) => l.trim())
