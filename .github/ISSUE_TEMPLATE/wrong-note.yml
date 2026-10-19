@@ -1,0 +1,42 @@
+name: Wrong, missing or noisy note
+description: A note that's wrong, a change stalemap missed, or a note that wastes the budget.
+labels: [notes]
+body:
+  - type: input
+    id: package
+    attributes:
+      label: Package and versions
+      description: The package, the version the model knows and the version you pin, as stalemap prints them.
+      placeholder: "next 15.4.0 → 16.4.2"
+    validations:
+      required: true
+  - type: input
+    id: model
+    attributes:
+      label: Model
+      placeholder: claude-sonnet-4-5
+    validations:
+      required: true
+  - type: dropdown
+    id: kind
+    attributes:
+      label: What's wrong
+      options:
+        - A note is wrong
+        - A change is missing
+        - A note is noise (true, but not useful)
+        - The guard reported the wrong thing, or missed an error
+    validations:
+      required: true
+  - type: textarea
+    id: details
+    attributes:
+      label: The note, or the change you expected
+      description: Paste the note, and link the release note, type change or upgrade guide it should come from.
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: stalemap version
+      description: "`npx stalemap --version`, or the commit if you built from source."

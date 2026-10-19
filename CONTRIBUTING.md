@@ -20,7 +20,7 @@ npm test
 
 - Add or update a test in `test/` for any behavior change. Tests run offline against the fixtures in `test/fixtures/`.
 - Keep rules general. A fix shouldn't name a specific package or task unless it is about that package by design (like TypeScript's compiler options).
-- Add a line under "Unreleased" in [CHANGELOG.md](CHANGELOG.md) for anything a user would notice.
+- Add a line under an "Unreleased" heading at the top of [CHANGELOG.md](CHANGELOG.md) for anything a user would notice.
 - `src/` can be frozen while a blind benchmark runs (see the tags). If a change can't wait, say so in the pull request.
 
 ## Benchmark tasks

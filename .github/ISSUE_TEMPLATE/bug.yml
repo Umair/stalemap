@@ -1,0 +1,37 @@
+name: Bug
+description: stalemap crashed, hung, wrote the wrong file, or a hook or the MCP server misbehaved.
+labels: [bug]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+      description: The command you ran, what you expected, and what happened instead. Include the output.
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: stalemap version
+      description: "`npx stalemap --version`, or the commit if you built from source."
+    validations:
+      required: true
+  - type: dropdown
+    id: agent
+    attributes:
+      label: Where you ran it
+      options:
+        - Command line
+        - Claude Code plugin
+        - Cursor
+        - Codex
+        - OpenCode
+        - Another MCP client
+        - GitHub Action
+    validations:
+      required: true
+  - type: input
+    id: env
+    attributes:
+      label: OS, Node version and package manager
+      placeholder: "macOS 27, Node 22, pnpm 10"

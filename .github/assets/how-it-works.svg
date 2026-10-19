@@ -1,0 +1,70 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="500" viewBox="0 0 1280 500" role="img" aria-labelledby="t d">
+  <title id="t">How stalemap works</title>
+  <desc id="d">Your dependencies and your model's training cutoff go in. stalemap diffs type declarations, reads release notes and upgrade guides, and gives the agent what changed in three ways: notes at session start, a guard after each edit, and search_changes on demand.</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0 0L10 5L0 10z" fill="#64748b"/>
+    </marker>
+    <pattern id="grid" width="32" height="32" patternUnits="userSpaceOnUse">
+      <path d="M32 0H0V32" fill="none" stroke="#ffffff" stroke-opacity="0.035"/>
+    </pattern>
+  </defs>
+  <rect width="1280" height="500" rx="20" fill="#0b1220"/>
+  <rect width="1280" height="500" rx="20" fill="url(#grid)"/>
+
+  <g font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif">
+    <!-- inputs -->
+    <text x="64" y="64" font-size="13" font-weight="600" fill="#64748b" letter-spacing="1.5">YOUR PROJECT</text>
+    <rect x="64" y="84" width="280" height="96" rx="12" fill="#111a2c" stroke="#334155"/>
+    <text x="88" y="120" font-size="19" font-weight="600" fill="#f1f5f9">Pinned versions</text>
+    <text x="88" y="150" font-size="14" fill="#94a3b8" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">package.json · lockfile</text>
+    <rect x="64" y="200" width="280" height="96" rx="12" fill="#111a2c" stroke="#334155"/>
+    <text x="88" y="236" font-size="19" font-weight="600" fill="#f1f5f9">What you use</text>
+    <text x="88" y="266" font-size="14" fill="#94a3b8" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">imports · config keys · files</text>
+    <rect x="64" y="316" width="280" height="96" rx="12" fill="#111a2c" stroke="#334155"/>
+    <text x="88" y="352" font-size="19" font-weight="600" fill="#f1f5f9">Your model</text>
+    <text x="88" y="382" font-size="14" fill="#94a3b8" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">training cutoff → known versions</text>
+
+    <path d="M352 132C400 132 400 248 448 248" stroke="#64748b" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+    <path d="M352 248H448" stroke="#64748b" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+    <path d="M352 364C400 364 400 248 448 248" stroke="#64748b" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+
+    <!-- analysis -->
+    <text x="456" y="64" font-size="13" font-weight="600" fill="#64748b" letter-spacing="1.5">STALEMAP FINDS WHAT CHANGED</text>
+    <rect x="456" y="84" width="352" height="328" rx="16" fill="#1a1407" stroke="#f59e0b" stroke-opacity="0.7"/>
+    <g font-size="16" fill="#e2e8f0">
+      <circle cx="488" cy="132" r="5" fill="#f59e0b"/>
+      <text x="504" y="138"><tspan font-weight="600" fill="#fcd34d">Type diffs</tspan> of both versions' .d.ts</text>
+      <text x="504" y="160" font-size="13" fill="#a8a29e">removed, renamed, moved, newly required</text>
+      <circle cx="488" cy="208" r="5" fill="#f59e0b"/>
+      <text x="504" y="214"><tspan font-weight="600" fill="#fcd34d">Release notes</tspan> and changelogs</text>
+      <text x="504" y="236" font-size="13" fill="#a8a29e">scored for breaking changes you'd hit</text>
+      <circle cx="488" cy="284" r="5" fill="#f59e0b"/>
+      <text x="504" y="290"><tspan font-weight="600" fill="#fcd34d">Upgrade guides</tspan> (optional)</text>
+      <text x="504" y="312" font-size="13" fill="#a8a29e">defaults and conventions types can't show</text>
+      <line x1="480" y1="346" x2="784" y2="346" stroke="#f59e0b" stroke-opacity="0.25"/>
+      <text x="480" y="378" font-size="14" fill="#d6d3d1">Ranked by what your code uses</text>
+    </g>
+
+    <path d="M816 132H880" stroke="#64748b" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+    <path d="M816 248H880" stroke="#64748b" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+    <path d="M816 364H880" stroke="#64748b" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+
+    <!-- delivery -->
+    <text x="888" y="64" font-size="13" font-weight="600" fill="#64748b" letter-spacing="1.5">YOUR AGENT GETS IT</text>
+    <rect x="888" y="84" width="328" height="96" rx="12" fill="#052e16" stroke="#22c55e" stroke-opacity="0.7"/>
+    <text x="912" y="118" font-size="19" font-weight="600" fill="#f0fdf4">Notes</text>
+    <text x="1192" y="118" font-size="13" fill="#86efac" text-anchor="end">at session start</text>
+    <text x="912" y="150" font-size="14" fill="#bbf7d0" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">a short block in CLAUDE.md</text>
+    <rect x="888" y="200" width="328" height="96" rx="12" fill="#052e16" stroke="#22c55e" stroke-opacity="0.7"/>
+    <text x="912" y="234" font-size="19" font-weight="600" fill="#f0fdf4">Guard</text>
+    <text x="1192" y="234" font-size="13" fill="#86efac" text-anchor="end">after each edit</text>
+    <text x="912" y="266" font-size="14" fill="#bbf7d0" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">compiler error + the fix</text>
+    <rect x="888" y="316" width="328" height="96" rx="12" fill="#052e16" stroke="#22c55e" stroke-opacity="0.7"/>
+    <text x="912" y="350" font-size="19" font-weight="600" fill="#f0fdf4">search_changes</text>
+    <text x="1192" y="350" font-size="13" fill="#86efac" text-anchor="end">on demand</text>
+    <text x="912" y="382" font-size="14" fill="#bbf7d0" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">MCP: ask in your own words</text>
+
+    <text x="640" y="462" font-size="15" fill="#64748b" text-anchor="middle">Claude Code · Cursor · Codex · OpenCode · any MCP client</text>
+  </g>
+</svg>

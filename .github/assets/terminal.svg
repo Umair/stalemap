@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="600" viewBox="0 0 1280 600" role="img" aria-labelledby="t d">
+  <title id="t">stalemap on a Next.js + AI SDK app</title>
+  <desc id="d">npx stalemap with claude-sonnet-4-5 (cutoff 2025-07-31) lists next 15.4.0 to 16.4.2, ai 4.3.16 to 7.0.142 and zod 3.25.67 to 4.6.7 as changed, and the notes it writes name the changed APIs and their replacements.</desc>
+  <rect width="1280" height="600" rx="16" fill="#0d1117"/>
+  <rect x="0.5" y="0.5" width="1279" height="599" rx="16" fill="none" stroke="#30363d"/>
+  <path d="M16 0.5H1264A15.5 15.5 0 0 1 1279.5 16V44H0.5V16A15.5 15.5 0 0 1 16 0.5Z" fill="#161b22"/>
+  <circle cx="28" cy="22" r="6" fill="#ff5f57"/>
+  <circle cx="48" cy="22" r="6" fill="#febc2e"/>
+  <circle cx="68" cy="22" r="6" fill="#28c840"/>
+  <text x="640" y="27" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" fill="#8b949e" text-anchor="middle">next-ai-app — zsh</text>
+
+  <g font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="15" fill="#c9d1d9">
+    <text x="32" y="82"><tspan fill="#3fb950">❯</tspan> npx stalemap --model claude-sonnet-4-5</text>
+    <text x="32" y="110" fill="#8b949e">stalemap 0.3.0 · model claude-sonnet-4-5 · training cutoff 2025-07-31</text>
+    <text x="32" y="138" fill="#c9d1d9">Changed since the model's training data:</text>
+    <text y="164"><tspan x="52" fill="#f0f6fc">next</tspan><tspan x="140" fill="#8b949e">15.4.0</tspan><tspan x="216">→</tspan><tspan x="240" fill="#f2cc60">16.4.2</tspan><tspan x="330" fill="#ffa657">major</tspan><tspan x="400" fill="#8b949e">types: 11 changes (2 in APIs you import)</tspan></text>
+    <text y="188"><tspan x="52" fill="#f0f6fc">ai</tspan><tspan x="140" fill="#8b949e">4.3.16</tspan><tspan x="216">→</tspan><tspan x="240" fill="#f2cc60">7.0.142</tspan><tspan x="330" fill="#ffa657">major</tspan><tspan x="400" fill="#8b949e">types: 163 changes (4 in APIs you import)</tspan></text>
+    <text y="212"><tspan x="52" fill="#f0f6fc">zod</tspan><tspan x="140" fill="#8b949e">3.25.67</tspan><tspan x="216">→</tspan><tspan x="240" fill="#f2cc60">4.6.7</tspan><tspan x="330" fill="#ffa657">major</tspan><tspan x="400" fill="#8b949e">types: 275 changes (3 in APIs you import)</tspan></text>
+    <text x="52" y="236" fill="#8b949e">… 7 more</text>
+
+    <text x="32" y="282"><tspan fill="#3fb950">❯</tspan> npx stalemap sync <tspan fill="#8b949e"># writes the notes into CLAUDE.md</tspan></text>
+    <rect x="32" y="300" width="1216" height="268" rx="10" fill="#161b22" stroke="#30363d"/>
+    <text x="56" y="332"><tspan fill="#f0f6fc" font-weight="700">**ai**</tspan> 4.3.16 → 7.0.142 (major)</text>
+    <text x="56" y="358"><tspan fill="#8b949e">-</tspan> Removed; use the replacements: <tspan fill="#ff7b72">`CoreMessage`</tspan> → <tspan fill="#7ee787">`ModelMessage`</tspan>, … <tspan fill="#58a6ff">[types]</tspan></text>
+    <text x="56" y="384"><tspan fill="#8b949e">-</tspan> <tspan fill="#d2a8ff">`streamText()`</tspan> options no longer accept <tspan fill="#ff7b72">`maxTokens`</tspan>, <tspan fill="#ff7b72">`maxSteps`</tspan>, …; new options include <tspan fill="#7ee787">`stopWhen`</tspan> <tspan fill="#58a6ff">[types]</tspan></text>
+    <text x="56" y="420"><tspan fill="#f0f6fc" font-weight="700">**next**</tspan> 15.4.0 → 16.4.2 (major)</text>
+    <text x="56" y="446"><tspan fill="#8b949e">-</tspan> <tspan fill="#d2a8ff">`revalidateTag()`</tspan> now requires <tspan fill="#7ee787">`profile`</tspan> (in `next/cache`) <tspan fill="#58a6ff">[types]</tspan></text>
+    <text x="56" y="472"><tspan fill="#8b949e">-</tspan> <tspan fill="#ff7b72">`NextMiddleware`</tspan> is deprecated: Use <tspan fill="#7ee787">`NextProxy`</tspan> instead. <tspan fill="#58a6ff">[types]</tspan></text>
+    <text x="56" y="508"><tspan fill="#f0f6fc" font-weight="700">**zod**</tspan> 3.25.67 → 4.6.7 (major)</text>
+    <text x="56" y="534"><tspan fill="#8b949e">-</tspan> <tspan fill="#d2a8ff">`string()`</tspan> options no longer accept <tspan fill="#ff7b72">`invalid_type_error`</tspan>, <tspan fill="#ff7b72">`required_error`</tspan>, …; use <tspan fill="#7ee787">`error`</tspan> <tspan fill="#58a6ff">[types]</tspan></text>
+  </g>
+</svg>

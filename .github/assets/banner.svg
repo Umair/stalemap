@@ -1,0 +1,79 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="360" viewBox="0 0 1280 360" role="img" aria-labelledby="t d">
+  <title id="t">stalemap</title>
+  <desc id="d">A timeline: what the model learned ends at its training cutoff; the versions a project pins are past it, and stalemap tells the agent what changed.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0b1220"/>
+      <stop offset="1" stop-color="#141c2f"/>
+    </linearGradient>
+    <linearGradient id="known" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#475569" stop-opacity="0"/>
+      <stop offset="1" stop-color="#64748b"/>
+    </linearGradient>
+    <linearGradient id="new" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#f59e0b"/>
+      <stop offset="1" stop-color="#22c55e"/>
+    </linearGradient>
+    <pattern id="grid" width="32" height="32" patternUnits="userSpaceOnUse">
+      <path d="M32 0H0V32" fill="none" stroke="#ffffff" stroke-opacity="0.035"/>
+    </pattern>
+  </defs>
+  <rect width="1280" height="360" rx="20" fill="url(#bg)"/>
+  <rect width="1280" height="360" rx="20" fill="url(#grid)"/>
+
+  <!-- wordmark -->
+  <g transform="translate(72 92)">
+    <g transform="translate(0 -38)">
+      <path d="M22 0C10 0 0 9.6 0 21.6 0 37 22 56 22 56S44 37 44 21.6C44 9.6 34 0 22 0Z" fill="#f59e0b"/>
+      <circle cx="22" cy="21" r="11" fill="#0b1220"/>
+      <path d="M22 14v7.5l5 3" stroke="#f59e0b" stroke-width="3" stroke-linecap="round" fill="none"/>
+    </g>
+    <text x="60" y="8" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="52" font-weight="700" fill="#f8fafc" letter-spacing="-1">stalemap</text>
+  </g>
+  <text x="72" y="148" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="24" fill="#cbd5e1">Tell your coding agent which dependencies changed</text>
+  <text x="72" y="180" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="24" fill="#cbd5e1">after its training cutoff.</text>
+
+  <!-- timeline -->
+  <g font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">
+    <rect x="72" y="262" width="560" height="6" rx="3" fill="url(#known)"/>
+    <rect x="640" y="262" width="568" height="6" rx="3" fill="url(#new)"/>
+    <text x="72" y="300" font-size="15" fill="#64748b">what the model learned</text>
+    <text x="1208" y="300" font-size="15" fill="#86efac" text-anchor="end">what your project pins</text>
+
+    <line x1="636" y1="214" x2="636" y2="316" stroke="#f8fafc" stroke-width="2" stroke-dasharray="5 5"/>
+    <rect x="566" y="318" width="140" height="26" rx="13" fill="#1e293b" stroke="#334155"/>
+    <text x="636" y="336" font-size="13" fill="#e2e8f0" text-anchor="middle">training cutoff</text>
+
+    <!-- stale versions, left of the cutoff -->
+    <g font-size="14" fill="#94a3b8">
+      <rect x="300" y="222" width="104" height="28" rx="6" fill="#1e293b" stroke="#334155"/>
+      <text x="352" y="241" text-anchor="middle">ai 4.3</text>
+      <rect x="416" y="222" width="104" height="28" rx="6" fill="#1e293b" stroke="#334155"/>
+      <text x="468" y="241" text-anchor="middle">next 15.4</text>
+      <rect x="532" y="222" width="90" height="28" rx="6" fill="#1e293b" stroke="#334155"/>
+      <text x="577" y="241" text-anchor="middle">zod 3</text>
+    </g>
+
+    <!-- pinned versions, right of the cutoff -->
+    <g font-size="14" font-weight="600">
+      <rect x="760" y="222" width="104" height="28" rx="6" fill="#422006" stroke="#f59e0b"/>
+      <text x="812" y="241" text-anchor="middle" fill="#fcd34d">ai 7.0</text>
+      <rect x="904" y="222" width="116" height="28" rx="6" fill="#3b2a07" stroke="#eab308"/>
+      <text x="962" y="241" text-anchor="middle" fill="#fde68a">next 16.4</text>
+      <rect x="1060" y="222" width="92" height="28" rx="6" fill="#052e16" stroke="#22c55e"/>
+      <text x="1106" y="241" text-anchor="middle" fill="#86efac">zod 4.6</text>
+    </g>
+  </g>
+
+  <!-- example notes, top right -->
+  <g font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14">
+    <rect x="760" y="48" width="448" height="140" rx="12" fill="#0f172a" stroke="#334155"/>
+    <circle cx="784" cy="70" r="5" fill="#ef4444"/>
+    <circle cx="802" cy="70" r="5" fill="#eab308"/>
+    <circle cx="820" cy="70" r="5" fill="#22c55e"/>
+    <text x="842" y="75" fill="#64748b">CLAUDE.md</text>
+    <text x="784" y="106" fill="#e2e8f0"><tspan fill="#fcd34d">maxSteps</tspan> → <tspan fill="#86efac">stopWhen</tspan></text>
+    <text x="784" y="132" fill="#e2e8f0"><tspan fill="#fcd34d">middleware.ts</tspan> → <tspan fill="#86efac">proxy.ts</tspan></text>
+    <text x="784" y="158" fill="#e2e8f0"><tspan fill="#fcd34d">required_error</tspan> → <tspan fill="#86efac">error</tspan></text>
+  </g>
+</svg>
