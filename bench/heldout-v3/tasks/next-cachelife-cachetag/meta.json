@@ -1,0 +1,13 @@
+{
+  "title": "Next 16: cache the product catalog",
+  "template": "latest",
+  "change": "next@16.0.0/unstable-cachelife-cachetag-stabilized",
+  "package": "next",
+  "scenario": "new-code",
+  "changeType": "breaking",
+  "kind": "type-checks",
+  "stale": ["\\bunstable_cacheLife\\b", "\\bunstable_cacheTag\\b"],
+  "deprecated": ["\\bunstable_cacheLife\\b", "\\bunstable_cacheTag\\b"],
+  "newApi": ["\\bcacheLife\\b", "\\bcacheTag\\b"],
+  "oracle": "In Next 16, `unstable_cacheLife` and `unstable_cacheTag` are stable as `cacheLife` and `cacheTag`; import those from next/cache (the unstable_ names log a deprecation error)."
+}

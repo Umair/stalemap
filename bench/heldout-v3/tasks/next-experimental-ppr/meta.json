@@ -1,0 +1,13 @@
+{
+  "title": "Next 16: turn on Partial Prerendering",
+  "template": "latest",
+  "change": "next@16.0.0/experimental-ppr-removed",
+  "package": "next",
+  "scenario": "new-code",
+  "changeType": "breaking",
+  "kind": "type-checks",
+  "stale": ["\\bppr\\s*:", "\\bexperimental_ppr\\b"],
+  "deprecated": [],
+  "newApi": ["cacheComponents", "[Cc]ache [Cc]omponents", "use cache"],
+  "oracle": "Since Next 16, `experimental.ppr` (incl. 'incremental') and the route-level `experimental_ppr` export are removed and loading the config throws; enable Partial Prerendering with top-level `cacheComponents: true`."
+}

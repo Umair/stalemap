@@ -1,0 +1,1 @@
+Signed-out visitors (no `session` cookie) must not reach anything under `/dashboard`, including the CSV export route: redirect them to `/login?from=<the path they requested>`. Do it once for the whole app, before requests reach the routes, not in each page or handler; other pages and signed-in visitors must be unaffected.

@@ -1,0 +1,1 @@
+Split the Vitest setup in `vitest.config.ts` into two named groups of tests: `unit` runs `src/**/*.test.ts` in Node, and `dom` runs `src/**/*.dom.test.ts` in jsdom. Every test file should run in exactly one group.

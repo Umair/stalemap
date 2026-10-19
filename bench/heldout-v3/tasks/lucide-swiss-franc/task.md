@@ -1,0 +1,1 @@
+Add the Swiss franc (`CHF`) to `src/currency.tsx` so that `PriceTag` shows a currency icon for CHF prices, the same way it does for the other currencies. We keep this codebase free of deprecated APIs.

@@ -1,0 +1,12 @@
+{
+  "title": "TypeScript 6: path alias",
+  "template": "latest",
+  "scenario": "new-code",
+  "kind": "compile-error",
+  "stale": [
+    "^(?![\\s\\S]*\"ignoreDeprecations\")[\\s\\S]*\"baseUrl\"\\s*:"
+  ],
+  "deprecated": [
+    "\"baseUrl\"\\s*:"
+  ]
+}

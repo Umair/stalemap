@@ -1,0 +1,1 @@
+We upgraded TypeScript in this invoicing service from 5.8 to 7.0, and `tsc` now fails on `tsconfig.json`. Fix the config so the project type-checks and runs again, without changing any of the imports in `src/`.

@@ -1,0 +1,11 @@
+{
+  "compilerOptions": {
+    "target": "ES2017",
+    "lib": ["ES2017", "DOM"],
+    "rootDir": "src",
+    "outDir": "public/js",
+    "strict": true,
+    "types": []
+  },
+  "files": ["src/parcels.ts", "src/carriers.ts", "src/page.ts"]
+}

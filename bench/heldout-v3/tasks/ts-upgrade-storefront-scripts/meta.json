@@ -1,0 +1,21 @@
+{
+  "title": "TypeScript 7: fix a 5.8 storefront build that concatenated scripts",
+  "template": "latest",
+  "change": "typescript@7.0.2/remove-outfile",
+  "package": "typescript",
+  "scenario": "upgrade",
+  "changeType": "breaking",
+  "kind": "compile-error",
+  "stale": [
+    "\"outFile\"\\s*:"
+  ],
+  "deprecated": [],
+  "newApi": [
+    "outFile",
+    "[Bb]undl",
+    "[Cc]oncat",
+    "TS510[0-9]",
+    "\\bremoved\\b"
+  ],
+  "oracle": "TypeScript 7.0 removed outFile (deprecated in 6.0) and it is a hard error; tsc can no longer concatenate output, so emit per-file with outDir and join or bundle the files with a separate step."
+}

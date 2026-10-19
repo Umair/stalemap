@@ -1,0 +1,16 @@
+{
+  "title": "mongoose 9: slug and publish check before validation",
+  "template": "latest",
+  "change": "mongoose@9.0.0/pre-middleware-no-next",
+  "package": "mongoose",
+  "scenario": "new-code",
+  "changeType": "breaking",
+  "kind": "compile-error",
+  "stale": [
+    "\\.pre\\(\\s*['\"]\\w+['\"]\\s*,\\s*(?:\\{[^}]*\\}\\s*,\\s*)?(?:async\\s+)?(?:function\\s*\\w*\\s*)?\\(\\s*(?:this\\s*:[^,)]*,\\s*)?next\\b",
+    "(?<![.\\w$])next\\s*\\(\\s*(?:new\\s+\\w*Error\\b|err\\b|error\\b|\\))"
+  ],
+  "deprecated": [],
+  "newApi": ["\\bpre\\s*\\(", "\\basync\\s+function\\b", "\\bmiddleware\\b"],
+  "oracle": "In mongoose 9, pre middleware no longer receives next(): write the hook as a plain or async function, return or throw an error instead of calling next(err), and drop next()."
+}

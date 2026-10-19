@@ -1,0 +1,13 @@
+{
+  "_comment": "Exploratory oracle arm (post hoc): one hand-written line per task naming its target change, condensed from the \"what changed\" column of bench/heldout-v2/PROTOCOL.md. It measures the ceiling for a perfect note, with no guard.",
+  "ai-chat-history": "`ai` 7: `result.response.messages` now holds only the final step's messages; all of a multi-step call's messages are in `result.responseMessages`.",
+  "ai-test-model": "`ai` 7: `ai/test` exports `MockLanguageModelV4` (and `MockLanguageModelV3`) with the V4 result shape; `MockLanguageModelV1` and `MockLanguageModelV2` are gone.",
+  "ai-token-usage": "`ai` 7: usage is `inputTokens`/`outputTokens`, with cached input under `inputTokenDetails.cacheReadTokens`; `promptTokens`/`completionTokens` and `cachedInputTokens` are gone.",
+  "next-image-defaults": "`next` 16: `images.qualities` now defaults to `[75]` (any quality was allowed before) and `images.minimumCacheTTL` to 14400 seconds (was 60).",
+  "next-sitemaps": "`next` 16: with `generateSitemaps`, the sitemap function's `id` argument is a promise (it was a string).",
+  "next-smooth-scroll": "`next` 16: smooth scrolling is only suspended during route changes when `<html data-scroll-behavior=\"smooth\">` is set; before, it was always suspended.",
+  "prisma-upgrade": "`prisma` 7: the datasource `url` is no longer allowed in `schema.prisma` (error P1012); it moves to `prisma.config.ts`.",
+  "ts-path-alias": "`typescript` 6: `baseUrl` is deprecated and reports error TS5101; `paths` resolve from the tsconfig.",
+  "vitest-projects": "`vitest` 4: `vitest.workspace`/`defineWorkspace`, `environmentMatchGlobs` and the `workspace` option were removed, leaving `test.projects`.",
+  "zod-derived-schema": "`zod` 4.3: `.pick()` and `.omit()` throw on object schemas that have refinements (4.0 to 4.2 silently dropped the refinement)."
+}

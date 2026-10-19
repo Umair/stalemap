@@ -1,0 +1,13 @@
+{
+  "title": "mongoose 9: change events for any document",
+  "template": "latest",
+  "change": "mongoose@9.0.0/document-id-virtual-string",
+  "package": "mongoose",
+  "scenario": "new-code",
+  "changeType": "breaking",
+  "kind": "compile-error",
+  "stale": ["^(?=[\\s\\S]*[\\w$]\\s*:\\s*Document\\b)(?=[\\s\\S]*\\.id\\b)"],
+  "deprecated": [],
+  "newApi": ["\\bHydratedDocument\\b", "\\b_id\\b"],
+  "oracle": "In mongoose 9 the Document class no longer declares `id: any`; the string `id` virtual is typed only on a model's hydrated documents, so for a plain Document use String(doc._id)."
+}

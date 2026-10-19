@@ -1,0 +1,1 @@
+- Run `npm test` to type-check the project and run the smoke tests.

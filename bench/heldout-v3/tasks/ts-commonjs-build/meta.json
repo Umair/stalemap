@@ -1,0 +1,19 @@
+{
+  "title": "TypeScript 7: add a CommonJS build next to an ESM build",
+  "template": "latest",
+  "change": "typescript@6.0.2/deprecate-moduleresolution-node10",
+  "package": "typescript",
+  "scenario": "new-code",
+  "changeType": "deprecation",
+  "kind": "type-checks",
+  "stale": [
+    "\"moduleResolution\"\\s*:\\s*\"[Nn]ode(10)?\""
+  ],
+  "deprecated": [],
+  "newApi": [
+    "moduleResolution",
+    "node10",
+    "[Bb]undler"
+  ],
+  "oracle": "moduleResolution \"node\" (node10) was deprecated in TypeScript 6.0 and is a hard error in 7.0; for CommonJS output keep moduleResolution \"bundler\" (allowed with module commonjs since 6.0) or use nodenext."
+}

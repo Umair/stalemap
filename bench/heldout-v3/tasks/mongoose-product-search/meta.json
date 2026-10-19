@@ -1,0 +1,16 @@
+{
+  "title": "mongoose 9: product search query from string params",
+  "template": "latest",
+  "change": "mongoose@9.0.0/queryfilter-keys-typed",
+  "package": "mongoose",
+  "scenario": "new-code",
+  "changeType": "breaking",
+  "kind": "compile-error",
+  "stale": [
+    "\\$(?:gte?|lte?)\\s*:\\s*(?:params|query|req\\.query)\\.\\w+\\s*[,}\\n]",
+    "\\b(?:inStock|price|rating)\\s*:\\s*(?:params|query|req\\.query)\\.\\w+\\s*[,}\\n]"
+  ],
+  "deprecated": [],
+  "newApi": ["\\bQueryFilter\\b", "\\bNumber\\s*\\(", "parse(?:Int|Float)"],
+  "oracle": "In mongoose 9, find()/findOne() filters type each top-level key from the schema, so a string for a Number or Boolean path is a TypeScript error; convert query-string values (Number(), === 'true') before filtering."
+}

@@ -1,0 +1,306 @@
+{
+  "$comment": "Input for scripts/precompute.ts. Model cutoffs are models.dev knowledge dates (Oct 2026); each distinct cutoff gives a package one baseline to precompute. Packages: fast-moving ones coding agents most often get wrong.",
+  "margin": 30,
+  "models": [
+    {
+      "id": "claude-opus-5-5",
+      "knowledge": "2026-06"
+    },
+    {
+      "id": "claude-sonnet-5-5",
+      "knowledge": "2026-06"
+    },
+    {
+      "id": "claude-haiku-5-5",
+      "knowledge": "2026-06"
+    },
+    {
+      "id": "claude-fable-5-1",
+      "knowledge": "2026-06"
+    },
+    {
+      "id": "claude-opus-5",
+      "knowledge": "2026-05"
+    },
+    {
+      "id": "claude-sonnet-5",
+      "knowledge": "2026-01-31"
+    },
+    {
+      "id": "claude-opus-4-8",
+      "knowledge": "2026-01"
+    },
+    {
+      "id": "claude-sonnet-4-6",
+      "knowledge": "2025-08-31"
+    },
+    {
+      "id": "gpt-6.1-sol",
+      "knowledge": "2026-04-30"
+    },
+    {
+      "id": "gpt-6-luna",
+      "knowledge": "2026-05-18"
+    },
+    {
+      "id": "gpt-6-sol",
+      "knowledge": "2026-04-20"
+    },
+    {
+      "id": "gpt-5.6-sol",
+      "knowledge": "2026-02-16"
+    },
+    {
+      "id": "gpt-5.5",
+      "knowledge": "2025-12-01"
+    },
+    {
+      "id": "gemini-4-argon",
+      "knowledge": "2026-03"
+    },
+    {
+      "id": "gemini-3.7-flash",
+      "knowledge": "2026-03"
+    },
+    {
+      "id": "gemini-3.1-pro-preview",
+      "knowledge": "2025-01"
+    },
+    {
+      "id": "deepseek-v4-flash",
+      "knowledge": "2025-05"
+    },
+    {
+      "id": "kimi-k2.7-code",
+      "knowledge": "2025-01"
+    },
+    {
+      "id": "glm-4.7",
+      "knowledge": "2025-04"
+    }
+  ],
+  "packages": {
+    "AI SDKs and agents": [
+      "ai",
+      "@ai-sdk/openai",
+      "@ai-sdk/anthropic",
+      "@ai-sdk/google",
+      "@ai-sdk/google-vertex",
+      "@ai-sdk/amazon-bedrock",
+      "@ai-sdk/azure",
+      "@ai-sdk/mistral",
+      "@ai-sdk/groq",
+      "@ai-sdk/xai",
+      "@ai-sdk/deepseek",
+      "@ai-sdk/openai-compatible",
+      "@ai-sdk/gateway",
+      "@ai-sdk/provider",
+      "@ai-sdk/provider-utils",
+      "@ai-sdk/react",
+      "@ai-sdk/vue",
+      "@ai-sdk/svelte",
+      "@ai-sdk/mcp",
+      "openai",
+      "@anthropic-ai/sdk",
+      "@anthropic-ai/claude-agent-sdk",
+      "@google/genai",
+      "@modelcontextprotocol/sdk",
+      "@openai/agents",
+      "@mistralai/mistralai",
+      "groq-sdk",
+      "ollama",
+      "@huggingface/inference",
+      "langchain",
+      "@langchain/core",
+      "@langchain/openai",
+      "@langchain/anthropic",
+      "@langchain/langgraph",
+      "@mastra/core",
+      "@pinecone-database/pinecone"
+    ],
+    "Frameworks": [
+      "next",
+      "react",
+      "react-dom",
+      "vue",
+      "nuxt",
+      "svelte",
+      "@sveltejs/kit",
+      "astro",
+      "react-router",
+      "@react-router/dev",
+      "solid-js",
+      "@angular/core",
+      "@angular/common",
+      "@angular/router",
+      "expo",
+      "react-native",
+      "expo-router",
+      "electron"
+    ],
+    "Styling and UI": [
+      "tailwindcss",
+      "@tailwindcss/postcss",
+      "@tailwindcss/vite",
+      "radix-ui",
+      "@radix-ui/react-dialog",
+      "@radix-ui/react-dropdown-menu",
+      "@headlessui/react",
+      "motion",
+      "framer-motion",
+      "lucide-react",
+      "tailwind-merge",
+      "@mui/material",
+      "@chakra-ui/react",
+      "@mantine/core",
+      "sonner",
+      "recharts",
+      "react-hook-form",
+      "@hookform/resolvers",
+      "@tiptap/react",
+      "@tiptap/core",
+      "lexical",
+      "nuqs",
+      "next-intl"
+    ],
+    "Validation and schemas": [
+      "zod",
+      "valibot",
+      "arktype",
+      "effect"
+    ],
+    "Data, ORMs and databases": [
+      "prisma",
+      "@prisma/client",
+      "drizzle-orm",
+      "drizzle-kit",
+      "kysely",
+      "mongoose",
+      "mongodb",
+      "pg",
+      "better-sqlite3",
+      "@libsql/client",
+      "@neondatabase/serverless",
+      "@electric-sql/pglite",
+      "redis",
+      "ioredis",
+      "@upstash/redis",
+      "@upstash/ratelimit",
+      "convex"
+    ],
+    "TanStack and data fetching": [
+      "@tanstack/react-query",
+      "@tanstack/query-core",
+      "@tanstack/vue-query",
+      "@tanstack/react-router",
+      "@tanstack/react-start",
+      "@tanstack/router-plugin",
+      "@tanstack/react-table",
+      "@tanstack/react-form",
+      "@tanstack/react-virtual",
+      "@tanstack/react-db",
+      "swr",
+      "@trpc/server",
+      "@trpc/client",
+      "@trpc/tanstack-react-query",
+      "graphql",
+      "@apollo/client"
+    ],
+    "State": [
+      "zustand",
+      "jotai",
+      "@reduxjs/toolkit",
+      "react-redux",
+      "xstate"
+    ],
+    "Build, lint and test": [
+      "vite",
+      "@vitejs/plugin-react",
+      "vitest",
+      "eslint",
+      "@eslint/js",
+      "typescript-eslint",
+      "eslint-config-next",
+      "prettier",
+      "@biomejs/biome",
+      "oxlint",
+      "jest",
+      "@playwright/test",
+      "playwright",
+      "puppeteer",
+      "@testing-library/react",
+      "msw",
+      "esbuild",
+      "rolldown",
+      "webpack",
+      "@rspack/core",
+      "turbo",
+      "tsx",
+      "typescript",
+      "storybook",
+      "@storybook/react"
+    ],
+    "Servers and HTTP": [
+      "hono",
+      "@hono/node-server",
+      "express",
+      "fastify",
+      "elysia",
+      "@nestjs/core",
+      "@nestjs/common",
+      "h3",
+      "nitropack",
+      "undici",
+      "axios"
+    ],
+    "Auth": [
+      "@clerk/nextjs",
+      "@clerk/clerk-react",
+      "@clerk/backend",
+      "@clerk/express",
+      "next-auth",
+      "@auth/core",
+      "better-auth",
+      "@supabase/supabase-js",
+      "@supabase/ssr",
+      "firebase",
+      "firebase-admin",
+      "@auth0/nextjs-auth0"
+    ],
+    "Payments, email and services": [
+      "stripe",
+      "@stripe/stripe-js",
+      "@stripe/react-stripe-js",
+      "resend",
+      "@react-email/components",
+      "@sentry/nextjs",
+      "@sentry/node",
+      "@sentry/react",
+      "posthog-js",
+      "posthog-node",
+      "@vercel/analytics",
+      "@vercel/blob",
+      "@vercel/functions",
+      "@aws-sdk/client-s3",
+      "twilio",
+      "@octokit/rest",
+      "inngest",
+      "@trigger.dev/sdk",
+      "uploadthing",
+      "@liveblocks/client",
+      "@t3-oss/env-nextjs",
+      "wrangler",
+      "agents",
+      "@cloudflare/vite-plugin",
+      "@cloudflare/workers-types"
+    ],
+    "Utilities": [
+      "date-fns",
+      "dayjs",
+      "commander",
+      "@clack/prompts",
+      "pino",
+      "sharp"
+    ]
+  }
+}

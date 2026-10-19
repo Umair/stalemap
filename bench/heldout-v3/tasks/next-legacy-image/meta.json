@@ -1,0 +1,13 @@
+{
+  "title": "Next 16: store image components after the upgrade",
+  "template": "latest",
+  "change": "next@16.0.0/next-legacy-image-deprecated",
+  "package": "next",
+  "scenario": "upgrade",
+  "changeType": "deprecation",
+  "kind": "type-checks",
+  "stale": ["[\"']next/legacy/image[\"']"],
+  "deprecated": ["[\"']next/legacy/image[\"']", "\\blayout\\s*=\\s*[\"'{]", "\\bobjectFit\\s*="],
+  "newApi": ["next/image", "\\bfill\\b", "legacy"],
+  "oracle": "Since Next 16, `next/legacy/image` is deprecated and warns at render; use `next/image` (`fill` plus `style={{ objectFit }}` for layout=\"fill\", `style={{ width: '100%', height: 'auto' }}` for responsive)."
+}

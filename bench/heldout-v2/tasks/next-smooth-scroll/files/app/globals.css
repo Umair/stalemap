@@ -1,0 +1,9 @@
+body {
+  margin: 0;
+  font-family: system-ui, sans-serif;
+}
+
+section {
+  min-height: 100vh;
+  padding: 4rem 2rem;
+}

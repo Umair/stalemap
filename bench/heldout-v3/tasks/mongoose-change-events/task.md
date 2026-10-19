@@ -1,0 +1,1 @@
+We put a change event on our queue whenever a customer or an order is saved or deleted (see the hooks in `src/models.ts`). Implement `toChangeEvent(type, doc)` in `src/events.ts` so it works for a document of any of our models: return the event type, the document's collection name and the document's id as a string.

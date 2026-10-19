@@ -1,0 +1,21 @@
+{
+  "title": "zod 4.5: object intersected with a pattern-keyed record",
+  "template": "latest",
+  "change": "zod@4.5.0/record-keys-intersection-match-typescript",
+  "package": "zod",
+  "scenario": "new-code",
+  "changeType": "breaking",
+  "kind": "type-checks",
+  "stale": [
+    "z\\s*\\.(?:object|looseObject)\\(\\{[^;]*?\\}\\)\\s*\\.and\\(\\s*z\\s*\\.record\\(",
+    "z\\s*\\.record\\([^;]*?\\)\\s*\\.and\\(\\s*z\\s*\\.(?:object|looseObject)\\(",
+    "intersection\\(\\s*z\\s*\\.(?:object|looseObject)\\(",
+    "intersection\\(\\s*z\\s*\\.record\\([^;]*?\\)\\s*,\\s*z\\s*\\.(?:object|looseObject)\\("
+  ],
+  "deprecated": [],
+  "newApi": [
+    "strictObject\\([^;]*\\)\\s*\\.and\\(\\s*z\\.record",
+    "only keys that match"
+  ],
+  "oracle": "Since zod 4.5, a record's key schema governs only keys that match it, so object.and(z.record(pattern, v)) silently drops non-matching keys instead of rejecting them; use z.strictObject(...).and(record) or refine the keys."
+}

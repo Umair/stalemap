@@ -1,0 +1,13 @@
+{
+  "title": "Next 16: split the product sitemap",
+  "template": "latest",
+  "change": "next@16.0.0/metadata-route-args-async",
+  "package": "next",
+  "scenario": "new-code",
+  "changeType": "breaking",
+  "kind": "type-checks",
+  "stale": ["\\{\\s*id\\s*:\\s*(?:number|string)\\s*\\}\\s*\\)"],
+  "deprecated": [],
+  "newApi": ["id\\s*:\\s*Promise", "await\\s+(?:\\w+\\.)?id\\b", "Promise<string>"],
+  "oracle": "Since Next 16, a sitemap's default export receives `id` as a Promise<string> (image routes likewise get `params` and `id` as Promises); await it, e.g. `const id = await props.id`."
+}

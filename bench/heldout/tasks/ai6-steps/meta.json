@@ -1,0 +1,13 @@
+{
+  "title": "AI SDK 6 (pinned): multi-step agent",
+  "template": "pinned",
+  "scenario": "pinned-version",
+  "stale": [
+    "\\bmaxSteps\\b",
+    "\\bparameters\\s*:",
+    "isStepCount",
+    "\\binstructions\\s*:",
+    "onStepEnd"
+  ],
+  "deprecated": []
+}

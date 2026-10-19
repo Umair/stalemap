@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "target": "ES5",
+    "module": "ES2015",
+    "moduleResolution": "bundler",
+    "ignoreDeprecations": "5.0",
+    "lib": ["ES2017", "DOM"],
+    "rootDir": "src",
+    "outDir": "dist",
+    "declaration": true,
+    "strict": true,
+    "types": []
+  },
+  "include": ["src"]
+}

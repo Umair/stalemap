@@ -1,0 +1,21 @@
+{
+  "title": "TypeScript 7: JSON imports written with import assertions",
+  "template": "latest",
+  "change": "typescript@6.0.2/deprecate-import-asserts",
+  "package": "typescript",
+  "scenario": "upgrade",
+  "changeType": "deprecation",
+  "kind": "compile-error",
+  "stale": [
+    "[\"'`]\\s*assert\\s*\\{",
+    "\\bassert\\s*:\\s*\\{"
+  ],
+  "deprecated": [],
+  "newApi": [
+    "\\bwith\\s*[:{]",
+    "\\b[Aa]ssert(ion)?s?\\b",
+    "[Aa]ttributes?",
+    "TS2880"
+  ],
+  "oracle": "TypeScript 6.0 deprecated import assertions and 7.0 rejects them (TS2880): write import x from \"./a.json\" with { type: \"json\" } and import(path, { with: { type: \"json\" } }) instead of assert."
+}

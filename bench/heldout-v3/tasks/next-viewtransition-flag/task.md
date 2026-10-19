@@ -1,0 +1,1 @@
+When you click a photo on the gallery grid (`app/page.tsx`), it should morph smoothly from the thumbnail into the large image on the photo page (`app/photos/[id]/page.tsx`) using React's view transitions. Both pages render the image through `app/components/Photo.tsx`; make the change there, and in `next.config.ts` if needed.

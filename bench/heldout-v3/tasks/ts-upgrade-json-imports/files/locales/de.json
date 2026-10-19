@@ -1,0 +1,4 @@
+{
+  "greeting": "Hallo, {name}!",
+  "items": "Du hast {count} Einträge."
+}

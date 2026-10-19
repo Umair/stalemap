@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "target": "ES2019",
+    "module": "UMD",
+    "moduleResolution": "node",
+    "ignoreDeprecations": "5.0",
+    "rootDir": "src",
+    "outDir": "dist",
+    "declaration": true,
+    "strict": true,
+    "types": []
+  },
+  "include": ["src"]
+}

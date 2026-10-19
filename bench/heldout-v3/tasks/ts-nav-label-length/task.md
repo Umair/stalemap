@@ -1,0 +1,1 @@
+Tab labels in our nav bar can be at most 12 characters. In `src/nav.ts`, make `navItem()` reject a string-literal label longer than that at compile time, and implement `isValidLabel()` for labels that come from the CMS at runtime. The two checks must accept exactly the same labels, and our labels often contain emoji (see `src/menu.ts`).

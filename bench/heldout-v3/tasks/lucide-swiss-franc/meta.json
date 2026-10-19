@@ -1,0 +1,13 @@
+{
+  "title": "lucide-react 1.42: Swiss franc icons deprecated",
+  "template": "latest",
+  "change": "lucide-react@1.42.0/swiss-franc-icons-deprecated",
+  "package": "lucide-react",
+  "scenario": "new-code",
+  "changeType": "deprecation",
+  "kind": "type-checks",
+  "stale": ["\\b(?:Lucide)?(?:Badge|Receipt)?SwissFranc(?:Icon)?\\b"],
+  "deprecated": ["\\b(?:Lucide)?(?:Badge|Receipt)?SwissFranc(?:Icon)?\\b"],
+  "newApi": ["\\bBanknote\\b", "\\bCoins\\b"],
+  "oracle": "In lucide-react 1.42+, SwissFranc, BadgeSwissFranc and ReceiptSwissFranc are @deprecated (the franc sign they draw is obsolete); use a generic money icon such as Banknote or Coins instead."
+}

@@ -1,0 +1,1 @@
+Add the `SignupForm` schema in `src/schemas.ts`: `email`, `password` (at least 8 characters) and `confirmPassword`, using the shared `PasswordsMatch` rule from `src/rules.ts` for the confirmation check. Submissions with any other key must be rejected, not silently accepted (we've seen people send `role: "admin"`).

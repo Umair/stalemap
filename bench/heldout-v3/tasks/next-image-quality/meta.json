@@ -1,0 +1,13 @@
+{
+  "title": "Next 16: sharper product photos",
+  "template": "latest",
+  "change": "next@15.5.0/image-quality-warning",
+  "package": "next",
+  "scenario": "new-code",
+  "changeType": "deprecation",
+  "kind": "type-checks",
+  "stale": ["^(?![\\s\\S]*\\bqualities\\s*:)[\\s\\S]*\\bquality\\s*="],
+  "deprecated": [],
+  "newApi": ["qualities"],
+  "oracle": "Since Next 15.5, next/image warns when a `quality` other than 75 is used without `images.qualities`, and Next 16 coerces it to the allowed list (default [75]); list every quality you use in `images.qualities` in next.config."
+}

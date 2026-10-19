@@ -1,0 +1,10 @@
+{
+  "title": "zod 4: function schema",
+  "template": "latest",
+  "scenario": "new-code",
+  "stale": [
+    "\\.args\\(",
+    "\\.returns\\("
+  ],
+  "deprecated": []
+}

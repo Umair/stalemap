@@ -1,0 +1,9 @@
+{
+  "title": "zod 4: record schema",
+  "template": "latest",
+  "scenario": "new-code",
+  "stale": [
+    "z\\.record\\(\\s*z\\.number"
+  ],
+  "deprecated": []
+}

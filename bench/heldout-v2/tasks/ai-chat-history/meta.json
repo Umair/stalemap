@@ -1,0 +1,10 @@
+{
+  "title": "AI SDK 7: conversation history after a tool loop",
+  "template": "latest",
+  "scenario": "new-code",
+  "kind": "type-checks",
+  "stale": [
+    "^(?![\\s\\S]*(?:\\bresponseMessages\\b|\\bsteps\\s*[.[]))[\\s\\S]*\\bresponse\\.messages\\b"
+  ],
+  "deprecated": []
+}

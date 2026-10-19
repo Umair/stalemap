@@ -1,0 +1,658 @@
+{
+  "model": "claude-sonnet-4-5",
+  "cutoff": "2025-07-31",
+  "provider": "claude-code",
+  "ranAt": "2026-10-16T10:14:03.402Z",
+  "probes": 12,
+  "results": [
+    {
+      "probe": {
+        "id": "1652549d32",
+        "pkg": "next",
+        "version": "16.4.2",
+        "subpath": "./cache",
+        "symbol": "revalidateTag",
+        "kind": "params",
+        "detail": "`revalidateTag()` now requires `profile`",
+        "task": "Write a short example that calls `revalidateTag()` from `next/cache` with typical arguments.",
+        "target": {
+          "names": [],
+          "callees": [
+            "revalidateTag"
+          ],
+          "apiNames": [
+            "revalidateTag"
+          ]
+        }
+      },
+      "arm": "bare",
+      "verdict": "stale",
+      "findings": [
+        "TS2554 (line 8): Expected 2 arguments, but got 1.",
+        "TS2554 (line 9): Expected 2 arguments, but got 1."
+      ],
+      "touchedApi": true,
+      "code": "'use server';\n\nimport { revalidateTag } from 'next/cache';\n\nexport async function updateProduct(id: string) {\n  // Update product in database\n  \n  revalidateTag('products');\n  revalidateTag(`product-${id}`);\n}\n"
+    },
+    {
+      "probe": {
+        "id": "1652549d32",
+        "pkg": "next",
+        "version": "16.4.2",
+        "subpath": "./cache",
+        "symbol": "revalidateTag",
+        "kind": "params",
+        "detail": "`revalidateTag()` now requires `profile`",
+        "task": "Write a short example that calls `revalidateTag()` from `next/cache` with typical arguments.",
+        "target": {
+          "names": [],
+          "callees": [
+            "revalidateTag"
+          ],
+          "apiNames": [
+            "revalidateTag"
+          ]
+        }
+      },
+      "arm": "notes",
+      "verdict": "current",
+      "findings": [],
+      "touchedApi": true,
+      "code": "import { revalidateTag } from 'next/cache';\n\n// Revalidate cached data tagged with 'products'\nrevalidateTag('products', { profile: 'default' });\n"
+    },
+    {
+      "probe": {
+        "id": "a73e963b24",
+        "pkg": "ai",
+        "version": "7.0.142",
+        "subpath": ".",
+        "symbol": "CoreMessage",
+        "kind": "removed",
+        "detail": "`CoreMessage` was removed",
+        "task": "Write a short TypeScript snippet that uses `CoreMessage` from `ai` the way it is used in this version.",
+        "target": {
+          "names": [
+            "CoreMessage"
+          ],
+          "apiNames": [
+            "CoreMessage",
+            "ModelMessage"
+          ]
+        }
+      },
+      "arm": "bare",
+      "verdict": "stale",
+      "findings": [
+        "TS2305 (line 1): Module '\"ai\"' has no exported member 'CoreMessage'."
+      ],
+      "touchedApi": true,
+      "code": "import { CoreMessage } from 'ai';\n\nconst messages: CoreMessage[] = [\n  {\n    role: 'system',\n    content: 'You are a helpful assistant.',\n  },\n  {\n    role: 'user',\n    content: 'What is TypeScript?',\n  },\n  {\n    role: 'assistant',\n    content: 'TypeScript is a typed superset of JavaScript that compiles to plain JavaScript.',\n  },\n];\n"
+    },
+    {
+      "probe": {
+        "id": "a73e963b24",
+        "pkg": "ai",
+        "version": "7.0.142",
+        "subpath": ".",
+        "symbol": "CoreMessage",
+        "kind": "removed",
+        "detail": "`CoreMessage` was removed",
+        "task": "Write a short TypeScript snippet that uses `CoreMessage` from `ai` the way it is used in this version.",
+        "target": {
+          "names": [
+            "CoreMessage"
+          ],
+          "apiNames": [
+            "CoreMessage",
+            "ModelMessage"
+          ]
+        }
+      },
+      "arm": "notes",
+      "verdict": "current",
+      "findings": [],
+      "touchedApi": true,
+      "code": "import { ModelMessage } from 'ai';\n\nconst messages: ModelMessage[] = [\n  {\n    role: 'user',\n    content: 'Hello, how are you?',\n  },\n  {\n    role: 'assistant',\n    content: 'I am doing well, thank you!',\n  },\n];\n"
+    },
+    {
+      "probe": {
+        "id": "f5b6731297",
+        "pkg": "@anthropic-ai/sdk",
+        "version": "0.135.0",
+        "subpath": ".",
+        "symbol": "default",
+        "kind": "members",
+        "detail": "`Anthropic`: removed `Page`",
+        "task": "Write a short example that uses `Anthropic` from `@anthropic-ai/sdk` and its `Page` member.",
+        "target": {
+          "names": [
+            "Page"
+          ],
+          "apiNames": [
+            "Anthropic"
+          ]
+        }
+      },
+      "arm": "bare",
+      "verdict": "current",
+      "findings": [],
+      "touchedApi": true,
+      "code": "import Anthropic from '@anthropic-ai/sdk';\nimport type { Page } from '@anthropic-ai/sdk/pagination';\n\nconst client = new Anthropic({\n  apiKey: process.env.ANTHROPIC_API_KEY,\n});\n\nasync function listMessagesWithPagination() {\n  // Get first page of messages\n  const page: Page<Anthropic.Beta.MessageBatch> = await client.beta.messages.batches.list({\n    limit: 20,\n  });\n\n  console.log('First page:', page.data);\n\n  // Iterate through all pages\n  for await (const batch of client.beta.messages.batches.list({ limit: 20 })) {\n    console.log('Batch ID:', batch.id);\n  }\n}\n\nlistMessagesWithPagination();\n"
+    },
+    {
+      "probe": {
+        "id": "f5b6731297",
+        "pkg": "@anthropic-ai/sdk",
+        "version": "0.135.0",
+        "subpath": ".",
+        "symbol": "default",
+        "kind": "members",
+        "detail": "`Anthropic`: removed `Page`",
+        "task": "Write a short example that uses `Anthropic` from `@anthropic-ai/sdk` and its `Page` member.",
+        "target": {
+          "names": [
+            "Page"
+          ],
+          "apiNames": [
+            "Anthropic"
+          ]
+        }
+      },
+      "arm": "notes",
+      "verdict": "current",
+      "findings": [],
+      "touchedApi": true,
+      "code": "import Anthropic from '@anthropic-ai/sdk';\n\nconst client = new Anthropic({\n  apiKey: process.env.ANTHROPIC_API_KEY,\n});\n\nasync function listFiles() {\n  for await (const file of client.beta.files.list()) {\n    console.log(file.id, file.name);\n  }\n}\n\nlistFiles();\n"
+    },
+    {
+      "probe": {
+        "id": "c04cc2de78",
+        "pkg": "openai",
+        "version": "7.34.0",
+        "subpath": ".",
+        "symbol": "default",
+        "kind": "deprecated",
+        "detail": "On `OpenAI`, deprecated: `videos`",
+        "task": "Write a short example that uses `OpenAI` from `openai` to do what `videos` does.",
+        "target": {
+          "names": [
+            "videos"
+          ],
+          "apiNames": [
+            "OpenAI"
+          ]
+        }
+      },
+      "arm": "bare",
+      "verdict": "stale",
+      "findings": [
+        "deprecated (line 7): `videos`"
+      ],
+      "touchedApi": true,
+      "code": "import OpenAI from 'openai';\n\nconst openai = new OpenAI({\n  apiKey: process.env.OPENAI_API_KEY,\n});\n\nconst video = await openai.videos.generate({\n  prompt: \"A golden retriever playing in a park\",\n  model: \"sora-1.0\",\n});\n\nconsole.log(video.url);\n"
+    },
+    {
+      "probe": {
+        "id": "c04cc2de78",
+        "pkg": "openai",
+        "version": "7.34.0",
+        "subpath": ".",
+        "symbol": "default",
+        "kind": "deprecated",
+        "detail": "On `OpenAI`, deprecated: `videos`",
+        "task": "Write a short example that uses `OpenAI` from `openai` to do what `videos` does.",
+        "target": {
+          "names": [
+            "videos"
+          ],
+          "apiNames": [
+            "OpenAI"
+          ]
+        }
+      },
+      "arm": "notes",
+      "verdict": "current",
+      "findings": [],
+      "touchedApi": true,
+      "code": "import OpenAI from 'openai';\n\nconst openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });\n\nconst response = await openai.chat.completions.create({\n  model: 'gpt-4o',\n  messages: [\n    {\n      role: 'user',\n      content: [\n        { type: 'text', text: 'Describe what happens in this video.' },\n        { \n          type: 'image_url', \n          image_url: { url: 'https://example.com/video.mp4' } \n        }\n      ]\n    }\n  ]\n});\n\nconsole.log(response.choices[0].message.content);\n"
+    },
+    {
+      "probe": {
+        "id": "8d868b98c6",
+        "pkg": "zod",
+        "version": "4.6.7",
+        "subpath": ".",
+        "symbol": "string",
+        "kind": "params",
+        "detail": "`string()` options no longer accept `errorMap`, `invalid_type_error`, `required_error`, `description`, `coerce`",
+        "task": "Write a short example that calls `string()` from `zod` and configures what the `errorMap`, `invalid_type_error`, `required_error` options did.",
+        "target": {
+          "names": [
+            "errorMap",
+            "invalid_type_error",
+            "required_error"
+          ],
+          "apiNames": [
+            "string"
+          ]
+        }
+      },
+      "arm": "bare",
+      "verdict": "stale",
+      "findings": [
+        "TS2769 (line 5): No overload matches this call.",
+        "TS2769 (line 14): No overload matches this call."
+      ],
+      "touchedApi": true,
+      "code": "import { z } from 'zod';\n\n// invalid_type_error and required_error\nconst name = z.string({\n  invalid_type_error: \"Name must be a string\",\n  required_error: \"Name is required\"\n});\n\nconsole.log(name.safeParse(123)); // uses invalid_type_error\nconsole.log(name.safeParse(undefined)); // uses required_error\n\n// errorMap for custom error handling\nconst email = z.string({\n  errorMap: (issue, ctx) => {\n    if (issue.code === z.ZodIssueCode.invalid_type) {\n      return { message: `Expected string, got ${issue.received}` };\n    }\n    return { message: ctx.defaultError };\n  }\n});\n\nconsole.log(email.safeParse(null)); // uses errorMap\n"
+    },
+    {
+      "probe": {
+        "id": "8d868b98c6",
+        "pkg": "zod",
+        "version": "4.6.7",
+        "subpath": ".",
+        "symbol": "string",
+        "kind": "params",
+        "detail": "`string()` options no longer accept `errorMap`, `invalid_type_error`, `required_error`, `description`, `coerce`",
+        "task": "Write a short example that calls `string()` from `zod` and configures what the `errorMap`, `invalid_type_error`, `required_error` options did.",
+        "target": {
+          "names": [
+            "errorMap",
+            "invalid_type_error",
+            "required_error"
+          ],
+          "apiNames": [
+            "string"
+          ]
+        }
+      },
+      "arm": "notes",
+      "verdict": "current",
+      "findings": [],
+      "touchedApi": true,
+      "code": "import { z, ZodIssueCode, type ZodErrorMap } from 'zod';\n\nconst errorMap: ZodErrorMap = (issue, ctx) => {\n  if (issue.code === ZodIssueCode.invalid_type && issue.expected === 'string') {\n    return issue.received === 'undefined'\n      ? { message: 'Field is required' }\n      : { message: 'Must be a string' };\n  }\n  return { message: ctx.defaultError };\n};\n\nz.setErrorMap(errorMap);\nconst schema = z.string();\n"
+    },
+    {
+      "probe": {
+        "id": "ac011a6890",
+        "pkg": "@tanstack/react-query",
+        "version": "5.104.3",
+        "subpath": ".",
+        "symbol": "QueryClient",
+        "kind": "deprecated",
+        "detail": "On `QueryClient`, deprecated: `ensureQueryData` (use queryClient.query({ ...options, staleTime: 'static' })), `fetchQuery` (use queryClient.query(options)), `prefetchQuery`, `fetchInfiniteQuery` (use queryClient.infiniteQuery(options)) (+2 more)",
+        "task": "Write a short example that uses `QueryClient` from `@tanstack/react-query` to do what `ensureQueryData`, `fetchQuery`, `prefetchQuery` do.",
+        "target": {
+          "names": [
+            "ensureQueryData",
+            "fetchQuery",
+            "prefetchQuery"
+          ],
+          "apiNames": [
+            "QueryClient"
+          ]
+        }
+      },
+      "arm": "bare",
+      "verdict": "stale",
+      "findings": [
+        "deprecated (line 11): `ensureQueryData`",
+        "deprecated (line 17): `fetchQuery`",
+        "deprecated (line 23): `prefetchQuery`"
+      ],
+      "touchedApi": true,
+      "code": "import { QueryClient } from '@tanstack/react-query';\n\nconst queryClient = new QueryClient();\n\nconst fetchUser = async (id: number) => {\n  const response = await fetch(`https://api.example.com/users/${id}`);\n  return response.json();\n};\n\n// ensureQueryData: returns cached data if available, otherwise fetches\nconst userData = await queryClient.ensureQueryData({\n  queryKey: ['user', 1],\n  queryFn: () => fetchUser(1),\n});\n\n// fetchQuery: always fetches and returns data\nconst freshData = await queryClient.fetchQuery({\n  queryKey: ['user', 2],\n  queryFn: () => fetchUser(2),\n});\n\n// prefetchQuery: fetches and caches but returns void\nawait queryClient.prefetchQuery({\n  queryKey: ['user', 3],\n  queryFn: () => fetchUser(3),\n});\n"
+    },
+    {
+      "probe": {
+        "id": "ac011a6890",
+        "pkg": "@tanstack/react-query",
+        "version": "5.104.3",
+        "subpath": ".",
+        "symbol": "QueryClient",
+        "kind": "deprecated",
+        "detail": "On `QueryClient`, deprecated: `ensureQueryData` (use queryClient.query({ ...options, staleTime: 'static' })), `fetchQuery` (use queryClient.query(options)), `prefetchQuery`, `fetchInfiniteQuery` (use queryClient.infiniteQuery(options)) (+2 more)",
+        "task": "Write a short example that uses `QueryClient` from `@tanstack/react-query` to do what `ensureQueryData`, `fetchQuery`, `prefetchQuery` do.",
+        "target": {
+          "names": [
+            "ensureQueryData",
+            "fetchQuery",
+            "prefetchQuery"
+          ],
+          "apiNames": [
+            "QueryClient"
+          ]
+        }
+      },
+      "arm": "notes",
+      "verdict": "current",
+      "findings": [],
+      "touchedApi": true,
+      "code": "import { QueryClient } from '@tanstack/react-query';\n\nconst queryClient = new QueryClient();\n\n// Instead of fetchQuery - use queryClient.query()\nconst userData = await queryClient.query({\n  queryKey: ['user', 1],\n  queryFn: async () => {\n    const res = await fetch('/api/user/1');\n    return res.json();\n  },\n});\n\n// Instead of ensureQueryData - use queryClient.query() with staleTime: 'static'\nconst cachedData = await queryClient.query({\n  queryKey: ['user', 1],\n  queryFn: async () => {\n    const res = await fetch('/api/user/1');\n    return res.json();\n  },\n  staleTime: 'static', // Only fetch if not already in cache\n});\n\n// Instead of prefetchQuery - use queryClient.query() (data is cached automatically)\nawait queryClient.query({\n  queryKey: ['posts'],\n  queryFn: async () => {\n    const res = await fetch('/api/posts');\n    return res.json();\n  },\n});\n"
+    },
+    {
+      "probe": {
+        "id": "b9a52fc2ef",
+        "pkg": "next",
+        "version": "16.4.2",
+        "subpath": "./server",
+        "symbol": "NextMiddleware",
+        "kind": "deprecated",
+        "detail": "`NextMiddleware` is deprecated: Use `NextProxy` instead. Middleware has been renamed to Proxy.",
+        "task": "Write a short TypeScript snippet that does what `NextMiddleware` from `next/server` is used for.",
+        "target": {
+          "names": [
+            "NextMiddleware"
+          ],
+          "apiNames": [
+            "NextMiddleware"
+          ]
+        }
+      },
+      "arm": "bare",
+      "verdict": "avoided",
+      "findings": [],
+      "touchedApi": false,
+      "code": "import { NextResponse } from 'next/server';\nimport type { NextRequest } from 'next/server';\n\nexport function middleware(request: NextRequest) {\n  if (request.nextUrl.pathname.startsWith('/admin')) {\n    const token = request.cookies.get('auth-token');\n    if (!token) {\n      return NextResponse.redirect(new URL('/login', request.url));\n    }\n  }\n\n  const response = NextResponse.next();\n  response.headers.set('x-middleware', 'active');\n  return response;\n}\n\nexport const config = {\n  matcher: ['/admin/:path*', '/api/:path*'],\n};\n"
+    },
+    {
+      "probe": {
+        "id": "b9a52fc2ef",
+        "pkg": "next",
+        "version": "16.4.2",
+        "subpath": "./server",
+        "symbol": "NextMiddleware",
+        "kind": "deprecated",
+        "detail": "`NextMiddleware` is deprecated: Use `NextProxy` instead. Middleware has been renamed to Proxy.",
+        "task": "Write a short TypeScript snippet that does what `NextMiddleware` from `next/server` is used for.",
+        "target": {
+          "names": [
+            "NextMiddleware"
+          ],
+          "apiNames": [
+            "NextMiddleware"
+          ]
+        }
+      },
+      "arm": "notes",
+      "verdict": "avoided",
+      "findings": [],
+      "touchedApi": false,
+      "code": "import { NextRequest, NextResponse } from 'next/server'\nimport type { NextProxy } from 'next/server'\n\nexport default function proxy(request: NextRequest) {\n  const response = NextResponse.next()\n  response.headers.set('x-custom-header', 'value')\n  return response\n} satisfies NextProxy\n\nexport const config = {\n  matcher: '/api/:path*',\n}\n"
+    },
+    {
+      "probe": {
+        "id": "4d950aa48b",
+        "pkg": "ai",
+        "version": "7.0.142",
+        "subpath": ".",
+        "symbol": "convertToCoreMessages",
+        "kind": "removed",
+        "detail": "`convertToCoreMessages` was removed",
+        "task": "Write a short TypeScript snippet that uses `convertToCoreMessages` from `ai` the way it is used in this version.",
+        "target": {
+          "names": [
+            "convertToCoreMessages"
+          ],
+          "apiNames": [
+            "convertToCoreMessages",
+            "convertToModelMessages"
+          ]
+        }
+      },
+      "arm": "bare",
+      "verdict": "stale",
+      "findings": [
+        "TS2724 (line 1): '\"ai\"' has no exported member named 'convertToCoreMessages'. Did you mean 'convertToModelMessages'?"
+      ],
+      "touchedApi": true,
+      "code": "import { convertToCoreMessages } from 'ai';\n\nconst messages = [\n  { role: 'user', content: 'Hello!' },\n  { role: 'assistant', content: 'Hi there! How can I help you?' },\n  { role: 'user', content: 'What is TypeScript?' }\n];\n\nconst coreMessages = convertToCoreMessages(messages);\n"
+    },
+    {
+      "probe": {
+        "id": "4d950aa48b",
+        "pkg": "ai",
+        "version": "7.0.142",
+        "subpath": ".",
+        "symbol": "convertToCoreMessages",
+        "kind": "removed",
+        "detail": "`convertToCoreMessages` was removed",
+        "task": "Write a short TypeScript snippet that uses `convertToCoreMessages` from `ai` the way it is used in this version.",
+        "target": {
+          "names": [
+            "convertToCoreMessages"
+          ],
+          "apiNames": [
+            "convertToCoreMessages",
+            "convertToModelMessages"
+          ]
+        }
+      },
+      "arm": "notes",
+      "verdict": "current",
+      "findings": [],
+      "touchedApi": true,
+      "code": "import { convertToModelMessages } from 'ai';\n\nconst messages = convertToModelMessages([\n  { role: 'user', content: 'Hello!' },\n  { role: 'assistant', content: 'Hi there!' }\n]);\n"
+    },
+    {
+      "probe": {
+        "id": "d76da19f42",
+        "pkg": "zod",
+        "version": "4.6.7",
+        "subpath": ".",
+        "symbol": "object",
+        "kind": "params",
+        "detail": "`object()` options no longer accept `errorMap`, `invalid_type_error`, `required_error`, `description`",
+        "task": "Write a short example that calls `object()` from `zod` and configures what the `errorMap`, `invalid_type_error`, `required_error` options did.",
+        "target": {
+          "names": [
+            "errorMap",
+            "invalid_type_error",
+            "required_error"
+          ],
+          "apiNames": [
+            "object"
+          ]
+        }
+      },
+      "arm": "bare",
+      "verdict": "stale",
+      "findings": [
+        "TS2769 (line 12): No overload matches this call.",
+        "TS2353 (line 16): Object literal may only specify known properties, and 'required_error' does not exist in type '$ZodNumberParams'.",
+        "TS2353 (line 20): Object literal may only specify known properties, and 'errorMap' does not exist in type '{ error?: string | $ZodErrorMap<NonNullable<$ZodIssueUnrecognizedKeys | $ZodIssueInvalidType<unknown>>>; message?: string; }'."
+      ],
+      "touchedApi": true,
+      "code": "import { z } from 'zod';\n\nconst customErrorMap: z.ZodErrorMap = (issue, ctx) => {\n  if (issue.code === z.ZodIssueCode.invalid_type) {\n    return { message: `Custom errorMap: expected ${issue.expected}, got ${issue.received}` };\n  }\n  return { message: ctx.defaultError };\n};\n\nconst schema = z.object({\n  username: z.string({\n    required_error: \"Username is required\",\n    invalid_type_error: \"Username must be a string\"\n  }),\n  age: z.number({\n    required_error: \"Age is required\",\n    invalid_type_error: \"Age must be a number\"\n  }),\n  active: z.boolean(), // Uses errorMap for errors\n}, { errorMap: customErrorMap });\n\n// Test cases showing the different error types:\ntry { schema.parse({}); } catch (e) { console.log(e.errors); } // required_error\ntry { schema.parse({ username: 123, age: 30, active: true }); } catch (e) { console.log(e.errors); } // invalid_type_error\ntry { schema.parse({ username: \"alice\", age: 30, active: \"yes\" }); } catch (e) { console.log(e.errors); } // errorMap\n"
+    },
+    {
+      "probe": {
+        "id": "d76da19f42",
+        "pkg": "zod",
+        "version": "4.6.7",
+        "subpath": ".",
+        "symbol": "object",
+        "kind": "params",
+        "detail": "`object()` options no longer accept `errorMap`, `invalid_type_error`, `required_error`, `description`",
+        "task": "Write a short example that calls `object()` from `zod` and configures what the `errorMap`, `invalid_type_error`, `required_error` options did.",
+        "target": {
+          "names": [
+            "errorMap",
+            "invalid_type_error",
+            "required_error"
+          ],
+          "apiNames": [
+            "object"
+          ]
+        }
+      },
+      "arm": "notes",
+      "verdict": "stale",
+      "findings": [
+        "TS2353 (line 12): Object literal may only specify known properties, and 'errorMap' does not exist in type 'ParseContext<$ZodIssue>'."
+      ],
+      "touchedApi": true,
+      "code": "import { z } from 'zod';\n\nconst schema = z.object({\n  name: z.string(),\n  age: z.number(),\n});\n\n// Custom error map replaces errorMap, invalid_type_error, and required_error options\nconst result = schema.safeParse(\n  { name: 123 },\n  {\n    errorMap: (issue, ctx) => {\n      if (issue.code === z.ZodIssueCode.invalid_type) {\n        if (issue.received === 'undefined') {\n          return { message: 'Field is required' }; // replaces required_error\n        }\n        return { message: 'Invalid type provided' }; // replaces invalid_type_error\n      }\n      return { message: ctx.defaultError }; // replaces general errorMap\n    }\n  }\n);\n"
+    },
+    {
+      "probe": {
+        "id": "e8c1c0d868",
+        "pkg": "ai",
+        "version": "7.0.142",
+        "subpath": ".",
+        "symbol": "streamText",
+        "kind": "params",
+        "detail": "`streamText()` options no longer accept `maxTokens`, `maxSteps`, `toolCallStreaming`, `experimental_generateMessageId`, `experimental_continueSteps`, `experimental_providerMetadata` (+3 more)",
+        "task": "Write a short example that calls `streamText()` from `ai` and configures what the `maxTokens`, `maxSteps`, `toolCallStreaming` options did.",
+        "target": {
+          "names": [
+            "maxTokens",
+            "maxSteps",
+            "toolCallStreaming"
+          ],
+          "apiNames": [
+            "streamText"
+          ]
+        }
+      },
+      "arm": "bare",
+      "verdict": "current",
+      "findings": [],
+      "touchedApi": true,
+      "code": "import { streamText } from 'ai';\nimport { anthropic } from '@ai-sdk/anthropic';\n\nconst result = streamText({\n  model: anthropic('claude-sonnet-4-5'),\n  prompt: 'What is the weather in San Francisco?',\n  maxTokens: 500, // Maximum tokens in the response\n  maxSteps: 5, // Maximum number of tool call rounds (agentic workflow)\n  toolCallStreaming: true, // Stream tool calls as they're generated\n  tools: {\n    getWeather: {\n      description: 'Get the weather for a location',\n      parameters: z.object({\n        location: z.string(),\n      }),\n      execute: async ({ location }) => ({\n        temperature: 72,\n        condition: 'sunny',\n        location,\n      }),\n    },\n  },\n});\n\nfor await (const chunk of result.textStream) {\n  process.stdout.write(chunk);\n}\n"
+    },
+    {
+      "probe": {
+        "id": "e8c1c0d868",
+        "pkg": "ai",
+        "version": "7.0.142",
+        "subpath": ".",
+        "symbol": "streamText",
+        "kind": "params",
+        "detail": "`streamText()` options no longer accept `maxTokens`, `maxSteps`, `toolCallStreaming`, `experimental_generateMessageId`, `experimental_continueSteps`, `experimental_providerMetadata` (+3 more)",
+        "task": "Write a short example that calls `streamText()` from `ai` and configures what the `maxTokens`, `maxSteps`, `toolCallStreaming` options did.",
+        "target": {
+          "names": [
+            "maxTokens",
+            "maxSteps",
+            "toolCallStreaming"
+          ],
+          "apiNames": [
+            "streamText"
+          ]
+        }
+      },
+      "arm": "notes",
+      "verdict": "current",
+      "findings": [],
+      "touchedApi": true,
+      "code": "import { streamText } from 'ai';\nimport { anthropic } from '@ai-sdk/anthropic';\nimport { z } from 'zod';\n\nconst result = await streamText({\n  model: anthropic('claude-3-5-sonnet-20241022'),\n  messages: [{ role: 'user', content: 'Calculate 2+2 then explain quantum physics' }],\n  maxTokens: 1500,\n  maxToolRoundtrips: 5,\n  tools: {\n    calculator: {\n      description: 'Perform math calculations',\n      parameters: z.object({\n        expression: z.string().describe('Math expression to evaluate'),\n      }),\n      execute: async ({ expression }) => {\n        return { result: eval(expression) };\n      },\n    },\n  },\n});\n\nfor await (const chunk of result.textStream) {\n  process.stdout.write(chunk);\n}\n"
+    },
+    {
+      "probe": {
+        "id": "67840efc5d",
+        "pkg": "zod",
+        "version": "4.6.7",
+        "subpath": ".",
+        "symbol": "nativeEnum",
+        "kind": "deprecated",
+        "detail": "`nativeEnum` is deprecated: This API has been merged into `z.enum()`. Use `z.enum()` instead.",
+        "task": "Write a short TypeScript snippet that does what `nativeEnum` from `zod` is used for.",
+        "target": {
+          "names": [
+            "nativeEnum"
+          ],
+          "apiNames": [
+            "nativeEnum"
+          ]
+        }
+      },
+      "arm": "bare",
+      "verdict": "stale",
+      "findings": [
+        "deprecated (line 15): `nativeEnum`",
+        "deprecated (line 16): `nativeEnum`"
+      ],
+      "touchedApi": true,
+      "code": "import { z } from 'zod';\n\nenum Status {\n  Active = 'active',\n  Inactive = 'inactive',\n  Pending = 'pending'\n}\n\nenum Priority {\n  Low = 1,\n  Medium = 2,\n  High = 3\n}\n\nconst statusSchema = z.nativeEnum(Status);\nconst prioritySchema = z.nativeEnum(Priority);\n\nstatusSchema.parse('active'); // ✓ Valid\nprioritySchema.parse(2); // ✓ Valid\nstatusSchema.parse('invalid'); // ✗ Throws ZodError\n"
+    },
+    {
+      "probe": {
+        "id": "67840efc5d",
+        "pkg": "zod",
+        "version": "4.6.7",
+        "subpath": ".",
+        "symbol": "nativeEnum",
+        "kind": "deprecated",
+        "detail": "`nativeEnum` is deprecated: This API has been merged into `z.enum()`. Use `z.enum()` instead.",
+        "task": "Write a short TypeScript snippet that does what `nativeEnum` from `zod` is used for.",
+        "target": {
+          "names": [
+            "nativeEnum"
+          ],
+          "apiNames": [
+            "nativeEnum"
+          ]
+        }
+      },
+      "arm": "notes",
+      "verdict": "avoided",
+      "findings": [],
+      "touchedApi": false,
+      "code": "import { z } from 'zod';\n\nenum Status {\n  Pending = 'pending',\n  Active = 'active',\n  Completed = 'completed'\n}\n\nenum Priority {\n  Low = 0,\n  Medium = 1,\n  High = 2\n}\n\n// In 4.6.7, z.enum() replaces z.nativeEnum()\nconst statusSchema = z.enum(Status);\nconst prioritySchema = z.enum(Priority);\n\nstatusSchema.parse('active'); // ✓\nprioritySchema.parse(1); // ✓\n"
+    },
+    {
+      "probe": {
+        "id": "42283b5a01",
+        "pkg": "ai",
+        "version": "7.0.142",
+        "subpath": ".",
+        "symbol": "tool",
+        "kind": "params",
+        "detail": "`tool()`: the `tool` argument no longer accepts `parameters`, `experimental_toToolResultContent`",
+        "task": "Write a short example that calls `tool()` from `ai` and configures what the `parameters`, `experimental_toToolResultContent` options did.",
+        "target": {
+          "names": [
+            "parameters",
+            "experimental_toToolResultContent"
+          ],
+          "apiNames": [
+            "tool"
+          ]
+        }
+      },
+      "arm": "bare",
+      "verdict": "current",
+      "findings": [],
+      "touchedApi": true,
+      "code": "import { tool } from 'ai';\nimport { z } from 'zod';\n\nconst weatherTool = tool({\n  description: 'Get the current weather for a location',\n  parameters: z.object({\n    location: z.string().describe('City name'),\n    unit: z.enum(['celsius', 'fahrenheit']).default('celsius')\n  }),\n  execute: async ({ location, unit }) => {\n    return {\n      location,\n      temperature: 72,\n      condition: 'sunny',\n      unit\n    };\n  },\n  experimental_toToolResultContent: (result) => {\n    return [\n      {\n        type: 'text' as const,\n        text: `Weather in ${result.location}: ${result.temperature}°${result.unit[0].toUpperCase()}, ${result.condition}`\n      }\n    ];\n  }\n});\n"
+    },
+    {
+      "probe": {
+        "id": "42283b5a01",
+        "pkg": "ai",
+        "version": "7.0.142",
+        "subpath": ".",
+        "symbol": "tool",
+        "kind": "params",
+        "detail": "`tool()`: the `tool` argument no longer accepts `parameters`, `experimental_toToolResultContent`",
+        "task": "Write a short example that calls `tool()` from `ai` and configures what the `parameters`, `experimental_toToolResultContent` options did.",
+        "target": {
+          "names": [
+            "parameters",
+            "experimental_toToolResultContent"
+          ],
+          "apiNames": [
+            "tool"
+          ]
+        }
+      },
+      "arm": "notes",
+      "verdict": "current",
+      "findings": [],
+      "touchedApi": true,
+      "code": "import { tool } from 'ai';\nimport { z } from 'zod';\n\n// In v7.0.142: 'parameters' → 'schema', 'experimental_toToolResultContent' removed\nconst weatherTool = tool({\n  description: 'Get the weather for a location',\n  schema: z.object({\n    location: z.string().describe('City name'),\n    units: z.enum(['celsius', 'fahrenheit']).optional(),\n  }),\n  execute: async ({ location, units = 'celsius' }) => {\n    // The return value directly becomes the tool result content\n    // (replaces experimental_toToolResultContent)\n    return {\n      location,\n      temperature: 22,\n      units,\n      condition: 'sunny',\n    };\n  },\n});\n"
+    }
+  ]
+}

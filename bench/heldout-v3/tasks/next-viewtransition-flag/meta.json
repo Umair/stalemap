@@ -1,0 +1,13 @@
+{
+  "title": "Next 16.3: shared-element view transitions",
+  "template": "latest",
+  "change": "next@16.3.0/experimental-flags-removed-memorylimit-viewtransition",
+  "package": "next",
+  "scenario": "new-code",
+  "changeType": "breaking",
+  "kind": "compile-error",
+  "stale": ["\\bviewTransition\\s*:", "\\bturbopackMemoryLimit\\b"],
+  "deprecated": [],
+  "newApi": ["\\bViewTransition\\b", "without (a|the) flag", "no flag"],
+  "oracle": "Next 16.3 removed `experimental.viewTransition` (and `turbopackMemoryLimit`): React's `<ViewTransition>` works without a Next flag, so leave next.config alone."
+}

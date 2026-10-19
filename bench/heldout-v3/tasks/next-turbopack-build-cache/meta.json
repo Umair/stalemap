@@ -1,0 +1,13 @@
+{
+  "title": "Next 16: no Turbopack disk cache for builds",
+  "template": "latest",
+  "change": "next@16.0.0/turbopack-config-keys-renamed",
+  "package": "next",
+  "scenario": "new-code",
+  "changeType": "breaking",
+  "kind": "compile-error",
+  "stale": ["\\bturbopackPersistentCaching\\b", "\\bturbopack\\s*:\\s*\\{[^}]*\\bmoduleIds\\s*:"],
+  "deprecated": [],
+  "newApi": ["FileSystemCache", "turbopackModuleIds", "renamed"],
+  "oracle": "Next 16 replaced `experimental.turbopackPersistentCaching` with `experimental.turbopackFileSystemCacheForDev` and `...ForBuild` (the old key is a fatal config error), and moved `turbopack.moduleIds` to `experimental.turbopackModuleIds`."
+}

@@ -1,0 +1,20 @@
+{
+  "title": "TypeScript 7: enable noImplicitAny alone in a project without a strict setting",
+  "template": "latest",
+  "change": "typescript@6.0.2/strict-default-true",
+  "package": "typescript",
+  "scenario": "new-code",
+  "changeType": "default-behavior",
+  "kind": "compile-error",
+  "stale": [
+    "^(?![\\s\\S]*\"(strict|strictNullChecks)\"\\s*:\\s*false)[\\s\\S]*\"noImplicitAny\"\\s*:\\s*true"
+  ],
+  "deprecated": [],
+  "newApi": [
+    "\"strict\"\\s*:\\s*false",
+    "strictNullChecks",
+    "strict\\W+(is|are)?\\s*(on|true|enabled)\\s+by\\s+default",
+    "defaults? to (true|strict)"
+  ],
+  "oracle": "Since TypeScript 6.0, strict defaults to true, so a tsconfig with no strict setting gets every strict check; set \"strict\": false explicitly and then enable individual checks like noImplicitAny."
+}

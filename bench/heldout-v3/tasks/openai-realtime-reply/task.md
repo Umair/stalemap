@@ -1,0 +1,1 @@
+Implement `ask(client, question)` in `src/realtime.ts`: send the question to the model over the Realtime API as a text-only conversation, resolve with the assistant's text reply once the response is complete, and close the connection. The API sometimes reports an error about one of our events without ending the session; log those with `console.warn` and still return the reply.

@@ -1,0 +1,13 @@
+{
+  "title": "Next 16: remote images behind redirects",
+  "template": "latest",
+  "change": "next@16.0.0/image-maximumredirects-default-3",
+  "package": "next",
+  "scenario": "new-code",
+  "changeType": "breaking",
+  "kind": "type-checks",
+  "stale": ["^(?![\\s\\S]*\\bmaximumRedirects\\s*:)[\\s\\S]*\\bimages\\s*:"],
+  "deprecated": [],
+  "newApi": ["maximumRedirects", "default of 3", "at most 3", "3 redirects"],
+  "oracle": "Since Next 16, the image optimizer follows at most 3 redirects for remote images by default (it was unlimited); set `images.maximumRedirects` (up to 20) in next.config when an image URL redirects more often."
+}

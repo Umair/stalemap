@@ -1,0 +1,20 @@
+{
+  "title": "TypeScript 7: legacy JS helpers that read arguments",
+  "template": "latest",
+  "change": "typescript@7.0.2/js-call-argument-checking-aligned",
+  "package": "typescript",
+  "scenario": "upgrade",
+  "changeType": "default-behavior",
+  "kind": "compile-error",
+  "stale": [
+    "\\barguments\\b"
+  ],
+  "deprecated": [],
+  "newApi": [
+    "\\.\\.\\.\\w+",
+    "\\brest\\b",
+    "\\barguments\\b",
+    "TS2554"
+  ],
+  "oracle": "In TypeScript 7.0, a JS function that reads arguments no longer gets an implicit ...args: any[] parameter, so callers passing arguments get TS2554; declare a real rest parameter (function f(...args)) instead."
+}

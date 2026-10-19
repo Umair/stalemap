@@ -1,0 +1,1 @@
+We're tightening type checking in this old codebase one step at a time. Turn on `noImplicitAny` in `tsconfig.json` and fix the errors it reports in `src/`, but keep every other strict check off for now: the null handling in `src/` stays as it is until a later step.

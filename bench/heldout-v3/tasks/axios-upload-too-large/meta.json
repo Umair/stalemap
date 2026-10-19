@@ -1,0 +1,13 @@
+{
+  "title": "axios 1.20: 413 status code renamed",
+  "template": "latest",
+  "change": "axios@1.20.0/payloadtoolarge-deprecated",
+  "package": "axios",
+  "scenario": "new-code",
+  "changeType": "deprecation",
+  "kind": "type-checks",
+  "stale": ["\\bPayloadTooLarge\\b"],
+  "deprecated": ["\\bPayloadTooLarge\\b"],
+  "newApi": ["\\bContentTooLarge\\b"],
+  "oracle": "In axios 1.20, HttpStatusCode.PayloadTooLarge (413) is @deprecated; use HttpStatusCode.ContentTooLarge instead."
+}

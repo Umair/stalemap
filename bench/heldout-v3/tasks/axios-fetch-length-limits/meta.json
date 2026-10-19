@@ -1,0 +1,15 @@
+{
+  "title": "axios 1.20: fetch-adapter attachments after the upgrade",
+  "template": "latest",
+  "change": "axios@1.16.0/fetch-enforces-length-limits",
+  "package": "axios",
+  "scenario": "upgrade",
+  "changeType": "default-behavior",
+  "kind": "type-checks",
+  "stale": [
+    "^(?![\\s\\S]*maxContentLength[\\s\\S]*maxContentLength)[\\s\\S]*?const\\s+(\\w+)\\s*=\\s*\\{[^}]*maxContentLength[\\s\\S]*axios\\.create\\(\\{\\s*\\.\\.\\.\\1\\b[^}]*adapter\\s*:\\s*[\"']fetch[\"']"
+  ],
+  "deprecated": [],
+  "newApi": ["maxContentLength", "maxBodyLength"],
+  "oracle": "Since axios 1.16 the fetch adapter enforces maxContentLength and maxBodyLength, which it ignored before; set them to -1 for fetch requests that must accept large bodies."
+}

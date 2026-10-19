@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "target": "ES2017",
+    "module": "ES2015",
+    "moduleResolution": "bundler",
+    "lib": ["ES2017", "DOM", "DOM.Iterable"],
+    "rootDir": "src",
+    "outDir": "public/js",
+    "strict": true,
+    "types": []
+  },
+  "include": ["src"]
+}

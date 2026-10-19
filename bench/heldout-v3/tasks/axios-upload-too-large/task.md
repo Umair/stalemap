@@ -1,0 +1,1 @@
+In `src/upload.ts`, make `uploadFile` throw the `FileTooLargeError` defined there when the server rejects an upload as too large (413), the same way it already handles unauthorized uploads. Any other error should still propagate as it does now.

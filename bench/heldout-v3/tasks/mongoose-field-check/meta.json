@@ -1,0 +1,13 @@
+{
+  "title": "mongoose 9: validate one schema path value",
+  "template": "latest",
+  "change": "mongoose@9.0.0/dovalidate-returns-promise",
+  "package": "mongoose",
+  "scenario": "new-code",
+  "changeType": "breaking",
+  "kind": "type-checks",
+  "stale": ["\\.doValidate\\(\\s*[^,()]+,\\s*(?:\\(|function\\b|async\\b|[A-Za-z_$][\\w$]*\\s*=>)"],
+  "deprecated": [],
+  "newApi": ["\\bdoValidate\\b"],
+  "oracle": "In mongoose 9, SchemaType#doValidate(value, scope, options) no longer takes a callback: it returns a promise that rejects with the ValidatorError, so await it in try/catch."
+}

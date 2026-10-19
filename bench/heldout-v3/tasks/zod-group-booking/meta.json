@@ -1,0 +1,13 @@
+{
+  "title": "zod 4.1: extending a refined object schema",
+  "template": "latest",
+  "change": "zod@4.1.0/extend-refined-object-throws",
+  "package": "zod",
+  "scenario": "new-code",
+  "changeType": "breaking",
+  "kind": "type-checks",
+  "stale": ["\\bBookingRequest\\s*\\.extend\\("],
+  "deprecated": [],
+  "newApi": ["safeExtend", "refinements"],
+  "oracle": "Since zod 4.1, .extend() on an object schema with refinements throws when it overwrites an existing key (4.0 silently dropped the refinements); use .safeExtend(), which keeps them."
+}

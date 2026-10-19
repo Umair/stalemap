@@ -1,0 +1,11 @@
+{
+  "title": "Next 16: keep Next 15 image behavior",
+  "template": "latest",
+  "scenario": "upgrade",
+  "kind": "type-checks",
+  "stale": [
+    "^(?![\\s\\S]*\\bqualities\\s*:)[\\s\\S]*\\bimages\\s*:",
+    "^(?![\\s\\S]*\\bminimumCacheTTL\\s*:)[\\s\\S]*\\bimages\\s*:"
+  ],
+  "deprecated": []
+}

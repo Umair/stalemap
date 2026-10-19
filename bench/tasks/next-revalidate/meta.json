@@ -1,0 +1,7 @@
+{
+  "title": "Next 16: revalidate a cache tag",
+  "stale": [
+    "revalidateTag\\(\\s*[\\\"'`]posts[\\\"'`]\\s*\\)"
+  ],
+  "deprecated": []
+}

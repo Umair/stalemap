@@ -1,0 +1,1 @@
+In `src/messages.ts`, export an async function `toModelMessages(messages)` that converts chat messages from the AI SDK UI (`useChat`) into the messages `generateText` and `streamText` accept. Use the AI SDK's helper for this and type the parameter and return value with the SDK's types.

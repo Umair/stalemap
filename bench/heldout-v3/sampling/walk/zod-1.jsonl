@@ -1,0 +1,10 @@
+{"id":"zod@4.6.0/error-maps-run-on-first-error-read","outcome":"task","task":"zod-localized-errors"}
+{"id":"zod@4.5.0/safeparse-error-no-stack-capture","outcome":"task","task":"zod-body-validation"}
+{"id":"zod@4.6.0/metadata-members-lazy-getters","outcome":"skip","criterion":"S6","reason":"Tried a form-field generator reading .minLength/.maxValue/.isInt: realistic chains read the same in 4.0.14 and 4.6.7 except where 4.0 reported wrong bounds (number().min(0).max(120).int() gave the safe-int range), so code written for 4.0 gets correct values in 4.6 and cannot fail; the rest is Object.keys/Object.assign reflection on schema instances, which no plausible app code relies on."}
+{"id":"zod@4.3.0/e164-regex-tightened","outcome":"skip","criterion":"S6","reason":"The regex went from /^\\+(?:[0-9]){6,14}[0-9]$/ (4.0.14) to /^\\+[1-9]\\d{6,14}$/, same 7-15 digit count, so the only strings whose result changed have a 0 right after the plus, which are not valid E.164 numbers: malformed input only, and a phone-validation task's stale z.e164() would still pass."}
+{"id":"zod@4.3.2/strict-object-intersection-loosened","outcome":"task","task":"zod-signup-strict-form"}
+{"id":"zod@4.1.0/extend-refined-object-throws","outcome":"task","task":"zod-group-booking"}
+{"id":"zod@4.5.0/iso-datetime-requires-seconds","outcome":"task","task":"zod-partner-event-times"}
+{"id":"zod@4.1.13/promise-output-type-wrapped","outcome":"task","task":"zod-plugin-commands"}
+{"id":"zod@4.5.0/proto-key-always-stripped","outcome":"skip","criterion":"S6","reason":"Against 4.0.14, strictObject already reported an own __proto__ key and object/record already dropped it; the only difference is that looseObject/catchall no longer let a JSON __proto__ key replace the parsed object's prototype, which is hostile input only: a task asking to block that passes with plain 4.0 code (looseObject is now safe), and no plausible code relies on the old prototype replacement."}
+{"id":"zod@4.3.0/refine-type-predicate-narrows","outcome":"task","task":"zod-upgrade-country-guard"}

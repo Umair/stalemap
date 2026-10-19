@@ -1,0 +1,55 @@
+name: stalemap
+description: Check, or comment on pull requests about, dependencies that changed after your coding model's training cutoff.
+author: stalemap contributors
+branding:
+  icon: clock
+  color: orange
+
+inputs:
+  mode:
+    description: "`check` fails when the stalemap block in AGENTS.md/CLAUDE.md is missing or stale. `comment` posts (and keeps updated) a pull-request comment listing the changes."
+    default: check
+  model:
+    description: Model your coding agent uses, e.g. claude-opus-5-5. Required unless `cutoff` is set.
+    default: ""
+  cutoff:
+    description: Training cutoff (YYYY-MM or YYYY-MM-DD) to use instead of a model id.
+    default: ""
+  working-directory:
+    description: Directory containing package.json.
+    default: "."
+  args:
+    description: Extra arguments for stalemap (e.g. `--all --budget 2000`).
+    default: ""
+  version:
+    description: stalemap version to run from npm.
+    default: latest
+  github-token:
+    description: Token for posting the pull-request comment (`comment` mode).
+    default: ${{ github.token }}
+
+outputs:
+  status:
+    description: "`fresh`, `stale` or `missing` (check mode); `commented`, `updated` or `skipped` (comment mode)."
+    value: ${{ steps.run.outputs.status }}
+
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-node@v4
+      with:
+        node-version: 22
+
+    - id: run
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+      env:
+        STALEMAP_MODE: ${{ inputs.mode }}
+        STALEMAP_MODEL: ${{ inputs.model }}
+        STALEMAP_CUTOFF: ${{ inputs.cutoff }}
+        STALEMAP_ARGS: ${{ inputs.args }}
+        STALEMAP_VERSION: ${{ inputs.version }}
+        GH_TOKEN: ${{ inputs.github-token }}
+        PR_NUMBER: ${{ github.event.pull_request.number }}
+        REPO: ${{ github.repository }}
+      run: bash "${{ github.action_path }}/action/run.sh"

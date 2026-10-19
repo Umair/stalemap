@@ -1,0 +1,20 @@
+{
+  "title": "TypeScript 7: fix a 5.8 browser app tsconfig after the upgrade",
+  "template": "latest",
+  "change": "typescript@7.0.2/remove-moduleresolution-classic",
+  "package": "typescript",
+  "scenario": "upgrade",
+  "changeType": "breaking",
+  "kind": "compile-error",
+  "stale": [
+    "\"moduleResolution\"\\s*:\\s*\"[Cc]lassic\""
+  ],
+  "deprecated": [],
+  "newApi": [
+    "[Cc]lassic",
+    "[Bb]undler",
+    "TS510[0-9]",
+    "\\bremoved\\b"
+  ],
+  "oracle": "TypeScript 7.0 removed moduleResolution \"classic\" (deprecated in 6.0) and setting it is a hard error; use \"bundler\" (or omit it, the default for ES module targets) or \"nodenext\"."
+}

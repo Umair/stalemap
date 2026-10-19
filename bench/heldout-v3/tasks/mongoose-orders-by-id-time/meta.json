@@ -1,0 +1,13 @@
+{
+  "title": "mongoose 9: query orders by the time in their ids",
+  "template": "latest",
+  "change": "mongoose@9.0.0/isvalidobjectid-false-for-numbers",
+  "package": "mongoose",
+  "scenario": "new-code",
+  "changeType": "breaking",
+  "kind": "compile-error",
+  "stale": ["new\\s+[\\w.]*ObjectId\\(\\s*(?![^;\\n]*toString\\(\\s*16\\s*\\))(?:Math\\.(?:floor|round|trunc|ceil)\\b|[^)\\n]*getTime\\(\\)|[^)\\n'\"`]*\\/\\s*1000|(?:seconds|secs|\\w*Seconds|timestamp|\\w*Timestamp)\\s*\\))"],
+  "deprecated": [],
+  "newApi": ["createFromTime"],
+  "oracle": "In mongoose 9 (bson 7), new Types.ObjectId(number) throws and isValidObjectId(number) returns false; build an id from a time with Types.ObjectId.createFromTime(seconds)."
+}

@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "target": "ES2017",
+    "module": "ES2015",
+    "moduleResolution": "classic",
+    "ignoreDeprecations": "5.0",
+    "lib": ["ES2017", "DOM", "DOM.Iterable"],
+    "rootDir": "src",
+    "outDir": "public/js",
+    "strict": true,
+    "types": []
+  },
+  "include": ["src"]
+}

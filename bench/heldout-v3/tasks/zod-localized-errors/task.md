@@ -1,0 +1,1 @@
+Our signup API should return Zod's validation messages in the user's language (English, German, French or Spanish) using Zod's built-in translations. Implement `safeParseLocalized()` in `src/validate.ts`; the signup handler in `src/routes.ts` already calls it and formats `result.error` for the response, and every other part of the app must keep getting English messages.

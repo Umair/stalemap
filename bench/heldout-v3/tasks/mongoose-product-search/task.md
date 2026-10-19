@@ -1,0 +1,1 @@
+Implement `searchProducts(params)` in `src/search.ts`: build, but don't run, the `Product` find query for the shop's search params: products in `category`, priced from `minPrice` to `maxPrice` inclusive, whose `inStock` matches the param ("true" or "false"), and rated at least `minRating`. Ignore any param that is missing or empty.

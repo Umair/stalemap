@@ -1,0 +1,1 @@
+We upgraded TypeScript in this storefront from 5.8 to 7.0, and `npm run build` now fails before it compiles anything. Fix the build so that `npm run build` again produces the single `public/js/app.js` that `public/index.html` loads, with the same `Shop` API as before; don't change `public/index.html`.

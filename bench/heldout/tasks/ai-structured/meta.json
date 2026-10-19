@@ -1,0 +1,9 @@
+{
+  "title": "AI SDK: structured output",
+  "template": "latest",
+  "scenario": "new-code",
+  "stale": [],
+  "deprecated": [
+    "generateObject\\("
+  ]
+}

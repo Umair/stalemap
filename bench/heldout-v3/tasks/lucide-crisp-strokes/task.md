@@ -1,0 +1,1 @@
+Our designer says the icons drawn through `AppIcon` (`src/icons/AppIcon.tsx`) look heavy at large sizes and faint at small ones. Update it so that every icon's stroke is drawn exactly 1.5px wide on screen, whatever size the icon is displayed at. We keep this codebase free of deprecated APIs.

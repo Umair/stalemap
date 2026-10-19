@@ -1,0 +1,1 @@
+Implement `listCommands()` in `src/plugins.ts`: validate each plugin registration with the existing `PluginRegistration` schema and return an object mapping each plugin's name to its command names. It should reject if any registration is invalid.

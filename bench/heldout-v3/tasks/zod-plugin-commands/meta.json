@@ -1,0 +1,13 @@
+{
+  "title": "zod 4.1.13: z.promise() output type",
+  "template": "latest",
+  "change": "zod@4.1.13/promise-output-type-wrapped",
+  "package": "zod",
+  "scenario": "new-code",
+  "changeType": "breaking",
+  "kind": "compile-error",
+  "stale": ["[=:]\\s*(?!await\\b)\\w+\\.commands\\s*[;,})\\n]"],
+  "deprecated": [],
+  "newApi": ["\\bawait\\s+\\w+\\.commands", "Promise<\\s*(?:z\\.)?output"],
+  "oracle": "Since zod 4.1.13, the inferred output type of z.promise(T) is Promise<output<T>> (it was output<T>), so await the field read from a parsed object before using it as the inner type."
+}

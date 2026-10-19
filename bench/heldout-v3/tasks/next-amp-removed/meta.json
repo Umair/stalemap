@@ -1,0 +1,13 @@
+{
+  "title": "Next 16: article page after the upgrade from 15",
+  "template": "latest",
+  "change": "next@16.0.0/amp-removed",
+  "package": "next",
+  "scenario": "upgrade",
+  "changeType": "breaking",
+  "kind": "compile-error",
+  "stale": ["[\"']next/amp[\"']", "\\buseAmp\\s*\\(", "\\bamp\\s*:\\s*(?:true\\b|[\"']hybrid[\"'])"],
+  "deprecated": [],
+  "newApi": ["\\bAMP\\b", "\\bamp\\b"],
+  "oracle": "Next 16 removed built-in AMP support: `next/amp` and `useAmp()` no longer exist and page `config.amp` / the `amp` config key are ignored; drop the AMP branches and render the regular markup."
+}

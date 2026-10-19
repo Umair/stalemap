@@ -1,0 +1,13 @@
+{
+  "title": "zod 4.5: ISO datetimes without seconds",
+  "template": "latest",
+  "change": "zod@4.5.0/iso-datetime-requires-seconds",
+  "package": "zod",
+  "scenario": "new-code",
+  "changeType": "breaking",
+  "kind": "type-checks",
+  "stale": ["^(?![\\s\\S]*precision\\s*:\\s*-1)[\\s\\S]*\\bdatetime\\(\\s*\\{[^}]*\\boffset\\s*:\\s*true"],
+  "deprecated": [],
+  "newApi": ["precision\\s*:\\s*-1", "precision"],
+  "oracle": "Since zod 4.5, z.iso.datetime() (also with offset: true) requires seconds and rejects 2026-03-01T09:30Z; to also accept minute precision, union it with z.iso.datetime({ offset: true, precision: -1 })."
+}

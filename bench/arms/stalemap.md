@@ -1,0 +1,1 @@
+- Always use stalemap's `search_changes` tool when I need code generation, setup or configuration steps, or library/API documentation for this project's dependencies. This means you should automatically search what changed in the installed versions before your first edit, without me having to explicitly ask.

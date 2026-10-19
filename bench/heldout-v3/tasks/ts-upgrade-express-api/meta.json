@@ -1,0 +1,22 @@
+{
+  "title": "TypeScript 7: fix an Express API built with esModuleInterop off",
+  "template": "latest",
+  "change": "typescript@6.0.2/deprecate-esmoduleinterop-false",
+  "package": "typescript",
+  "scenario": "upgrade",
+  "changeType": "deprecation",
+  "kind": "compile-error",
+  "stale": [
+    "\"esModuleInterop\"\\s*:\\s*false",
+    "\"allowSyntheticDefaultImports\"\\s*:\\s*false"
+  ],
+  "deprecated": [],
+  "newApi": [
+    "esModuleInterop",
+    "allowSyntheticDefaultImports",
+    "TS5108",
+    "default[- ]import",
+    "import \\w+ from"
+  ],
+  "oracle": "esModuleInterop false was deprecated in TypeScript 6.0 and is an error in 7.0, so interop is always on; remove the option and replace `import * as x` of callable CommonJS modules with `import x from` or `import x = require()`."
+}

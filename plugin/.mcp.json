@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "stalemap": {
+      "command": "npx",
+      "args": ["-y", "stalemap@latest", "mcp"]
+    }
+  }
+}

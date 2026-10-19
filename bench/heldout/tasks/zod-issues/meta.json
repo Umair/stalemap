@@ -1,0 +1,12 @@
+{
+  "title": "zod 4: list error issues",
+  "template": "latest",
+  "scenario": "new-code",
+  "stale": [
+    "\\.errors\\b"
+  ],
+  "deprecated": [
+    "\\.format\\(",
+    "\\.flatten\\("
+  ]
+}

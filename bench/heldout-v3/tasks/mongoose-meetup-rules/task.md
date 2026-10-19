@@ -1,0 +1,1 @@
+Add three rules to the meetup schema in `src/models/meetup.ts`: an in-person meetup (`online` false) must have a `venue`; `endsAt` defaults to two hours after `startsAt` when it isn't given; and a meetup must end after it starts, reported as a validation error on `endsAt` with the message "A meetup must end after it starts".

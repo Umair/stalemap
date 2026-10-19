@@ -1,0 +1,19 @@
+{
+  "title": "TypeScript 7: library build that emits to dist/index.js",
+  "template": "latest",
+  "change": "typescript@6.0.2/rootdir-default-config-dir",
+  "package": "typescript",
+  "scenario": "new-code",
+  "changeType": "default-behavior",
+  "kind": "type-checks",
+  "stale": [
+    "^(?![\\s\\S]*\"rootDir\"\\s*:)[\\s\\S]*\"outDir\"\\s*:"
+  ],
+  "deprecated": [],
+  "newApi": [
+    "rootDir",
+    "TS5011",
+    "common source directory"
+  ],
+  "oracle": "Since TypeScript 6.0, an unset rootDir means the tsconfig.json directory, not the common directory of the inputs, so src/index.ts emits to dist/src/index.js; set \"rootDir\": \"src\" explicitly."
+}

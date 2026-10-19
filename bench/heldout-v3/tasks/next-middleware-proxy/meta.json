@@ -1,0 +1,13 @@
+{
+  "title": "Next 16: sign-in gate for the dashboard",
+  "template": "latest",
+  "change": "next@16.0.0/middleware-deprecated-for-proxy",
+  "package": "next",
+  "scenario": "new-code",
+  "changeType": "deprecation",
+  "kind": "type-checks",
+  "stale": ["\\bexport\\s+(?:async\\s+)?function\\s+middleware\\b", "\\bexport\\s+(?:const|let|var)\\s+middleware\\b", "\\bexport\\s*\\{[^}]*\\bmiddleware\\b"],
+  "deprecated": ["\\bexport\\s+(?:async\\s+)?function\\s+middleware\\b", "\\bexport\\s+(?:const|let|var)\\s+middleware\\b", "\\bexport\\s*\\{[^}]*\\bmiddleware\\b"],
+  "newApi": ["\\bproxy\\b", "[Pp]roxy\\.ts", "\\bmiddleware\\b", "[Mm]iddleware"],
+  "oracle": "Since Next 16, the `middleware.ts` file and its `middleware` export are deprecated (next build warns); put request interception in `proxy.ts` at the project root exporting `proxy` (Node.js runtime only)."
+}

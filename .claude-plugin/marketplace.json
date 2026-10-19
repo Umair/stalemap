@@ -1,0 +1,12 @@
+{
+  "name": "stalemap",
+  "owner": { "name": "stalemap contributors" },
+  "description": "Dependency changes since your model's training cutoff, for Claude Code.",
+  "plugins": [
+    {
+      "name": "stalemap",
+      "source": "./plugin",
+      "description": "Session-start notes, an MCP server and skills that tell Claude which of your dependencies changed after its training cutoff."
+    }
+  ]
+}

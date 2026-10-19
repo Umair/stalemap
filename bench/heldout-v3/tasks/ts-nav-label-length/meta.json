@@ -1,0 +1,22 @@
+{
+  "title": "TypeScript 7: compile-time label length that agrees with the runtime check",
+  "template": "latest",
+  "change": "typescript@7.0.2/template-literal-unicode-code-points",
+  "package": "typescript",
+  "scenario": "new-code",
+  "changeType": "breaking",
+  "kind": "type-checks",
+  "stale": [
+    "\\blabel\\.length\\b",
+    "\\.split\\(\\s*(\"\"|'')\\s*\\)"
+  ],
+  "deprecated": [],
+  "newApi": [
+    "code ?points?",
+    "Array\\.from",
+    "\\[\\.\\.\\.",
+    "Segmenter",
+    "surrogate"
+  ],
+  "oracle": "In TypeScript 7.0, template literal inference (`${infer H}${infer T}`) consumes whole Unicode code points, not UTF-16 code units; count code points at runtime ([...s].length), not s.length, to match type-level counts."
+}

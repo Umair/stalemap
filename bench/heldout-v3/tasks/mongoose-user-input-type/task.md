@@ -1,0 +1,1 @@
+The `UserInput` interface in `src/models/user.ts` is written by hand and has already drifted from the schema. Replace it with a type inferred from `userDefinition`, so its fields and their types always match the schema, and keep `src/seed.ts` and `src/users.ts` compiling without changing what they do.

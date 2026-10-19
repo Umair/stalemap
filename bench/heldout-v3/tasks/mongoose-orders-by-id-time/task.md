@@ -1,0 +1,1 @@
+Implement `ordersCreatedBetween(from, to)` in `src/orders.ts`: build, but don't run, the `Order` find query for orders created at or after `from` and before `to`. Our orders have no creation-date field, so use the creation time embedded in each order's id.

@@ -1,0 +1,13 @@
+{
+  "title": "zod 4.5: throwing a safeParse error loses its stack",
+  "template": "latest",
+  "change": "zod@4.5.0/safeparse-error-no-stack-capture",
+  "package": "zod",
+  "scenario": "new-code",
+  "changeType": "default-behavior",
+  "kind": "type-checks",
+  "stale": ["^(?![\\s\\S]*captureStackTrace)[\\s\\S]*\\bthrow\\s+\\w+(?:\\??\\.error)\\b"],
+  "deprecated": [],
+  "newApi": ["captureStackTrace", "no stack", "stack frames", "\\.parse\\("],
+  "oracle": "Since zod 4.5, the ZodError from safeParse() captures no stack trace; to throw with the caller's stack use schema.parse() (it captures one) or call Error.captureStackTrace(result.error) before throwing."
+}

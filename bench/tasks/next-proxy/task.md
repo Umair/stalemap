@@ -1,0 +1,1 @@
+Add Next.js request interception at the project root (next to `package.json`) that permanently redirects `/old-blog/<slug>` to `/blog/<slug>`. It should only run for `/old-blog/*` paths. Use the file name and export that this Next.js version expects.

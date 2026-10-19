@@ -1,0 +1,24 @@
+{
+  "name": "next-ai-app",
+  "private": true,
+  "dependencies": {
+    "next": "16.4.2",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
+    "ai": "7.0.142",
+    "@ai-sdk/openai": "4.0.95",
+    "@anthropic-ai/sdk": "0.135.0",
+    "openai": "7.34.0",
+    "zod": "4.6.7",
+    "@tanstack/react-query": "5.104.3",
+    "stripe": "23.0.0",
+    "clsx": "2.1.1",
+    "date-fns": "4.4.0"
+  },
+  "devDependencies": {
+    "tailwindcss": "4.3.3",
+    "@tailwindcss/postcss": "4.3.3",
+    "eslint": "10.12.0",
+    "@types/react": "19.2.0"
+  }
+}

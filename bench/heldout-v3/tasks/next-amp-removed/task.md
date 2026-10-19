@@ -1,0 +1,1 @@
+We upgraded this news site from Next.js 15 to 16. Update the article page (`src/pages/articles/[slug].tsx`) and the components it uses so they work on Next 16; readers should keep seeing the same article page as before, with the photo and the comment form.

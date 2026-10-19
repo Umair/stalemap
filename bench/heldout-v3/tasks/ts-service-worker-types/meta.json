@@ -1,0 +1,21 @@
+{
+  "title": "TypeScript 7: type a service worker without DOM globals",
+  "template": "latest",
+  "change": "typescript@6.0.2/deprecate-no-default-lib-directive",
+  "package": "typescript",
+  "scenario": "new-code",
+  "changeType": "deprecation",
+  "kind": "compile-error",
+  "stale": [
+    "no-default-lib"
+  ],
+  "deprecated": [],
+  "newApi": [
+    "no-default-lib",
+    "noLib",
+    "libReplacement",
+    "[Ww]eb[Ww]orker",
+    "\\blib\\b"
+  ],
+  "oracle": "Since TypeScript 6.0, /// <reference no-default-lib=\"true\"/> is no longer honored (7.0 ignores it), so the default DOM lib stays in; set \"lib\" in tsconfig.json instead, e.g. [\"ES2022\", \"WebWorker\"]."
+}

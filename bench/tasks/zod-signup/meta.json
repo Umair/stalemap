@@ -1,0 +1,11 @@
+{
+  "title": "zod 4: custom error messages",
+  "stale": [
+    "required_error",
+    "invalid_type_error",
+    "errorMap"
+  ],
+  "deprecated": [
+    "\\.email\\("
+  ]
+}

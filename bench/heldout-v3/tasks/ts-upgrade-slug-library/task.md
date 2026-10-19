@@ -1,0 +1,1 @@
+We upgraded TypeScript in this library from 5.8 to 7.0, and `npm run build` now fails before it compiles anything. Fix `tsconfig.json` so the build works again: `dist/` is only consumed by our Node services, which load `dist/index.js` with `require()`, and they still need the type declarations.

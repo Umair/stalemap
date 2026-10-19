@@ -1,0 +1,9 @@
+{"id":"mongoose@9.0.0/dovalidate-returns-promise","outcome":"task","task":"mongoose-field-check"}
+{"id":"mongoose@9.0.0/document-id-virtual-string","outcome":"task","task":"mongoose-change-events"}
+{"id":"mongoose@9.0.0/pre-middleware-no-next","outcome":"task","task":"mongoose-article-slug"}
+{"id":"mongoose@9.0.0/custom-method-hooks-no-callbacks","outcome":"task","task":"mongoose-failed-logins"}
+{"id":"mongoose@9.0.0/isasync-middleware-removed","outcome":"skip","criterion":"S6","reason":"isAsync middleware (pre(name, true, function (next, done))) is rejected by mongoose 8.16.1 TypeScript types as well (TS2769), so TS application code cannot use it without a cast, and its 9.x failure is the same missing next() as the pre-middleware-no-next task (mongoose-article-slug)."}
+{"id":"mongoose@9.0.0/inferrawdoctype-includes-id","outcome":"task","task":"mongoose-user-input-type"}
+{"id":"mongoose@9.0.0/isvalidobjectid-false-for-numbers","outcome":"task","task":"mongoose-orders-by-id-time"}
+{"id":"mongoose@9.0.0/queryfilter-keys-typed","outcome":"task","task":"mongoose-product-search"}
+{"id":"mongoose@9.0.0/find-null-throws","outcome":"skip","criterion":"S6","reason":"mongoose 8.16.1 types already reject find(null)/findOne(null)/countDocuments(null) (TS2769), so typed application code cannot rely on null meaning an empty filter; only an untyped value that happens to be null reaches it (unexpected input), and in 9 the error surfaces only at exec()."}

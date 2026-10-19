@@ -1,0 +1,1 @@
+We upgraded axios from 1.10 to 1.20. Go through `src/http.ts` and `src/attachments.ts` and change whatever is needed so that API calls and attachment uploads and downloads behave exactly as they did on 1.10.

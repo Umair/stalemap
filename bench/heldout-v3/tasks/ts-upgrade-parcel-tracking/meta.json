@@ -1,0 +1,25 @@
+{
+  "title": "TypeScript 7: fix 5.8 page scripts compiled with alwaysStrict off",
+  "template": "latest",
+  "change": "typescript@7.0.2/remove-alwaysstrict-false",
+  "package": "typescript",
+  "scenario": "upgrade",
+  "changeType": "breaking",
+  "kind": "compile-error",
+  "stale": [
+    "\"alwaysStrict\"\\s*:\\s*false",
+    "\\(\\s*package\\s*[:,)]",
+    "\\bconst\\s+package\\b"
+  ],
+  "deprecated": [],
+  "newApi": [
+    "alwaysStrict",
+    "[Ss]trict mode",
+    "[Ss]loppy",
+    "[Rr]eserved",
+    "TS510[0-9]",
+    "TS121[2-4]",
+    "\\bremoved\\b"
+  ],
+  "oracle": "TypeScript 7.0 removed alwaysStrict: false (deprecated in 6.0): all code is parsed and emitted as strict mode, so delete the option and rename identifiers reserved in strict mode such as package, interface, static or private."
+}

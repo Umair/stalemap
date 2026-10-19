@@ -1,0 +1,13 @@
+{
+  "title": "mongoose 9: infer a plain input type from a schema definition",
+  "template": "latest",
+  "change": "mongoose@9.0.0/inferrawdoctype-includes-id",
+  "package": "mongoose",
+  "scenario": "new-code",
+  "changeType": "breaking",
+  "kind": "compile-error",
+  "stale": ["^(?![\\s\\S]*['\"]_id['\"])[\\s\\S]*\\bInferRawDocType\\s*<"],
+  "deprecated": [],
+  "newApi": ["InferRawDocTypeWithout_id", "\\b_id\\b"],
+  "oracle": "In mongoose 9, InferRawDocType adds a required `_id: ObjectId` to the inferred type; use InferRawDocTypeWithout_id (or Omit<..., '_id'>) for the 8.x shape without _id."
+}

@@ -1,0 +1,1 @@
+Our docs have standalone TypeScript examples in `docs/examples/` that aren't part of the app's build. Implement `checkExample(file)` in `src/check-examples.ts`: type-check that one file by itself with the project's `tsc`, strictly and without emitting anything, and resolve `{ ok, output }` with whether it passed and what tsc printed.

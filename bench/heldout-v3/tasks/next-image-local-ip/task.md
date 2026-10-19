@@ -1,0 +1,1 @@
+We deploy this app with `docker-compose.yml`, and the product photos (`app/components/ProductPhoto.tsx`) are stored in the `minio` service at `http://minio:9000/catalog/<slug>.jpg`, which is only reachable inside the compose network. Configure `next.config.ts` so `next/image` loads and optimizes these photos on the server.

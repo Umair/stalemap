@@ -1,0 +1,8 @@
+{
+  "title": "AI SDK: convert UI messages",
+  "stale": [
+    "convertToCoreMessages",
+    "\\bCoreMessage\\b"
+  ],
+  "deprecated": []
+}

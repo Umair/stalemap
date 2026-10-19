@@ -1,0 +1,13 @@
+{
+  "title": "Next 16: optimize images from a compose service",
+  "template": "latest",
+  "change": "next@16.0.0/image-local-ip-blocked",
+  "package": "next",
+  "scenario": "new-code",
+  "changeType": "breaking",
+  "kind": "type-checks",
+  "stale": ["^(?![\\s\\S]*\\bdangerouslyAllowLocalIP\\s*:\\s*true)[\\s\\S]*\\bimages\\s*:"],
+  "deprecated": [],
+  "newApi": ["dangerouslyAllowLocalIP", "private IP", "local IP", "private address"],
+  "oracle": "Since Next 16, the image optimizer refuses to fetch images whose host resolves to a local or private IP address; set `images.dangerouslyAllowLocalIP: true` in next.config (alongside remotePatterns) for such hosts."
+}

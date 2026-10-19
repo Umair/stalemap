@@ -1,0 +1,1 @@
+We upgraded to Next.js 16. Update this project to Next 16's conventions so it type-checks: the request interception file, the cache revalidation in `src/actions.ts`, and `next.config.ts` (keep Partial Prerendering's behavior through its Next 16 replacement).

@@ -1,0 +1,15 @@
+{
+  "title": "next-auth 4.24.15: custom email identifier normalizer",
+  "template": "latest",
+  "change": "next-auth@4.24.15/email-normalizer-nfkc",
+  "package": "next-auth",
+  "scenario": "new-code",
+  "changeType": "default-behavior",
+  "kind": "type-checks",
+  "stale": [
+    "^(?![\\s\\S]*\\.normalize\\(\\s*[\"'`]NFK[CD])[\\s\\S]*normalizeIdentifier"
+  ],
+  "deprecated": [],
+  "newApi": ["NFKC", "normalize\\(\\s*[\"'`]NFK"],
+  "oracle": "Since next-auth 4.24.15, the email provider's default normalizeIdentifier applies NFKC normalization (folding full-width and look-alike @ characters) before validating; a custom normalizer should call identifier.normalize(\"NFKC\") first."
+}

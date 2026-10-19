@@ -1,0 +1,1 @@
+The product photos rendered by `app/components/ProductPhoto.tsx` look over-compressed on large screens. Have `next/image` serve them at quality 90, while every other image in the app keeps the default quality.

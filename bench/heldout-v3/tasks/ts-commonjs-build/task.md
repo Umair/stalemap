@@ -1,0 +1,1 @@
+This package is published as ES modules only, built by `tsconfig.json` into `dist/esm`. Add a CommonJS build for consumers that use `require()`: create `tsconfig.cjs.json` so that `npm run build` also emits CommonJS JavaScript into `dist/cjs`, which `package.json` already points `require` at.

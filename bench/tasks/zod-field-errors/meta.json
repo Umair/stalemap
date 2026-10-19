@@ -1,0 +1,8 @@
+{
+  "title": "zod 4: field errors",
+  "stale": [],
+  "deprecated": [
+    "\\.flatten\\(",
+    "\\.formErrors\\b"
+  ]
+}

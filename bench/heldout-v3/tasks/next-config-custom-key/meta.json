@@ -1,0 +1,16 @@
+{
+  "title": "Next 16: config plugin with options in next.config",
+  "template": "latest",
+  "change": "next@16.0.0/nextconfig-type-rejects-excess-properties",
+  "package": "next",
+  "scenario": "new-code",
+  "changeType": "breaking",
+  "kind": "compile-error",
+  "stale": [
+    "^(?![\\s\\S]*declare module)[\\s\\S]*:\\s*NextConfig\\s*=\\s*\\{[^}]*\\bsecurityHeaders\\s*:",
+    "^(?![\\s\\S]*declare module)[\\s\\S]*\\(\\s*(\\w+)\\s*:\\s*NextConfig\\s*\\)[\\s\\S]*\\b\\1\\.securityHeaders\\b"
+  ],
+  "deprecated": [],
+  "newApi": ["Record<string", "excess", "unknown key", "NextConfig &", "extends NextConfig", "declare module"],
+  "oracle": "Since Next 16 the `NextConfig` type no longer extends `Record<string, any>`: custom keys in a typed next.config are TS errors; type the object as `NextConfig & { yourKey?: ... }` (or augment the interface)."
+}

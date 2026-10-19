@@ -1,0 +1,11 @@
+{
+  "title": "AI SDK 7: mock language model for tests",
+  "template": "latest",
+  "scenario": "new-code",
+  "kind": "compile-error",
+  "stale": [
+    "MockLanguageModelV[12]\\b",
+    "\\bpromptTokens\\b"
+  ],
+  "deprecated": []
+}

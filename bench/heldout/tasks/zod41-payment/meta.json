@@ -1,0 +1,10 @@
+{
+  "title": "zod 4.1 (pinned): payment schema",
+  "template": "pinned",
+  "scenario": "pinned-version",
+  "stale": [
+    "creditCard\\(",
+    "currencyCode\\("
+  ],
+  "deprecated": []
+}

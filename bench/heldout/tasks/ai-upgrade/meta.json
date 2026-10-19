@@ -1,0 +1,13 @@
+{
+  "title": "Upgrade AI SDK 4 code to 7",
+  "template": "latest",
+  "scenario": "upgrade",
+  "stale": [
+    "\\bmaxSteps\\b",
+    "\\bmaxTokens\\b",
+    "\\bparameters\\s*:",
+    "convertToCoreMessages",
+    "\\bCoreMessage\\b"
+  ],
+  "deprecated": []
+}

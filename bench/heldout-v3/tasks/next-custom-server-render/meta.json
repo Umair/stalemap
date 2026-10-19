@@ -1,0 +1,13 @@
+{
+  "title": "Next 16.3: custom server maintenance page",
+  "template": "latest",
+  "change": "next@16.3.0/custom-server-undocumented-methods-deprecated",
+  "package": "next",
+  "scenario": "new-code",
+  "changeType": "deprecation",
+  "kind": "type-checks",
+  "stale": ["\\.(?:render|renderToHTML|renderError|renderErrorToHTML|render404)\\s*\\(\\s*(?:req|request)\\b", "\\.setAssetPrefix\\s*\\("],
+  "deprecated": ["\\.(?:render|renderToHTML|renderError|renderErrorToHTML|render404)\\s*\\(\\s*(?:req|request)\\b", "\\.setAssetPrefix\\s*\\("],
+  "newApi": ["getRequestHandler", "\\bhandle\\(", "parsed URL", "\\.render\\b", "deprecat"],
+  "oracle": "Since Next 16.3, a custom server's `app.render()`, `renderToHTML()`, `renderError()`, `render404()`, `setAssetPrefix()` etc. are deprecated (warn); call `app.getRequestHandler()` with an adjusted parsed URL instead."
+}

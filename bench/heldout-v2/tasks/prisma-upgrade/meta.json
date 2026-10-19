@@ -1,0 +1,11 @@
+{
+  "title": "Upgrade a Prisma 6 project to 7",
+  "template": "latest",
+  "scenario": "upgrade",
+  "kind": "type-checks",
+  "stale": [
+    "(?:^|\\n)[ \\t]*url\\s*=\\s*env\\("
+  ],
+  "deprecated": [],
+  "currentFile": "prisma.config.ts"
+}

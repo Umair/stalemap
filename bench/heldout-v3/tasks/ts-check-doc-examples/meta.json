@@ -1,0 +1,18 @@
+{
+  "title": "TypeScript 7: type-check a single file next to a tsconfig.json",
+  "template": "latest",
+  "change": "typescript@6.0.2/cli-files-with-tsconfig-error",
+  "package": "typescript",
+  "scenario": "new-code",
+  "changeType": "breaking",
+  "kind": "type-checks",
+  "stale": [
+    "^(?![\\s\\S]*ignoreConfig)(?![\\s\\S]*[\"'](-p|--project)[\"'])[\\s\\S]*[\"']--noEmit[\"']"
+  ],
+  "deprecated": [],
+  "newApi": [
+    "ignoreConfig",
+    "TS5112"
+  ],
+  "oracle": "Since TypeScript 6.0, running tsc with file arguments where a tsconfig.json is found fails with TS5112 instead of ignoring the config; pass --ignoreConfig (or use -p with a config listing the file)."
+}

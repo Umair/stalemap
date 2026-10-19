@@ -1,0 +1,1 @@
+Set up the build for this library: change `tsconfig.json` so that `npm run build` compiles `src/` to JavaScript and type declarations in `dist/`, matching the `main`, `types` and `exports` entries in `package.json`.

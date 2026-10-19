@@ -1,0 +1,1 @@
+Cache `getCatalog()` in `app/lib/catalog.ts` with Next's `"use cache"` directive. The cached catalog should follow Next's built-in `hours` lifetime profile and be tagged `catalog`, so the CMS webhook in `app/api/revalidate/route.ts` can invalidate it.

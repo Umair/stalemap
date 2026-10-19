@@ -1,0 +1,13 @@
+{
+  "title": "lucide-react 1.42: absoluteStrokeWidth deprecated for nonScalingStroke",
+  "template": "latest",
+  "change": "lucide-react@1.42.0/absolute-stroke-width-deprecated",
+  "package": "lucide-react",
+  "scenario": "new-code",
+  "changeType": "deprecation",
+  "kind": "type-checks",
+  "stale": ["\\babsoluteStrokeWidth\\b"],
+  "deprecated": ["\\babsoluteStrokeWidth\\b"],
+  "newApi": ["\\bnonScalingStroke\\b", "non-scaling-stroke"],
+  "oracle": "In lucide-react 1.42+, the absoluteStrokeWidth prop (on icons and LucideProvider) is @deprecated; use the new nonScalingStroke prop, which keeps strokeWidth in screen pixels via vector-effect=non-scaling-stroke."
+}

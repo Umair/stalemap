@@ -1,0 +1,1 @@
+Our signup form checks each field as the user types. Implement `checkField(field, value)` in `src/fieldCheck.ts`: run the validators declared for that field in `userSchema` (`src/models/user.ts`) against the value, working from the schema itself without registering a model, and resolve to `null` when the value passes or to the validation error's message when it fails.

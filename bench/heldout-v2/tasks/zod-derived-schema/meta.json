@@ -1,0 +1,12 @@
+{
+  "title": "zod 4.3+: schema derived from a refined object",
+  "template": "latest",
+  "scenario": "new-code",
+  "kind": "type-checks",
+  "stale": [
+    "\\bAccountSchema\\s*\\.\\s*(pick|omit)\\(",
+    "\\.innerType\\(",
+    "_def\\.schema\\b"
+  ],
+  "deprecated": []
+}

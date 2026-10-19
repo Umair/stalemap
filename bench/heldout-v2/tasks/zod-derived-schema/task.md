@@ -1,0 +1,1 @@
+In `src/profile.ts`, export `ProfileSchema` for the profile form: only the `email` and `displayName` fields of `AccountSchema` (in `src/account.ts`), with the same rules. Reuse those field rules rather than copying them, and keep `AccountSchema` working as it does now.

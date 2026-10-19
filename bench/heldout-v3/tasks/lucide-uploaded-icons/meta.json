@@ -1,0 +1,13 @@
+{
+  "title": "lucide-react 1.42: IconNode type deprecated for LucideIconNode",
+  "template": "latest",
+  "change": "lucide-react@1.42.0/icon-node-type-deprecated",
+  "package": "lucide-react",
+  "scenario": "new-code",
+  "changeType": "deprecation",
+  "kind": "type-checks",
+  "stale": ["\\bIconNode\\b"],
+  "deprecated": ["\\bIconNode\\b"],
+  "newApi": ["\\bLucideIconNode\\b", "\\bLucideIconData\\b"],
+  "oracle": "In lucide-react 1.42+, the IconNode type is @deprecated; type icon node arrays as LucideIconNode[] (element names are plain strings) or pass a LucideIconData object ({ name, node }) to createLucideIcon."
+}

@@ -1,0 +1,11 @@
+{
+  "title": "Next 16: middleware is now proxy",
+  "stale": [
+    "\\bexport\\s+(async\\s+)?function\\s+middleware\\b",
+    "\\bexport\\s+const\\s+middleware\\b"
+  ],
+  "deprecated": [
+    "NextMiddleware"
+  ],
+  "currentFile": "proxy.ts"
+}

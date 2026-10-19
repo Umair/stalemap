@@ -1,0 +1,23 @@
+node_modules/
+dist/
+*.log
+*.tgz
+.DS_Store
+test/fixtures/*/node_modules/
+# Built by `npm run precompute`; published separately, not committed. data/precompute.json is the input.
+data/precomputed/
+
+# Benchmark scratch space, session transcripts and caches
+bench/.work/
+bench/results/*/runs/
+bench/results/*/run.log
+.cache/
+.stalemap/
+
+# Local agent settings and secrets
+.claude/
+.env
+.env.*
+*.key
+*.keys
+*.pem

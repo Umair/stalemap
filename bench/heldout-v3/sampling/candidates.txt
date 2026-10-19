@@ -1,0 +1,156 @@
+# Candidate pool for the heldout-v3 frame, written 2026-10-16 before any release notes were read.
+# Packages a TypeScript web or Node application commonly lists as a direct dependency, in 12 categories
+# ("# category: <name>" lines). One line per npm package. frame.ts merges packages from one project into a family.
+# category: UI frameworks
+react
+react-dom
+vue
+svelte
+@angular/core
+solid-js
+preact
+# category: meta-frameworks and routing
+next
+nuxt
+@sveltejs/kit
+astro
+react-router
+@remix-run/react
+# category: server
+express
+fastify
+hono
+koa
+@nestjs/core
+socket.io
+ws
+cors
+helmet
+multer
+# category: validation and data
+zod
+yup
+joi
+valibot
+ajv
+class-validator
+superjson
+# category: databases and ORMs
+prisma
+@prisma/client
+drizzle-orm
+mongoose
+mongodb
+typeorm
+sequelize
+knex
+kysely
+pg
+mysql2
+ioredis
+redis
+better-sqlite3
+@supabase/supabase-js
+firebase
+# category: state, data fetching and HTTP
+@tanstack/react-query
+@reduxjs/toolkit
+zustand
+jotai
+immer
+swr
+rxjs
+axios
+ky
+got
+node-fetch
+undici
+graphql
+@apollo/client
+@trpc/server
+# category: UI components and styling
+@mui/material
+styled-components
+@emotion/react
+framer-motion
+motion
+react-hook-form
+lucide-react
+@radix-ui/react-dialog
+clsx
+tailwind-merge
+class-variance-authority
+recharts
+chart.js
+three
+# category: AI and API SDKs
+ai
+openai
+@anthropic-ai/sdk
+@google/genai
+langchain
+@langchain/core
+@modelcontextprotocol/sdk
+stripe
+@aws-sdk/client-s3
+@sentry/node
+# category: auth and crypto
+jsonwebtoken
+jose
+better-auth
+next-auth
+bcrypt
+# category: testing
+vitest
+jest
+mocha
+chai
+sinon
+@playwright/test
+playwright
+cypress
+@testing-library/react
+msw
+jsdom
+# category: build, lint and language
+typescript
+eslint
+typescript-eslint
+prettier
+vite
+webpack
+esbuild
+rollup
+tsx
+tailwindcss
+postcss
+@babel/core
+storybook
+turbo
+# category: utilities
+lodash
+date-fns
+dayjs
+luxon
+moment
+uuid
+nanoid
+commander
+yargs
+chalk
+dotenv
+pino
+winston
+semver
+yaml
+glob
+minimatch
+execa
+chokidar
+cheerio
+marked
+dompurify
+sharp
+nodemailer
+bullmq
+i18next

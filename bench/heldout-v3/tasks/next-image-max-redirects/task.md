@@ -1,0 +1,1 @@
+Product photos (`app/components/ProductPhoto.tsx`) come from our media server at `https://media.example.com/p/<sku>`. Each of those URLs goes through a chain of up to 5 redirects (tracking, region, CDN, signed URL) before it reaches the image file. Configure `next.config.ts` so `next/image` loads and optimizes these photos.

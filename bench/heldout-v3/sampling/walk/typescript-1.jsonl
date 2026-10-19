@@ -1,0 +1,8 @@
+{"id":"typescript@7.0.2/template-literal-unicode-code-points","outcome":"task","task":"ts-nav-label-length"}
+{"id":"typescript@6.0.2/strict-default-true","outcome":"task","task":"ts-implicit-any-first"}
+{"id":"typescript@7.0.2/remove-downleveliteration","outcome":"task","task":"ts-upgrade-build-config"}
+{"id":"typescript@6.0.2/cli-files-with-tsconfig-error","outcome":"task","task":"ts-check-doc-examples"}
+{"id":"typescript@7.0.2/remove-moduleresolution-classic","outcome":"task","task":"ts-upgrade-browser-app"}
+{"id":"typescript@6.0.2/rootdir-default-config-dir","outcome":"task","task":"ts-library-build-output"}
+{"id":"typescript@6.0.2/deprecate-moduleresolution-node10","outcome":"task","task":"ts-commonjs-build"}
+{"id":"typescript@6.0.2/deprecate-esmoduleinterop-false","outcome":"task","task":"ts-upgrade-express-api"}

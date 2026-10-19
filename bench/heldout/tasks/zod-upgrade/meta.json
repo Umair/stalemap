@@ -1,0 +1,15 @@
+{
+  "title": "Upgrade zod 3 code to 4",
+  "template": "latest",
+  "scenario": "upgrade",
+  "stale": [
+    "required_error",
+    "\\.errors\\b",
+    "z\\.record\\(\\s*z\\.boolean"
+  ],
+  "deprecated": [
+    "nativeEnum",
+    "\\.email\\(",
+    "\\.strict\\("
+  ]
+}

@@ -1,0 +1,1 @@
+Our product catalog has outgrown a single sitemap. Change `app/sitemap.ts` so Next.js serves the product URLs as several sitemaps of at most 1,000 products each, with every product listed in exactly one of them; the catalog keeps growing, so work out how many sitemaps are needed from the product count.

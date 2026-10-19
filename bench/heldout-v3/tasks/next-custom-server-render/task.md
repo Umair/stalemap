@@ -1,0 +1,1 @@
+Add a maintenance mode to our custom Next.js server: when `createHandler` in `src/server/handler.ts` is given `maintenance: true`, every page request should show our `/maintenance` page while the browser keeps the URL it asked for (no redirect). Requests for Next's own assets under `/_next/` must still be served as usual.

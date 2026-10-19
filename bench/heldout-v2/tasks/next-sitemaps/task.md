@@ -1,0 +1,1 @@
+Our catalog has outgrown a single sitemap. Change `app/sitemap.ts` to produce one sitemap per category in `src/catalog.ts`, each listing that category's products as `https://shop.example.com/products/<slug>`.

@@ -1,0 +1,1 @@
+We upgraded TypeScript in this library from 5.8 to 7.0, and `tsc` now fails on `tsconfig.json` before it even checks the code. Fix the config so the library compiles again and the build emits exactly the same JavaScript and type declarations as it did on 5.8.

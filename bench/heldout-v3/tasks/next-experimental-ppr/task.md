@@ -1,0 +1,1 @@
+Our product page (`app/page.tsx`) is rendered on every request just because of the live stock count. Turn on Partial Prerendering in `next.config.ts` so the rest of the page is prerendered as a static shell and only the stock count, which is already inside a `<Suspense>` boundary, renders at request time.

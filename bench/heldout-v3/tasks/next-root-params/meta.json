@@ -1,0 +1,13 @@
+{
+  "title": "Next 16: read the root [lang] param anywhere",
+  "template": "latest",
+  "change": "next@16.0.0/unstable-rootparams-removed",
+  "package": "next",
+  "scenario": "new-code",
+  "changeType": "breaking",
+  "kind": "compile-error",
+  "stale": ["\\bunstable_rootParams\\b"],
+  "deprecated": [],
+  "newApi": ["root-params", "rootParams", "[Rr]oot param"],
+  "oracle": "Next 16 removed `unstable_rootParams` from 'next/server'; import one getter per root-layout param from 'next/root-params' instead, e.g. `import { lang } from 'next/root-params'; await lang()`."
+}

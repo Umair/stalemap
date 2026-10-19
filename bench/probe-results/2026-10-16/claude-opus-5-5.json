@@ -1,0 +1,182 @@
+{
+  "model": "claude-opus-5-5",
+  "cutoff": "2026-06-30",
+  "provider": "claude-code",
+  "ranAt": "2026-10-16T10:14:33.489Z",
+  "probes": 3,
+  "results": [
+    {
+      "probe": {
+        "id": "830c85403d",
+        "pkg": "@anthropic-ai/sdk",
+        "version": "0.135.0",
+        "subpath": ".",
+        "symbol": "default",
+        "kind": "members",
+        "detail": "`Anthropic`: removed `Page`, `TokenPage`, `PageCursor`",
+        "task": "Write a short example that uses `Anthropic` from `@anthropic-ai/sdk` and its `Page`, `TokenPage`, `PageCursor` members.",
+        "target": {
+          "names": [
+            "Page",
+            "TokenPage",
+            "PageCursor"
+          ],
+          "apiNames": [
+            "Anthropic"
+          ]
+        }
+      },
+      "arm": "bare",
+      "verdict": "current",
+      "findings": [],
+      "touchedApi": true,
+      "code": "import Anthropic from '@anthropic-ai/sdk';\nimport { Page, TokenPage, PageCursor } from '@anthropic-ai/sdk/pagination';\n\nconst client = new Anthropic(); // reads ANTHROPIC_API_KEY from the environment\n\n// Collect every item from any of the SDK's paginated list responses.\nasync function collectAll<T>(\n  first: Page<T> | TokenPage<T> | PageCursor<T>,\n): Promise<T[]> {\n  const items: T[] = [];\n  let page = first;\n  while (true) {\n    items.push(...page.getPaginatedItems());\n    if (!page.hasNextPage()) break;\n    page = await page.getNextPage();\n  }\n  return items;\n}\n\nasync function main() {\n  // Auto-pagination with `for await` (fetches further pages as needed).\n  for await (const model of client.models.list({ limit: 20 })) {\n    console.log(model.id, model.display_name);\n  }\n\n  // Manual pagination with the Page object.\n  const page: Page<Anthropic.ModelInfo> = await client.models.list({ limit: 5 });\n  console.log('first page:', page.data.map((m) => m.id));\n  console.log('has more:', page.has_more, 'last_id:', page.last_id);\n\n  if (page.hasNextPage()) {\n    const next = await page.getNextPage();\n    console.log('second page:', next.data.map((m) => m.id));\n  }\n\n  // Generic helper works for Page, TokenPage, and PageCursor results alike.\n  const allModels = await collectAll(await client.models.list({ limit: 10 }));\n  console.log('total models:', allModels.length);\n}\n\nmain().catch((err) => {\n  if (err instanceof Anthropic.APIError) {\n    console.error(err.status, err.name, err.message);\n  } else {\n    console.error(err);\n  }\n  process.exit(1);\n});\n"
+    },
+    {
+      "probe": {
+        "id": "830c85403d",
+        "pkg": "@anthropic-ai/sdk",
+        "version": "0.135.0",
+        "subpath": ".",
+        "symbol": "default",
+        "kind": "members",
+        "detail": "`Anthropic`: removed `Page`, `TokenPage`, `PageCursor`",
+        "task": "Write a short example that uses `Anthropic` from `@anthropic-ai/sdk` and its `Page`, `TokenPage`, `PageCursor` members.",
+        "target": {
+          "names": [
+            "Page",
+            "TokenPage",
+            "PageCursor"
+          ],
+          "apiNames": [
+            "Anthropic"
+          ]
+        }
+      },
+      "arm": "notes",
+      "verdict": "current",
+      "findings": [],
+      "touchedApi": true,
+      "code": "import Anthropic from '@anthropic-ai/sdk';\n\n// In @anthropic-ai/sdk 0.135.0, `Anthropic.Page`, `Anthropic.TokenPage`, and\n// `Anthropic.PageCursor` are no longer exported from the `Anthropic` namespace.\n// Use the page objects returned by `list()` methods, and let TypeScript infer\n// their types instead of naming the removed types.\n\nconst client = new Anthropic(); // reads ANTHROPIC_API_KEY from the environment\n\n// Replaces `Anthropic.Page<Anthropic.ModelInfo>`.\ntype ModelsPage = Awaited<ReturnType<typeof client.models.list>>;\ntype ModelInfo = ModelsPage['data'][number];\n\nasync function listAllModelsAutoPaginated(): Promise<ModelInfo[]> {\n  const models: ModelInfo[] = [];\n  // Auto-pagination follows the cursor across pages.\n  for await (const model of client.models.list({ limit: 20 })) {\n    models.push(model);\n  }\n  return models;\n}\n\nasync function listModelsPageByPage(): Promise<void> {\n  let page: ModelsPage = await client.models.list({ limit: 5 });\n  let pageNumber = 1;\n\n  while (true) {\n    console.log(\n      `Page ${pageNumber}:`,\n      page.data.map((m) => m.id),\n    );\n\n    if (!page.hasNextPage()) break;\n    page = await page.getNextPage();\n    pageNumber++;\n  }\n}\n\n// Manual cursor handling replaces the old `Anthropic.PageCursor` params type.\nasync function listBatchesWithCursor(): Promise<void> {\n  let afterId: string | undefined;\n\n  do {\n    const page = await client.messages.batches.list({\n      limit: 10,\n      ...(afterId ? { after_id: afterId } : {}),\n    });\n\n    for (const batch of page.data) {\n      console.log(batch.id, batch.processing_status);\n    }\n\n    afterId = page.hasNextPage() ? page.data.at(-1)?.id : undefined;\n  } while (afterId);\n}\n\nasync function main(): Promise<void> {\n  const all = await listAllModelsAutoPaginated();\n  console.log(`Total models: ${all.length}`);\n\n  await listModelsPageByPage();\n  await listBatchesWithCursor();\n}\n\nmain().catch((err) => {\n  console.error(err);\n  process.exit(1);\n});\n"
+    },
+    {
+      "probe": {
+        "id": "c04cc2de78",
+        "pkg": "openai",
+        "version": "7.34.0",
+        "subpath": ".",
+        "symbol": "default",
+        "kind": "deprecated",
+        "detail": "On `OpenAI`, deprecated: `videos`",
+        "task": "Write a short example that uses `OpenAI` from `openai` to do what `videos` does.",
+        "target": {
+          "names": [
+            "videos"
+          ],
+          "apiNames": [
+            "OpenAI"
+          ]
+        }
+      },
+      "arm": "bare",
+      "verdict": "stale",
+      "findings": [
+        "deprecated (line 8): `videos`",
+        "deprecated (line 17): `videos`",
+        "deprecated (line 26): `videos`",
+        "deprecated (line 32): `videos`",
+        "deprecated (line 37): `videos`",
+        "deprecated (line 43): `videos`"
+      ],
+      "touchedApi": true,
+      "code": "import OpenAI from \"openai\";\nimport { writeFile } from \"node:fs/promises\";\n\nconst client = new OpenAI(); // reads OPENAI_API_KEY from env\n\nasync function main() {\n  // Create a video generation job and poll until it finishes\n  let video = await client.videos.create({\n    model: \"sora-2\",\n    prompt: \"A calico cat playing a tiny piano on a sunlit windowsill\",\n    seconds: \"8\",\n    size: \"1280x720\",\n  });\n\n  while (video.status === \"queued\" || video.status === \"in_progress\") {\n    await new Promise((r) => setTimeout(r, 5000));\n    video = await client.videos.retrieve(video.id);\n    console.log(`Status: ${video.status} (${video.progress ?? 0}%)`);\n  }\n\n  if (video.status !== \"completed\") {\n    throw new Error(`Video generation failed: ${video.error?.message ?? video.status}`);\n  }\n\n  // Download the rendered MP4\n  const content = await client.videos.downloadContent(video.id, { variant: \"video\" });\n  const buffer = Buffer.from(await content.arrayBuffer());\n  await writeFile(\"video.mp4\", buffer);\n  console.log(\"Saved video.mp4\");\n\n  // List recent videos\n  for await (const v of client.videos.list({ limit: 5 })) {\n    console.log(v.id, v.status, v.model);\n  }\n\n  // Remix the finished video with a new prompt\n  const remix = await client.videos.remix(video.id, {\n    prompt: \"Same scene, but at night with moonlight\",\n  });\n  console.log(\"Remix job:\", remix.id, remix.status);\n\n  // Clean up the original\n  const deleted = await client.videos.delete(video.id);\n  console.log(\"Deleted:\", deleted.id, deleted.deleted);\n}\n\nmain().catch((err) => {\n  console.error(err);\n  process.exit(1);\n});\n"
+    },
+    {
+      "probe": {
+        "id": "c04cc2de78",
+        "pkg": "openai",
+        "version": "7.34.0",
+        "subpath": ".",
+        "symbol": "default",
+        "kind": "deprecated",
+        "detail": "On `OpenAI`, deprecated: `videos`",
+        "task": "Write a short example that uses `OpenAI` from `openai` to do what `videos` does.",
+        "target": {
+          "names": [
+            "videos"
+          ],
+          "apiNames": [
+            "OpenAI"
+          ]
+        }
+      },
+      "arm": "notes",
+      "verdict": "stale",
+      "findings": [
+        "deprecated (line 15): `videos`",
+        "deprecated (line 25): `videos`",
+        "deprecated (line 34): `videos`"
+      ],
+      "touchedApi": true,
+      "code": "// Requires Node.js 22+ (openai@7 dropped older Node versions).\n//\n// NOTE: In openai@7.34.0, `client.videos` is marked deprecated in the type\n// definitions, but the release notes don't name a replacement resource.\n// It is still present and functional, so this example uses it. Check the\n// JSDoc `@deprecated` tag on `client.videos` in your editor for any\n// migration target, and swap it in if one is listed.\nimport OpenAI from 'openai';\nimport { writeFile } from 'node:fs/promises';\n\nconst client = new OpenAI(); // reads OPENAI_API_KEY from the environment\n\nasync function main() {\n  // Start a video generation job.\n  let video = await client.videos.create({\n    model: 'sora-2',\n    prompt: 'A calico cat playing a tiny piano on a sunlit windowsill',\n    seconds: '4',\n    size: '1280x720',\n  });\n\n  // Poll until the job finishes.\n  while (video.status === 'queued' || video.status === 'in_progress') {\n    await new Promise((r) => setTimeout(r, 5000));\n    video = await client.videos.retrieve(video.id);\n    console.log(`status=${video.status} progress=${video.progress ?? 0}%`);\n  }\n\n  if (video.status !== 'completed') {\n    throw new Error(`Video generation failed: ${JSON.stringify(video.error)}`);\n  }\n\n  // Download the rendered MP4.\n  const response = await client.videos.downloadContent(video.id, { variant: 'video' });\n  const buffer = Buffer.from(await response.arrayBuffer());\n  await writeFile('output.mp4', buffer);\n  console.log('Saved output.mp4');\n}\n\nmain().catch((err) => {\n  console.error(err);\n  process.exit(1);\n});\n"
+    },
+    {
+      "probe": {
+        "id": "ac011a6890",
+        "pkg": "@tanstack/react-query",
+        "version": "5.104.3",
+        "subpath": ".",
+        "symbol": "QueryClient",
+        "kind": "deprecated",
+        "detail": "On `QueryClient`, deprecated: `ensureQueryData` (use queryClient.query({ ...options, staleTime: 'static' })), `fetchQuery` (use queryClient.query(options)), `prefetchQuery`, `fetchInfiniteQuery` (use queryClient.infiniteQuery(options)) (+2 more)",
+        "task": "Write a short example that uses `QueryClient` from `@tanstack/react-query` to do what `ensureQueryData`, `fetchQuery`, `prefetchQuery` do.",
+        "target": {
+          "names": [
+            "ensureQueryData",
+            "fetchQuery",
+            "prefetchQuery"
+          ],
+          "apiNames": [
+            "QueryClient"
+          ]
+        }
+      },
+      "arm": "bare",
+      "verdict": "stale",
+      "findings": [
+        "deprecated (line 22): `prefetchQuery`",
+        "deprecated (line 25): `fetchQuery`",
+        "deprecated (line 33): `ensureQueryData`"
+      ],
+      "touchedApi": true,
+      "code": "import { QueryClient } from '@tanstack/react-query'\n\ntype Todo = { id: number; title: string; completed: boolean }\n\nconst queryClient = new QueryClient({\n  defaultOptions: {\n    queries: { staleTime: 60_000 },\n  },\n})\n\nconst todoQueryOptions = (id: number) => ({\n  queryKey: ['todo', id] as const,\n  queryFn: async (): Promise<Todo> => {\n    const res = await fetch(`https://jsonplaceholder.typicode.com/todos/${id}`)\n    if (!res.ok) throw new Error(`Failed to fetch todo ${id}`)\n    return res.json()\n  },\n})\n\nasync function main() {\n  // prefetchQuery: warm the cache; resolves to void and never throws\n  await queryClient.prefetchQuery(todoQueryOptions(1))\n\n  // fetchQuery: returns data; refetches if cached data is older than staleTime; throws on error\n  const fresh = await queryClient.fetchQuery({\n    ...todoQueryOptions(2),\n    staleTime: 10_000,\n  })\n  console.log('fetchQuery:', fresh.title)\n\n  // ensureQueryData: returns cached data if present, otherwise fetches it\n  // revalidateIfStale triggers a background refetch when cached data is stale\n  const ensured = await queryClient.ensureQueryData({\n    ...todoQueryOptions(1),\n    revalidateIfStale: true,\n  })\n  console.log('ensureQueryData:', ensured.title)\n\n  // Read synchronously from the cache after prefetching\n  const cached = queryClient.getQueryData<Todo>(['todo', 1])\n  console.log('cached:', cached?.title)\n}\n\nmain().catch(console.error)\n"
+    },
+    {
+      "probe": {
+        "id": "ac011a6890",
+        "pkg": "@tanstack/react-query",
+        "version": "5.104.3",
+        "subpath": ".",
+        "symbol": "QueryClient",
+        "kind": "deprecated",
+        "detail": "On `QueryClient`, deprecated: `ensureQueryData` (use queryClient.query({ ...options, staleTime: 'static' })), `fetchQuery` (use queryClient.query(options)), `prefetchQuery`, `fetchInfiniteQuery` (use queryClient.infiniteQuery(options)) (+2 more)",
+        "task": "Write a short example that uses `QueryClient` from `@tanstack/react-query` to do what `ensureQueryData`, `fetchQuery`, `prefetchQuery` do.",
+        "target": {
+          "names": [
+            "ensureQueryData",
+            "fetchQuery",
+            "prefetchQuery"
+          ],
+          "apiNames": [
+            "QueryClient"
+          ]
+        }
+      },
+      "arm": "notes",
+      "verdict": "current",
+      "findings": [],
+      "touchedApi": true,
+      "code": "import { QueryClient, queryOptions } from '@tanstack/react-query'\n\ntype Todo = { id: number; title: string; completed: boolean }\n\nconst queryClient = new QueryClient({\n  defaultOptions: { queries: { staleTime: 60_000 } },\n})\n\nconst todoOptions = (id: number) =>\n  queryOptions({\n    queryKey: ['todos', id],\n    queryFn: async ({ signal }): Promise<Todo> => {\n      const res = await fetch(`/api/todos/${id}`, { signal })\n      if (!res.ok) throw new Error(`Failed to fetch todo ${id}`)\n      return res.json()\n    },\n  })\n\n// Replaces queryClient.ensureQueryData(options):\n// returns cached data if present (never considered stale), otherwise fetches.\nexport function ensureTodo(id: number): Promise<Todo> {\n  return queryClient.query({ ...todoOptions(id), staleTime: 'static' })\n}\n\n// Replaces queryClient.fetchQuery(options):\n// returns cached data if fresh per staleTime, otherwise fetches. Throws on error.\nexport function fetchTodo(id: number): Promise<Todo> {\n  return queryClient.query(todoOptions(id))\n}\n\n// Replaces queryClient.prefetchQuery(options):\n// same as query(), but resolves to void and swallows errors.\nexport async function prefetchTodo(id: number): Promise<void> {\n  await queryClient.query(todoOptions(id)).catch(() => undefined)\n}\n\n// Usage\nasync function main() {\n  await prefetchTodo(1) // warm the cache, ignore failures\n\n  const cached = await ensureTodo(1) // served from cache, no refetch\n  console.log('ensured:', cached.title)\n\n  try {\n    const fresh = await fetchTodo(2) // fetched (or cached if still fresh)\n    console.log('fetched:', fresh.title)\n  } catch (err) {\n    console.error('fetch failed:', err)\n  }\n}\n\nvoid main()\n"
+    }
+  ]
+}

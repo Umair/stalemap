@@ -1,0 +1,10 @@
+{
+  "title": "Next 16: enable Cache Components",
+  "template": "latest",
+  "scenario": "new-code",
+  "stale": [
+    "dynamicIO",
+    "\\bppr\\b"
+  ],
+  "deprecated": []
+}

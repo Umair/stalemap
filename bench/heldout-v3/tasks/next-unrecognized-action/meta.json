@@ -1,0 +1,13 @@
+{
+  "title": "Next 16.4: replay unknown Server Actions on the previous deployment",
+  "template": "latest",
+  "change": "next@16.4.0/unrecognized-server-actions-client-errors",
+  "package": "next",
+  "scenario": "new-code",
+  "changeType": "default-behavior",
+  "kind": "type-checks",
+  "stale": ["(?:status|statusCode)\\s*(?:===?|!==?)\\s*404\\b", "\\b404\\s*(?:===?|!==?)\\s*\\w+\\.status"],
+  "deprecated": [],
+  "newApi": ["\\b409\\b", "\\b400\\b", "x-nextjs-action-not-found", "[Cc]onflict"],
+  "oracle": "Since Next 16.4, a Server Action ID the deployment doesn't recognize gets a 409 (or 400 if malformed) with `x-nextjs-action-not-found: 1`, for fetch and form posts, instead of a 404/500 page; check for that."
+}

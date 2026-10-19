@@ -1,0 +1,10 @@
+{
+  "title": "Next 16: one sitemap per category",
+  "template": "latest",
+  "scenario": "new-code",
+  "kind": "type-checks",
+  "stale": [
+    "\\bid\\s*:\\s*(?:string|number)\\s*[;,]?\\s*\\}(?!\\s*[\\[>])"
+  ],
+  "deprecated": []
+}

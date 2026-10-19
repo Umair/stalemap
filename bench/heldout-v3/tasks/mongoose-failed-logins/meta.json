@@ -1,0 +1,13 @@
+{
+  "title": "mongoose 9: count failed logins in a method hook",
+  "template": "latest",
+  "change": "mongoose@9.0.0/custom-method-hooks-no-callbacks",
+  "package": "mongoose",
+  "scenario": "new-code",
+  "changeType": "breaking",
+  "kind": "type-checks",
+  "stale": ["\\bcomparePassword\\b[^\\n]*?\\(\\s*\\w+\\s*(?::\\s*string\\s*)?,\\s*(?:cb|callback|done)\\b"],
+  "deprecated": [],
+  "newApi": ["\\basync\\b", "\\bPromise\\b", "promisif"],
+  "oracle": "In mongoose 9, hooks on custom methods and statics only wrap async or promise-returning methods: a callback-style method gets no callback and its post hooks run before it finishes, so make the method async."
+}

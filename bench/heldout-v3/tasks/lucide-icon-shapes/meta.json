@@ -1,0 +1,13 @@
+{
+  "title": "lucide-react 1.42: icon modules export __iconData",
+  "template": "latest",
+  "change": "lucide-react@1.42.0/icon-module-exports-icondata",
+  "package": "lucide-react",
+  "scenario": "new-code",
+  "changeType": "breaking",
+  "kind": "type-checks",
+  "stale": ["__iconNode\\b"],
+  "deprecated": [],
+  "newApi": ["__iconData\\b"],
+  "oracle": "In lucide-react 1.42+, per-icon modules (what dynamicIconImports loads) export __iconData ({ name, size, node }) instead of __iconNode (now undefined); __iconData.node is the [tag, attrs] array __iconNode used to be."
+}

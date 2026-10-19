@@ -1,0 +1,16 @@
+{
+  "title": "mongoose 9: product documents without generated ids",
+  "template": "latest",
+  "change": "mongoose@9.0.0/skipid-boolean-param-removed",
+  "package": "mongoose",
+  "scenario": "new-code",
+  "changeType": "breaking",
+  "kind": "compile-error",
+  "stale": [
+    ",\\s*(?:null|undefined|\\{[^{}]*\\})\\s*,\\s*(?:true|false|!0|!1)\\s*\\)",
+    ",\\s*skipId\\s*\\)"
+  ],
+  "deprecated": [],
+  "newApi": ["\\bskipId\\s*:"],
+  "oracle": "In mongoose 9 the third argument to new Model()/Document() must be an options object: pass { skipId: true } instead of the boolean true, which now throws and no longer type-checks."
+}

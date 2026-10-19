@@ -1,0 +1,12 @@
+{
+  "title": "Upgrade Next 15 code to 16",
+  "template": "latest",
+  "scenario": "upgrade",
+  "stale": [
+    "revalidateTag\\(\\s*[\\\"'`]settings[\\\"'`]\\s*\\)",
+    "\\bppr\\b",
+    "export\\s+(async\\s+)?function\\s+middleware\\b"
+  ],
+  "deprecated": [],
+  "currentFile": "proxy.ts"
+}

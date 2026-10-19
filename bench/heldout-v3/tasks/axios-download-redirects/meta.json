@@ -1,0 +1,15 @@
+{
+  "title": "axios 1.20: fetch-adapter downloads behind redirects after the upgrade",
+  "template": "latest",
+  "change": "axios@1.20.0/fetch-maxredirects-zero",
+  "package": "axios",
+  "scenario": "upgrade",
+  "changeType": "default-behavior",
+  "kind": "type-checks",
+  "stale": [
+    "^(?![\\s\\S]*maxRedirects[\\s\\S]*maxRedirects)[\\s\\S]*?const\\s+(\\w+)\\s*=\\s*\\{(?:[^{}]|\\{[^{}]*\\})*maxRedirects\\s*:\\s*0[\\s\\S]*axios\\.create\\(\\{\\s*\\.\\.\\.\\1\\b[^}]*adapter\\s*:\\s*[\"']fetch[\"']"
+  ],
+  "deprecated": [],
+  "newApi": ["maxRedirects", "\\bredirect"],
+  "oracle": "Since axios 1.20 the fetch adapter honors maxRedirects: 0 (manual redirect mode, the 3xx comes back) where it used to ignore it and follow; give fetch requests that must follow redirects maxRedirects > 0."
+}

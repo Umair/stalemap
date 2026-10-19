@@ -1,0 +1,19 @@
+services:
+  web:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: production
+    depends_on:
+      - minio
+  minio:
+    image: minio/minio
+    command: server /data
+    environment:
+      MINIO_ROOT_USER: catalog
+      MINIO_ROOT_PASSWORD: change-me-in-prod
+    volumes:
+      - minio-data:/data
+volumes:
+  minio-data:

@@ -1,0 +1,7 @@
+{
+  "title": "AI SDK: define a tool",
+  "stale": [
+    "\\bparameters\\s*:"
+  ],
+  "deprecated": []
+}

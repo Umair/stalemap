@@ -1,0 +1,17 @@
+{
+  "title": "zod 4.3: strict object inside an intersection",
+  "template": "latest",
+  "change": "zod@4.3.2/strict-object-intersection-loosened",
+  "package": "zod",
+  "scenario": "new-code",
+  "changeType": "default-behavior",
+  "kind": "type-checks",
+  "stale": [
+    "strictObject\\(\\{[^;]*?\\}\\)\\s*\\.and\\(\\s*PasswordsMatch\\s*\\)",
+    "\\.strict\\(\\)\\s*\\.and\\(\\s*PasswordsMatch\\s*\\)",
+    "intersection\\(\\s*z\\.strictObject\\([^;]*?\\)\\s*,\\s*PasswordsMatch\\s*\\)"
+  ],
+  "deprecated": [],
+  "newApi": ["PasswordsMatch\\.strict", "safeExtend", "both sides", "unrecognized by"],
+  "oracle": "Since zod 4.3.2, an intersection with z.strictObject() rejects only keys unknown to both sides, so strictObject(...).and(nonStrictObject) accepts extra keys; make both sides strict (e.g. .and(Rule.strict()))."
+}

@@ -1,0 +1,1 @@
+We upgraded this store from Next.js 15 to 16. Update the image components in `app/components/` for Next 16 without changing how they look: the hero photo fills its banner, cropped to cover it, and product photos keep their 4:3 shape and scale to the width of their column. We keep this codebase free of deprecated APIs.

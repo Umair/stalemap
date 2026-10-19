@@ -1,0 +1,1 @@
+Implement `answerWithStats(model, prompt)` in `src/stats.ts` with the AI SDK: generate a text answer and return it with the token counts the provider reported: input tokens, how many of those input tokens were read from the provider's prompt cache, and output tokens. Use 0 for any count the provider doesn't report.

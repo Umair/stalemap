@@ -1,0 +1,1 @@
+We upgraded TypeScript in this app from 5.8 to 7.0, and `tsc` now fails. Fix what the upgrade broke so the project type-checks again; the app must keep reading its defaults from `config/defaults.json` and its translations from `locales/`.

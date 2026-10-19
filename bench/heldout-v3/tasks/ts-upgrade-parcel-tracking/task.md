@@ -1,0 +1,1 @@
+We upgraded TypeScript in our parcel-tracking page from 5.8 to 7.0, and `tsc` now fails. Fix the project so it type-checks and builds again, and the compiled scripts in `public/js/` keep working on `public/index.html` exactly as before.

@@ -1,0 +1,1 @@
+We upgraded TypeScript in this app from 5.8 to 7.0, and `tsc` now reports errors wherever our TypeScript code calls the old helpers in `src/legacy/strings.js`. Fix the helpers, not the callers, so the project type-checks again; the helpers must keep behaving exactly as they do now.

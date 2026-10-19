@@ -1,0 +1,15 @@
+{
+  "title": "openai 6.45: realtime reply despite a non-fatal server error",
+  "template": "latest",
+  "change": "openai@6.45.0/emitted-rejects-on-error",
+  "package": "openai",
+  "scenario": "new-code",
+  "changeType": "default-behavior",
+  "kind": "type-checks",
+  "stale": [
+    "\\.emitted\\(\\s*[\"'`]response\\.(?:done|text\\.done|output_text\\.done|output_item\\.done|content_part\\.done)[\"'`]"
+  ],
+  "deprecated": [],
+  "newApi": ["\\bemitted\\b", "\\breject"],
+  "oracle": "Since openai 6.45, emitted(event) on the Realtime WebSocket clients rejects as soon as an 'error' event fires (it used to ignore errors); to keep waiting past non-fatal errors, use on()/once() listeners instead."
+}

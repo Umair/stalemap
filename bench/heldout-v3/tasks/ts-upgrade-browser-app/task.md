@@ -1,0 +1,1 @@
+We upgraded TypeScript in this small browser app from 5.8 to 7.0, and `tsc` now stops with an error in `tsconfig.json`. Fix the config so the app type-checks again and `tsc` still writes exactly the same ES modules to `public/js/` as it did on 5.8.

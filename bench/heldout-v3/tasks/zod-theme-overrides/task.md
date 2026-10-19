@@ -1,0 +1,1 @@
+Add the `ThemeOverrides` schema in `src/theme.ts`: `--brand` (a hex color) and `--radius` (a CSS length) are required, and admins may add any other CSS custom property (a key starting with `--`) with a string value, which must be kept. Any other key is a typo (like `brand` or `radius`) and must fail validation.

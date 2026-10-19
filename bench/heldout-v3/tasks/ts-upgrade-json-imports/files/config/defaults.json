@@ -1,0 +1,6 @@
+{
+  "locale": "en",
+  "pageSize": 25,
+  "theme": "light",
+  "features": { "export": true, "betaSearch": false }
+}

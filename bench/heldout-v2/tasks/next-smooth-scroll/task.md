@@ -1,0 +1,1 @@
+Use CSS to make the in-page links on the home page (`#features`, `#pricing`) scroll smoothly to their sections. Navigating to another page, like `/docs`, should still jump straight to the top without animating, as it does now.

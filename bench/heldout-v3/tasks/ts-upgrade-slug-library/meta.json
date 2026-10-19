@@ -1,0 +1,20 @@
+{
+  "title": "TypeScript 7: fix a 5.8 library tsconfig that emitted UMD",
+  "template": "latest",
+  "change": "typescript@7.0.2/remove-module-amd-umd-system-none",
+  "package": "typescript",
+  "scenario": "upgrade",
+  "changeType": "breaking",
+  "kind": "compile-error",
+  "stale": [
+    "\"module\"\\s*:\\s*\"([Aa][Mm][Dd]|[Uu][Mm][Dd]|[Ss]ystem|SYSTEM|[Nn]one|NONE)\""
+  ],
+  "deprecated": [],
+  "newApi": [
+    "[Cc]ommon[Jj][Ss]",
+    "\\bUMD\\b",
+    "\\bremoved\\b",
+    "TS5108"
+  ],
+  "oracle": "TypeScript 7.0 removed the module values amd, umd, system and none (deprecated in 6.0), and they are hard errors; use \"commonjs\" for require() consumers, or esnext/preserve with a bundler."
+}

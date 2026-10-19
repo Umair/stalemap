@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Your parcels</title>
+  </head>
+  <body>
+    <h1>Your parcels</h1>
+    <p id="summary"></p>
+    <ul id="parcels"></ul>
+    <!-- window.PARCELS is written into the page by the server. -->
+    <script src="js/parcels.js"></script>
+    <script src="js/carriers.js"></script>
+    <script src="js/page.js"></script>
+    <script>
+      Tracking.mount(document.getElementById("parcels"), document.getElementById("summary"), window.PARCELS || []);
+    </script>
+  </body>
+</html>

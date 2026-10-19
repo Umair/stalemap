@@ -1,0 +1,19 @@
+{
+  "title": "TypeScript 7: fix a 5.8 library tsconfig after the upgrade",
+  "template": "latest",
+  "change": "typescript@7.0.2/remove-downleveliteration",
+  "package": "typescript",
+  "scenario": "upgrade",
+  "changeType": "breaking",
+  "kind": "compile-error",
+  "stale": [
+    "\"downlevelIteration\"\\s*:"
+  ],
+  "deprecated": [],
+  "newApi": [
+    "downlevelIteration",
+    "TS510[0-9]",
+    "\\bremoved\\b"
+  ],
+  "oracle": "TypeScript 7.0 removed the downlevelIteration option (deprecated in 6.0) and setting it is a hard error; delete it from tsconfig.json (it had no effect for targets ES2015 and later)."
+}

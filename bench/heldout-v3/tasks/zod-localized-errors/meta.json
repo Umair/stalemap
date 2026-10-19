@@ -1,0 +1,13 @@
+{
+  "title": "zod 4.6: localized safeParse error messages",
+  "template": "latest",
+  "change": "zod@4.6.0/error-maps-run-on-first-error-read",
+  "package": "zod",
+  "scenario": "new-code",
+  "changeType": "breaking",
+  "kind": "type-checks",
+  "stale": ["\\bconfig\\(\\s*[^)\\s]"],
+  "deprecated": [],
+  "newApi": ["\\berror\\s*:\\s*\\S*localeError", "\\blazy\\b", "first read"],
+  "oracle": "Since zod 4.6, safeParse builds result.error lazily on first read, so the z.config() locale at read time applies; pass the locale per parse with safeParse(input, { error: z.locales.de().localeError })."
+}

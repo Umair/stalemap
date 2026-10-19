@@ -1,0 +1,1 @@
+Our PDF export draws lucide icons as vector shapes. Implement `iconShapes(name)` in `src/iconShapes.ts` so that it returns the SVG elements the named icon draws (e.g. `"camera"`), as `[tag, attributes]` pairs in drawing order, loading only the icon that's asked for.

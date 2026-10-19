@@ -1,0 +1,19 @@
+{
+  "title": "zod 4.3: refine() type predicates narrow the output",
+  "template": "latest",
+  "change": "zod@4.3.0/refine-type-predicate-narrows",
+  "package": "zod",
+  "scenario": "upgrade",
+  "changeType": "default-behavior",
+  "kind": "compile-error",
+  "stale": [
+    "^(?![\\s\\S]*\\b(?:isCountryCode\\(\\s*shopCountry|parse\\(\\s*shopCountry|shopCountry:\\s*CountryCode|shopCountry\\s+as\\s))[\\s\\S]*\\bshopCountry\\b"
+  ],
+  "deprecated": [],
+  "newApi": [
+    "type predicate",
+    "narrow",
+    "type guard"
+  ],
+  "oracle": "Since zod 4.3, a type-predicate callback passed to .refine() narrows the schema's output type (4.0 ignored it), so z.infer of such a field is the predicate's type; values built from wider types must be checked first."
+}

@@ -1,0 +1,1 @@
+Finish `chatTurn` in `src/chat.ts`. It should return the model's reply and the history to send on the next turn: the earlier history, the user's message, and every message the model and its tools produced during this turn.

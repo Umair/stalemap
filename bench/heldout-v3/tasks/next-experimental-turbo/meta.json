@@ -1,0 +1,13 @@
+{
+  "title": "Next 16: alias a module under Turbopack",
+  "template": "latest",
+  "change": "next@16.0.0/experimental-turbo-removed",
+  "package": "next",
+  "scenario": "new-code",
+  "changeType": "breaking",
+  "kind": "compile-error",
+  "stale": ["\\bturbo\\s*:", "experimental\\.turbo\\b"],
+  "deprecated": [],
+  "newApi": ["\\bturbopack\\s*:", "resolveAlias", "top-level"],
+  "oracle": "Next 16 removed `experimental.turbo` (it is now ignored with an unrecognized-key warning); put Turbopack options such as `resolveAlias` and `rules` under the top-level `turbopack` key in next.config."
+}

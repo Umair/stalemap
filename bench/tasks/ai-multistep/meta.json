@@ -1,0 +1,9 @@
+{
+  "title": "AI SDK: multi-step tool calling",
+  "stale": [
+    "\\bmaxSteps\\b",
+    "\\bparameters\\s*:",
+    "\\bmaxTokens\\b"
+  ],
+  "deprecated": []
+}

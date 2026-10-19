@@ -1,0 +1,12 @@
+{
+  "title": "Vitest 4+: unit and DOM test projects",
+  "template": "latest",
+  "scenario": "new-code",
+  "kind": "compile-error",
+  "stale": [
+    "defineWorkspace",
+    "environmentMatchGlobs",
+    "\\bworkspace\\s*:"
+  ],
+  "deprecated": []
+}

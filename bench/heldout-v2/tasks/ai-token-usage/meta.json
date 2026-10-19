@@ -1,0 +1,12 @@
+{
+  "title": "AI SDK 7: token usage with cached input",
+  "template": "latest",
+  "scenario": "new-code",
+  "kind": "compile-error",
+  "stale": [
+    "\\bpromptTokens\\b",
+    "\\bcompletionTokens\\b",
+    "\\bcachedInputTokens\\b"
+  ],
+  "deprecated": []
+}

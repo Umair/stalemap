@@ -1,0 +1,7 @@
+{"id":"next@16.3.0/optimistic-routing-default","outcome":"skip","criterion":"S1","reason":"Route prediction only lets the browser's client router skip the route-tree prefetch for URLs that match already-learned route patterns (it deopts for rewrites and intercepted routes and renders the same result), so it is a prefetch optimization no application code or config written for Next 15 (which had no such option) depends on."}
+{"id":"next@15.5.22/reject-typescript-7","outcome":"skip","criterion":"S3","reason":"The TypeScript >= 7 rejection exists only on the 15.5 backport line; the pinned next 16.4.2 accepts TypeScript 7 (verify-typescript-setup only warns below 5.1.0, and the template runs it with TypeScript 7.0.2)."}
+{"id":"next@16.0.0/metadata-route-args-async","outcome":"task","task":"next-metadata-route-args"}
+{"id":"next@16.0.0/amp-removed","outcome":"task","task":"next-amp-removed"}
+{"id":"next@16.0.0/middleware-deprecated-for-proxy","outcome":"task","task":"next-middleware-proxy"}
+{"id":"next@16.0.0/next-legacy-image-deprecated","outcome":"task","task":"next-legacy-image"}
+{"id":"next@16.4.0/unrecognized-server-actions-client-errors","outcome":"task","task":"next-unrecognized-action"}

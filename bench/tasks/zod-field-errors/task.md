@@ -1,0 +1,1 @@
+In `src/errors.ts`, export `fieldErrors(error)`: it takes the `ZodError` from a failed `safeParse` of an object schema and returns `{ [field: string]: string[] }` with each field's error messages. Use zod's own helper for this.

@@ -1,0 +1,1 @@
+Our build servers start every `next build` from a clean checkout and don't keep `.next/cache`, so Turbopack's on-disk cache only costs us time and disk space there. Turn that cache off for `next build` in `next.config.ts`, but keep it for `next dev`.

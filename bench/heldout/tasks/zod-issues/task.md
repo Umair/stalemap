@@ -1,0 +1,1 @@
+In `src/format.ts`, export `formatError(error)`. It takes a `ZodError` and returns one string per problem, `"<path>: <message>"`, with the path joined by dots (`"address.zip: Too short"`) and `"(root)"` when the path is empty.

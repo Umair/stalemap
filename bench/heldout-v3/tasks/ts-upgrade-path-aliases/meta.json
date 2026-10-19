@@ -1,0 +1,22 @@
+{
+  "title": "TypeScript 7: fix 5.8 path aliases that relied on baseUrl",
+  "template": "latest",
+  "change": "typescript@7.0.2/remove-baseurl",
+  "package": "typescript",
+  "scenario": "upgrade",
+  "changeType": "breaking",
+  "kind": "compile-error",
+  "stale": [
+    "\"baseUrl\"\\s*:"
+  ],
+  "deprecated": [],
+  "newApi": [
+    "baseUrl",
+    "\\./src/",
+    "configDir",
+    "TS5102",
+    "TS5090",
+    "\\bremoved\\b"
+  ],
+  "oracle": "TypeScript 7.0 removed baseUrl (deprecated in 6.0), a hard error; write paths entries relative to the tsconfig (\"./src/lib/*\") and map bare imports with \"*\": [\"./src/*\"]."
+}

@@ -1,0 +1,1 @@
+`next build` fails with "Module not found: Can't resolve 'canvas'", coming from the chart library we vendored in `vendor/chart-export` (we use Turbopack for dev and build). We don't use its server-side PNG export, so don't install `canvas` or edit the vendored code: fix it in `next.config.ts` so that import resolves to an empty module instead.
