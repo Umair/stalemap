@@ -19,8 +19,6 @@
   <a href="CHANGELOG.md">Changelog</a>
 </p>
 
-# stalemap
-
 Coding agents learn libraries from training data that stops at a cutoff date. When your project pins newer versions, the agent writes code for the old API: `maxSteps` against AI SDK 7, `required_error` against zod 4, `middleware.ts` against Next 16.
 
 stalemap finds the dependencies that changed after your model's training cutoff and tells the agent what changed, in three ways:
