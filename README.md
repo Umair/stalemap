@@ -35,7 +35,7 @@ It works for JavaScript and TypeScript projects, with Claude Code, Cursor, Codex
 
 ## Status
 
-- **npm:** the latest release is [`stalemap` 0.3.0](https://www.npmjs.com/package/stalemap). `npx stalemap`, the Claude Code plugin and the GitHub Action all run it. See the [changelog](CHANGELOG.md).
+- **npm:** the latest release is [`stalemap` 0.3.1](https://www.npmjs.com/package/stalemap). `npx stalemap`, the Claude Code plugin and the GitHub Action all run it. See the [changelog](CHANGELOG.md).
 - The project is early, and maintained by one person.
 
 ## Install

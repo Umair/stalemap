@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.3.1
+
+Docs only; no change to what stalemap does.
+
+- The npm page's README no longer says the latest release is 0.2.0 or calls 0.3.0's features unreleased.
+- README graphics: a banner, a diagram of how it works, and an example of the output.
+
 ## 0.3.0
 
 - Docs: comparisons with third-party tools are withdrawn from the README and the benchmark results pending permission. The 0.2.0 README's claim that stalemap beat a docs tool in one-shot mode doesn't hold: that tool's calls were refused in most of the run's later sessions, which the harness didn't detect.
