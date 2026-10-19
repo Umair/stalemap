@@ -1,6 +1,6 @@
 {
   "name": "stalemap",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Tell your coding agent which of your dependencies changed after its training cutoff. Diffs types and changelogs, writes a short block into AGENTS.md / CLAUDE.md.",
   "keywords": [
     "ai",

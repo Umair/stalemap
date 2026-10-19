@@ -1,7 +1,7 @@
 {
   "name": "stalemap",
   "displayName": "stalemap",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Tells Claude which of your project's dependencies changed after its training cutoff: removed and renamed APIs, new required options, deprecations, breaking changelog entries.",
   "author": { "name": "stalemap contributors" },
   "homepage": "https://github.com/Umair/stalemap",

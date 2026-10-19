@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.3.0
 
 Not on npm yet: `npx stalemap` and the Claude Code plugin run 0.2.0. Everything below is in the repository only.
 
