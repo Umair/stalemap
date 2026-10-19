@@ -28,9 +28,12 @@ const started = Date.now();
 // Run tsc's JS entry with this hook's own Node: `.bin/tsc` would pick whatever `node` comes first on
 // PATH, which can be a different, too old or broken install, and then print nothing.
 const tscEntry = join(cwd, "node_modules", "typescript", "bin", "tsc");
+// `--pretty false`: tsc colors its output when FORCE_COLOR is set (node's test runner sets it in a
+// terminal), and colored lines don't match `error TS`.
+const tscArgs = ["--noEmit", "-p", "tsconfig.json", "--pretty", "false"];
 const [cmd, args] = existsSync(tscEntry)
-  ? [process.execPath, [tscEntry, "--noEmit", "-p", "tsconfig.json"]]
-  : [join(cwd, "node_modules", ".bin", "tsc"), ["--noEmit", "-p", "tsconfig.json"]];
+  ? [process.execPath, [tscEntry, ...tscArgs]]
+  : [join(cwd, "node_modules", ".bin", "tsc"), tscArgs];
 execFile(cmd, args, { cwd, timeout: 50_000, maxBuffer: 8 * 1024 * 1024 }, (err, stdout) => {
   const errors = String(stdout ?? "")
     .split("\n")
