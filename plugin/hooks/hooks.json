@@ -10,7 +10,7 @@
             "command": "npx",
             "args": [
               "-y",
-              "stalemap@latest",
+              "stalemap@0.4.1",
               "hook",
               "session-start"
             ],
@@ -28,7 +28,7 @@
             "command": "npx",
             "args": [
               "-y",
-              "stalemap@latest",
+              "stalemap@0.4.1",
               "hook",
               "post-edit"
             ],

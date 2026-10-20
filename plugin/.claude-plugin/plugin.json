@@ -3,9 +3,19 @@
   "displayName": "stalemap",
   "version": "0.4.1",
   "description": "Tells Claude which of your project's dependencies changed after its training cutoff: removed and renamed APIs, new required options, deprecations, breaking changelog entries.",
-  "author": { "name": "stalemap contributors" },
-  "homepage": "https://github.com/Umair/stalemap",
+  "author": {
+    "name": "stalemap contributors"
+  },
+  "homepage": "https://stalemap.com",
   "repository": "https://github.com/Umair/stalemap",
   "license": "MIT",
-  "keywords": ["dependencies", "knowledge-cutoff", "changelog", "typescript", "npm", "upgrades"]
+  "keywords": [
+    "dependencies",
+    "knowledge-cutoff",
+    "changelog",
+    "typescript",
+    "npm",
+    "upgrades"
+  ],
+  "icon": "./icon.png"
 }

@@ -90,9 +90,16 @@ test("each agent's config has the documented shape", async () => {
 });
 
 test("the Claude Code setup installs the same hooks as the plugin", async () => {
-  const plugin = JSON.parse(await read(root, "plugin/hooks/hooks.json"));
+  // The plugin pins this release (the Claude directory requires pinned npx versions); setup's project
+  // files follow @latest. Otherwise they're the same.
+  const pinned = await read(root, "plugin/hooks/hooks.json");
+  const { version } = JSON.parse(await read(root, "package.json")) as { version: string };
+  const pins = [...new Set([...pinned.matchAll(/stalemap@([\w.-]+)/g), ...(await read(root, "plugin/.mcp.json")).matchAll(/stalemap@([\w.-]+)/g)].map((m) => m[1]))];
+  assert.deepEqual(pins, [version], "the plugin pins the package's own version");
+  const unpin = (text: string) => JSON.parse(text.replaceAll(`stalemap@${version}`, "stalemap@latest"));
+  const plugin = unpin(pinned);
   assert.deepEqual(plugin.hooks, { SessionStart: [CLAUDE_HOOKS.SessionStart], PostToolUse: [CLAUDE_HOOKS.PostToolUse] });
-  const mcp = JSON.parse(await read(root, "plugin/.mcp.json"));
+  const mcp = unpin(await read(root, "plugin/.mcp.json"));
   const dir = await project();
   await run("claude", dir);
   assert.deepEqual((await readJson(dir, ".mcp.json")).mcpServers, mcp.mcpServers);

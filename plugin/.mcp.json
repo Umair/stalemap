@@ -2,7 +2,7 @@
   "mcpServers": {
     "stalemap": {
       "command": "npx",
-      "args": ["-y", "stalemap@latest", "mcp"]
+      "args": ["-y", "stalemap@0.4.1", "mcp"]
     }
   }
 }

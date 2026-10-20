@@ -2,13 +2,13 @@
 description: Write or refresh the stalemap block in AGENTS.md or CLAUDE.md, listing dependencies that changed after the model's training cutoff.
 argument-hint: "[--target CLAUDE.md] [--all] [--llm]"
 disable-model-invocation: true
-allowed-tools: Bash(npx -y stalemap@latest:*)
+allowed-tools: Bash(npx -y stalemap@0.4.1:*)
 ---
 
 Run this from the project root:
 
 ```bash
-npx -y stalemap@latest sync --yes $ARGUMENTS
+npx -y stalemap@0.4.1 sync --yes $ARGUMENTS
 ```
 
 Then tell the user, in two or three lines:

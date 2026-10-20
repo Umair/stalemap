@@ -10,4 +10,4 @@ Your knowledge of a library's API stops at your training cutoff. Before you writ
 
 When upgrading a dependency, call `package_changes` with the target version first, then update call sites for every removed, renamed or changed API it lists. Run the type checker afterwards.
 
-If the tool isn't available, run `npx -y stalemap@latest scan` in the project root and read the block it prints.
+If the tool isn't available, run `npx -y stalemap@0.4.1 scan` in the project root and read the block it prints.
