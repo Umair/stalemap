@@ -1,0 +1,13 @@
+{
+  "title": "vitest 5: test titles formatted with pretty-format, truncated by taskTitleValueFormatTruncate",
+  "template": "latest",
+  "change": "vitest@5.0.0/pretty-format-inspection",
+  "package": "vitest",
+  "scenario": "new-code",
+  "changeType": "breaking",
+  "kind": "type-checks",
+  "stale": ["\\btruncateThreshold\\b"],
+  "deprecated": [],
+  "newApi": ["taskTitleValueFormatTruncate", "pretty-format", "\\bloupe\\b"],
+  "oracle": "In Vitest 5, test.each/test.for title values are formatted with pretty-format and chaiConfig.truncateThreshold no longer affects them; set test.taskTitleValueFormatTruncate (0 = no limit) instead."
+}

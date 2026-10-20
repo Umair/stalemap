@@ -1,0 +1,20 @@
+{
+  "title": "react-hook-form 7.83: typed field paths stop at 10 segments",
+  "template": "latest",
+  "change": "react-hook-form@7.83.0/path-types-depth-capped-at-10",
+  "package": "react-hook-form",
+  "scenario": "new-code",
+  "changeType": "default-behavior",
+  "kind": "compile-error",
+  "stale": [
+    "\\b(?:setValue|register|getValues|resetField|getFieldState)\\(\\s*`[^`]*\\.answers\\.\\$\\{[^}]+\\}\\.(?:correct|text)`"
+  ],
+  "deprecated": [],
+  "newApi": [
+    "10 segments",
+    "depth",
+    "segments deep",
+    "levels deep"
+  ],
+  "oracle": "Since react-hook-form 7.83, Path/FieldPath types stop at 10 segments, so a field 11+ segments deep isn't a valid name for setValue/register; set a shallower parent (e.g. the whole array) or cast the name."
+}

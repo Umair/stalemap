@@ -1,0 +1,13 @@
+{
+  "title": "preact 11: compat's unitless style list changed, so numeric fillOpacity in a style object now gets px",
+  "template": "latest",
+  "change": "preact@11.0.0/compat-non-dimensional-props",
+  "package": "preact",
+  "scenario": "new-code",
+  "changeType": "default-behavior",
+  "kind": "type-checks",
+  "stale": ["\\b(?:fill|stroke|stop|flood)Opacity\\s*:\\s*(?:Math\\.|\\d|\\.\\d|\\(?\\s*[\\w.$]+\\s*\\/)"],
+  "deprecated": [],
+  "newApi": ["\\bString\\(", "toFixed", "fill-opacity", "fillOpacity"],
+  "oracle": "In Preact 11, preact/compat's list of unitless style properties changed: numeric fillOpacity/strokeOpacity/stopOpacity in a style object now get 'px' and are dropped; pass a string or use the fillOpacity attribute."
+}

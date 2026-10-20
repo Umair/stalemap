@@ -1,0 +1,13 @@
+{
+  "title": "react-dom 19.3: streaming server renderers no longer call onAllReady after the shell errors",
+  "template": "latest",
+  "change": "react@19.3.0/ssr-no-onallready-after-shell-error",
+  "package": "react",
+  "scenario": "new-code",
+  "changeType": "default-behavior",
+  "kind": "type-checks",
+  "stale": ["^(?![\\s\\S]*\\bonShellError\\b)(?=[\\s\\S]*\\brenderToPipeableStream\\b)(?=[\\s\\S]*\\bonAllReady\\b)"],
+  "deprecated": [],
+  "newApi": ["onShellError", "prerenderToNodeStream", "renderToReadableStream", "allReady"],
+  "oracle": "Since react-dom 19.3, renderToPipeableStream no longer calls onAllReady after the shell has errored; handle shell failures in onShellError (or catch the rejection of renderToReadableStream/prerender)."
+}

@@ -1,0 +1,13 @@
+{
+  "title": "firebase 13: hybrid inference's default cloud model is gemini-3.5-flash-lite",
+  "template": "latest",
+  "change": "firebase@13.0.0/ai-hybrid-default-model",
+  "package": "firebase",
+  "scenario": "upgrade",
+  "changeType": "default-behavior",
+  "kind": "type-checks",
+  "stale": ["^(?![\\s\\S]*\\binCloudParams\\b)[\\s\\S]*getGenerativeModel\\([^)]*\\bmode\\s*:"],
+  "deprecated": [],
+  "newApi": ["\\binCloudParams\\b", "flash-lite"],
+  "oracle": "In firebase 13 (firebase/ai 3), hybrid inference's default in-cloud model changed from gemini-2.5-flash-lite to gemini-3.5-flash-lite; set inCloudParams: { model } to keep the old one."
+}

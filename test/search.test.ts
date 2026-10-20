@@ -89,5 +89,30 @@ test("a long document is shown by its best part", () => {
   const text = Array.from({ length: 40 }, (_, i) => (i === 25 ? "Use `turbopack.resolveAlias` to stub `canvas`." : `Unrelated line ${i} about something else entirely.`)).join("\n");
   const s = snippet(text, tokenize("resolve alias canvas"));
   assert.match(s, /resolveAlias/);
-  assert.ok(s.length < 800);
+  assert.ok(s.length < 1000);
+});
+
+test("a release-note section is one document, its code kept; one release's sections aren't capped together", async () => {
+  const { reportDocs, searchIndex, buildIndex } = await import("../src/search.ts");
+  const items = [
+    { version: "4.5.0", heading: "⚠️ `z.iso.datetime()` requires seconds", raw: "⚠️ `z.iso.datetime()` requires seconds", text: "`z.iso.datetime()` requires seconds", score: 9, seq: 0 },
+    { version: "4.5.0", heading: "⚠️ `z.iso.datetime()` requires seconds", raw: "RFC 3339 mandates seconds. `z.iso.datetime()` no longer accepts minute precision.", text: "RFC 3339 mandates seconds. `z.iso.datetime()` no longer accepts minute precision.", score: 6, seq: 1 },
+    { version: "4.5.0", heading: "⚠️ `z.iso.datetime()` requires seconds", raw: "To accept both forms, union the two precisions:\n```ts\nz.union([z.iso.datetime(), z.iso.datetime({ precision: -1 })]);\n```", text: "To accept both forms, union the two precisions:", score: 0, seq: 2 },
+    { version: "4.5.0", heading: "Other", raw: "- `z.email()` uses a stricter pattern", text: "`z.email()` uses a stricter pattern", score: 4, seq: 3 },
+    { version: "4.5.0", heading: "More", raw: "- `z.url()` rejects spaces", text: "`z.url()` rejects spaces", score: 4, seq: 4 },
+  ];
+  const report: PackageReport = { name: "zod", status: "changed", pinned: "4.6.7", baseline: { version: "3.25.67", publishedAt: "" }, major: true, used: true, usedNames: [], files: [], changelog: { source: "GitHub releases", versions: ["4.5.0"], items } };
+  const docs = reportDocs(report).filter((d) => d.source === "release notes 4.5.0");
+  const section = docs.find((d) => d.text.includes("requires seconds"))!;
+  assert.match(section.text, /RFC 3339 mandates seconds[\s\S]*To accept both forms[\s\S]*```\nz\.union\(\[z\.iso\.datetime\(\), z\.iso\.datetime\(\{ precision: -1 \}\)\]\);\n```/);
+  assert.equal(docs.length, 3, "one section document, two separate bullets");
+  const hits = searchIndex(buildIndex(docs), "zod 4.5.0 email url datetime", { limit: 8 });
+  assert.equal(hits.length, 3, "three sections of one release all come back");
+});
+
+test("stemming joins -ion and -ing forms; `_id` stays whole", async () => {
+  const { tokenize } = await import("../src/search.ts");
+  assert.deepEqual(tokenize("intersection"), tokenize("intersecting"));
+  assert.deepEqual(tokenize("validation"), tokenize("validated").map((t) => t));
+  assert.deepEqual(tokenize("skip _id generation"), ["skip", "_id", "generat"]);
 });

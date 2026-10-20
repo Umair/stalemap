@@ -1,0 +1,1 @@
+We upgraded ESLint from 10.4 to 10.13, and `npm run lint` now fails on `src/jobs/runner.js`. Make lint pass again without loosening `eslint.config.js`, and keep jobs, locks and the after-listeners working as they do now.

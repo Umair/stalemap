@@ -1,0 +1,13 @@
+{
+  "title": "@tanstack/react-query 5.102: experimental_prefetchInRender and useQuery().promise removed",
+  "template": "latest",
+  "change": "@tanstack/react-query@5.102.0/prefetch-in-render-removed",
+  "package": "@tanstack/react-query",
+  "scenario": "upgrade",
+  "changeType": "breaking",
+  "kind": "compile-error",
+  "stale": ["\\b(?:experimental_)?prefetchInRender\\b", "\\{[^}]*\\bpromise\\b[^}]*\\}\\s*=\\s*use(?:Infinite)?Query\\b", "use(?:Infinite)?Query\\([^;]*\\)\\s*\\.\\s*promise\\b"],
+  "deprecated": [],
+  "newApi": ["\\buseSuspenseQuery\\b"],
+  "oracle": "@tanstack/react-query 5.102 removed the experimental_prefetchInRender option and the promise on useQuery/useInfiniteQuery results; to suspend while loading, use useSuspenseQuery (or a stable promise from queryClient.query())."
+}

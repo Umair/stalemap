@@ -1,0 +1,1 @@
+We upgraded Vitest from 4 to 5, and the coverage report now includes the generated API client in `src/api/generated/` and our `*.stories.ts` files, which it used to leave out. Fix `vitest.config.ts` so coverage covers the same files as before the upgrade.

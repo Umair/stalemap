@@ -1,0 +1,1 @@
+Implement `createAuth(db)` in `src/auth.ts` with better-auth so users can sign up and sign in with email and password, keeping their accounts and sessions in the SQLite database our app opens in `src/db.ts`. Those tables are owned by our own migrations and must stay exactly as they are; better-auth should use them as they are.

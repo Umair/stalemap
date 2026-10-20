@@ -1,0 +1,1 @@
+Make the help widget in `src/HelpWidget.tsx` open and close its shortcuts panel when the user presses `?`, binding the key with `bindKey` from `src/keyboard.ts`. Partner pages remove the widget with the function `mountHelpWidget` (`src/embed.tsx`) returns and often bind `?` for their own help right after that call, so by the time it returns the widget must have let go of the key.

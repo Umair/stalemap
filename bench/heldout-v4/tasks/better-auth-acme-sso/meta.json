@@ -1,0 +1,13 @@
+{
+  "title": "better-auth 1.7: generic OAuth sign-in with a provider that rejects PKCE",
+  "template": "latest",
+  "change": "better-auth@1.7.0/generic-oauth-pkce-default",
+  "package": "better-auth",
+  "scenario": "new-code",
+  "changeType": "default-behavior",
+  "kind": "type-checks",
+  "stale": ["^(?![\\s\\S]*\\bpkce\\s*:\\s*false\\b)[\\s\\S]*\\bgenericOAuth\\s*\\("],
+  "deprecated": [],
+  "newApi": ["\\bpkce\\b", "\\bPKCE\\b", "code_challenge", "code_verifier"],
+  "oracle": "Since better-auth 1.7 generic OAuth providers default pkce to true and send code_challenge/code_verifier; set pkce: false in the provider config for servers that reject PKCE."
+}

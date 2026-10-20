@@ -1,0 +1,13 @@
+{
+  "title": "jest 30.5: @jest/source-map getCallsite() deprecated",
+  "template": "latest",
+  "change": "jest@30.5.0/source-map-getcallsite-deprecated",
+  "package": "jest",
+  "scenario": "new-code",
+  "changeType": "deprecation",
+  "kind": "type-checks",
+  "stale": ["import\\s*(?:type\\s*)?\\{[^}]*\\bgetCallsite\\b[^}]*\\}\\s*from\\s*[\"']@jest/source-map[\"']", "\\{[^}]*\\bgetCallsite\\b[^}]*\\}\\s*=\\s*require\\(\\s*[\"']@jest/source-map[\"']"],
+  "deprecated": ["import\\s*(?:type\\s*)?\\{[^}]*\\bgetCallsite\\b[^}]*\\}\\s*from\\s*[\"']@jest/source-map[\"']", "\\{[^}]*\\bgetCallsite\\b[^}]*\\}\\s*=\\s*require\\(\\s*[\"']@jest/source-map[\"']"],
+  "newApi": ["\\bSourceMapSupport\\b"],
+  "oracle": "In jest 30.5, @jest/source-map's standalone getCallsite() export is @deprecated; create a SourceMapSupport instance and call its getCallsite(level, sourceMaps) method instead."
+}

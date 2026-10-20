@@ -1,0 +1,13 @@
+{
+  "title": "stripe 23: Stripe.ErrorType removed, use Stripe.errors",
+  "template": "latest",
+  "change": "stripe@23.0.0/errortype-removed",
+  "package": "stripe",
+  "scenario": "new-code",
+  "changeType": "breaking",
+  "kind": "compile-error",
+  "stale": ["\\bStripe\\.ErrorType\\b", "\\bErrorType\\.Stripe\\w*Error\\b"],
+  "deprecated": [],
+  "newApi": ["Stripe\\.errors\\.", "\\berrors\\.StripeCardError\\b"],
+  "oracle": "In stripe 23 the Stripe.ErrorType type namespace is removed; annotate errors with Stripe.errors instead, e.g. Stripe.errors.StripeCardError."
+}

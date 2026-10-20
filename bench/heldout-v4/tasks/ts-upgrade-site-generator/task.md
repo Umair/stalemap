@@ -1,0 +1,1 @@
+We upgraded TypeScript in our blog's site generator from 6.0 to 7.0, and `tsc` now fails in the legacy helpers `src/legacy/slugify.cjs` and `src/legacy/dates.cjs` and in `src/site.ts`, which uses them. Fix the helpers so the project type-checks again with their types intact; the old Node scripts in `scripts/` still `require()` them, so what each module exports must stay the same.

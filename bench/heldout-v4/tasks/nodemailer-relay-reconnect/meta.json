@@ -1,0 +1,13 @@
+{
+  "title": "nodemailer 10.1: notice when the relay drops an idle SMTP connection",
+  "template": "latest",
+  "change": "nodemailer@10.1.0/idle-close-emits-end-only",
+  "package": "nodemailer",
+  "scenario": "new-code",
+  "changeType": "default-behavior",
+  "kind": "type-checks",
+  "stale": ["ECONNECTION[^\\n]*(?:\\n[^\\n]*){0,4}?onDisconnect", "\\.on\\(\\s*[\"']error[\"']\\s*,[^\\n]*\\n(?:[^\\n]*\\n){0,4}?[^\\n]*onDisconnect"],
+  "deprecated": [],
+  "newApi": ["[\"']end[\"']"],
+  "oracle": "Since nodemailer 10.1 an SMTPConnection whose server closes it while idle (or sends an idle 421) emits only 'end', no ECONNECTION 'error'; detect drops on 'end' and track your own close() to tell them apart."
+}

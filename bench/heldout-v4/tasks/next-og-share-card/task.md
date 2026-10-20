@@ -1,0 +1,1 @@
+Implement the share-card endpoint in `app/api/og/route.tsx` that our blog posts use as their og:image: a GET that returns a 1200×630 PNG showing the `title` query parameter (or "Acme Blog" when there is none) in large text on a dark background. Use what Next.js provides for generating images; don't add dependencies. We keep this codebase free of deprecated APIs.

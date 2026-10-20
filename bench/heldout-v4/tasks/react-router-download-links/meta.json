@@ -1,0 +1,13 @@
+{
+  "title": "React Router 8.3: release download links",
+  "template": "latest",
+  "change": "react-router@8.3.0/path-params-rfc3986-encoding",
+  "package": "react-router",
+  "scenario": "new-code",
+  "changeType": "default-behavior",
+  "kind": "type-checks",
+  "stale": ["^(?![\\s\\S]*(?:%2B|encodeURIComponent))[\\s\\S]*\\b(?:generatePath|href)\\s*\\(\\s*[\"'`]/releases/:\\w+/:\\w+[\"'`]"],
+  "deprecated": [],
+  "newApi": ["RFC ?3986", "%2B", "encodeURIComponent", "generatePath", "\\bhref\\("],
+  "oracle": "Since React Router 8.3, `generatePath()` and `href()` encode params with RFC 3986 path rules, leaving `$ & + , ; = : @` literal (`1.0.0+1` stays `1.0.0+1`); encode `+` yourself where a server reads it as a space."
+}

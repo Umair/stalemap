@@ -1,0 +1,13 @@
+{
+  "title": "firebase 13: LiveSession.sendMediaChunks() removed",
+  "template": "latest",
+  "change": "firebase@13.0.0/ai-deprecated-apis-removed",
+  "package": "firebase",
+  "scenario": "new-code",
+  "changeType": "breaking",
+  "kind": "compile-error",
+  "stale": ["\\bsendMedia(?:Chunks|Stream)\\s*\\("],
+  "deprecated": [],
+  "newApi": ["\\bsendAudioRealtime\\b"],
+  "oracle": "In firebase 13 (firebase/ai 3), LiveSession.sendMediaChunks() and sendMediaStream() are removed; send microphone audio with session.sendAudioRealtime({ mimeType, data }) per chunk."
+}

@@ -1,0 +1,1 @@
+We upgraded TypeScript in our storefront from 6.0 to 7.0, and `tsc` now fails on `src/legacy/shipping.js`, the old rates module that `src/checkout.ts` uses. Fix the legacy module, which must stay plain JavaScript, rather than the TypeScript that calls it, so the project type-checks again with the module's types intact and its behavior unchanged.

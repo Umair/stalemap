@@ -1,0 +1,13 @@
+{
+  "title": "firebase 12.18: Imagen APIs removed from firebase/ai",
+  "template": "latest",
+  "change": "firebase@12.18.0/ai-imagen-removed",
+  "package": "firebase",
+  "scenario": "new-code",
+  "changeType": "breaking",
+  "kind": "compile-error",
+  "stale": ["\\bget(?:Template)?ImagenModel\\b", "\\bImagen\\w*\\b", "\\bgenerateImages\\s*\\("],
+  "deprecated": [],
+  "newApi": ["\\bImagen\\b", "\\bimage\\s+model", "responseModalities", "flash-image"],
+  "oracle": "Since firebase 12.18, firebase/ai has no Imagen APIs (getImagenModel, ImagenModel, …); generate images with a Gemini image model via getGenerativeModel and read the inlineData parts."
+}

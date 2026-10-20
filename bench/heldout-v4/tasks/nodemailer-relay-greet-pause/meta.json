@@ -1,0 +1,13 @@
+{
+  "title": "nodemailer 10.1: SMTP relay with a greet pause after the upgrade",
+  "template": "latest",
+  "change": "nodemailer@10.1.0/connection-timeout-covers-setup",
+  "package": "nodemailer",
+  "scenario": "upgrade",
+  "changeType": "default-behavior",
+  "kind": "type-checks",
+  "stale": ["connectionTimeout\\s*:\\s*(?:[12]_?\\d{3}|\\d{1,3})\\s*[,}\\n]"],
+  "deprecated": [],
+  "newApi": ["connectionTimeout"],
+  "oracle": "Since nodemailer 10.1, connectionTimeout bounds the whole setup (DNS, TCP, TLS and the server greeting), not just the TCP connect; set it above the time the server takes to greet, greetingTimeout alone no longer covers it."
+}

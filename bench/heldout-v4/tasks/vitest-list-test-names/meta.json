@@ -1,0 +1,13 @@
+{
+  "title": "vitest 5: experimental_parseSpecifications and experimental_clearCache deprecated",
+  "template": "latest",
+  "change": "vitest@5.0.0/experimental-api-methods-deprecated",
+  "package": "vitest",
+  "scenario": "new-code",
+  "changeType": "deprecation",
+  "kind": "type-checks",
+  "stale": ["\\bexperimental_(?:parseSpecifications|clearCache)\\b"],
+  "deprecated": ["\\bexperimental_(?:parseSpecifications|clearCache)\\b"],
+  "newApi": ["(?<!experimental_)\\bparseSpecifications\\b", "\\bclearCache\\b"],
+  "oracle": "In Vitest 5, the Vitest methods experimental_parseSpecifications and experimental_clearCache are deprecated aliases that log a warning; call parseSpecifications and clearCache instead."
+}

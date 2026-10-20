@@ -1,0 +1,20 @@
+{
+  "title": "ESLint 10.11: object-shorthand ignoreConstructors now covers quoted keys",
+  "template": "latest",
+  "change": "eslint@10.11.0/object-shorthand-ignoreconstructors-quoted",
+  "package": "eslint",
+  "scenario": "upgrade",
+  "changeType": "default-behavior",
+  "kind": "type-checks",
+  "stale": [
+    "eslint-disable(-next-line|-line)?\\s+[^\\n]*object-shorthand"
+  ],
+  "deprecated": [],
+  "newApi": [
+    "ignoreConstructors",
+    "eslint-disable",
+    "[Uu]nused",
+    "quoted"
+  ],
+  "oracle": "Since ESLint 10.11, object-shorthand's ignoreConstructors also skips quoted capitalized keys (\"Foo\": function () {}), so eslint-disable comments added for them are now unused; remove them."
+}

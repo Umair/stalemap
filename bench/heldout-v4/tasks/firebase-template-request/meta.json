@@ -1,0 +1,13 @@
+{
+  "title": "firebase 13: TemplateGenerativeModel.generateContent() takes a TemplateRequest object",
+  "template": "latest",
+  "change": "firebase@13.0.0/ai-template-request-object",
+  "package": "firebase",
+  "scenario": "new-code",
+  "changeType": "breaking",
+  "kind": "compile-error",
+  "stale": ["\\.generateContent(?:Stream)?\\(\\s*[\"'`]"],
+  "deprecated": [],
+  "newApi": ["\\btemplateId\\b", "\\btemplateVariables\\b", "\\bTemplateRequest\\b"],
+  "oracle": "In firebase 13 (firebase/ai 3), TemplateGenerativeModel.generateContent()/generateContentStream() take one object, { templateId, templateVariables, toolConfig? }, instead of (templateId, variables)."
+}

@@ -1,0 +1,1 @@
+Add "Sign in with Microsoft" to `src/auth.ts`: customers should be able to use a work or school account from any organization, or a personal Microsoft account. The app registration's credentials are in `MS_CLIENT_ID` and `MS_CLIENT_SECRET`; keep the existing staff sign-in working.

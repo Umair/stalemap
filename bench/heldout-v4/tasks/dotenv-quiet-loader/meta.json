@@ -1,0 +1,13 @@
+{
+  "title": "dotenv 18: options passed to config() beat DOTENV_CONFIG_* variables",
+  "template": "latest",
+  "change": "dotenv@18.0.0/code-options-beat-env-vars",
+  "package": "dotenv",
+  "scenario": "new-code",
+  "changeType": "default-behavior",
+  "kind": "type-checks",
+  "stale": ["^(?![\\s\\S]*process\\.env\\.DOTENV_)(?![\\s\\S]*\\bDOTENV_CONFIG_(?:QUIET|DEBUG)\\b[^\\n]*=\\s*process\\.env)[\\s\\S]*\\bquiet:\\s*true\\b"],
+  "deprecated": [],
+  "newApi": ["precedence", "take over", "win over", "options passed"],
+  "oracle": "Since dotenv 18, options passed to config() win over DOTENV_* / DOTENV_CONFIG_* variables; to let ops override quiet/debug from the environment, read those variables yourself or leave the option out."
+}

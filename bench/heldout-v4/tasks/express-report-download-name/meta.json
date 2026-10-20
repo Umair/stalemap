@@ -1,0 +1,13 @@
+{
+  "title": "express 5.3: reading the download filename an express API suggests",
+  "template": "latest",
+  "change": "express@5.3.0/content-disposition-unquoted-token",
+  "package": "express",
+  "scenario": "new-code",
+  "changeType": "default-behavior",
+  "kind": "type-checks",
+  "stale": ["filename=\"\\((?![^\\n]*\\|\\s*filename=)"],
+  "deprecated": [],
+  "newApi": ["unquoted", "\\btoken\\b", "filename=(?!\")"],
+  "oracle": "Since express 5.3, res.attachment(), res.download() and res.sendFile() send Content-Disposition filenames that are valid HTTP tokens without quotes (filename=report.csv); parse both quoted and bare values."
+}

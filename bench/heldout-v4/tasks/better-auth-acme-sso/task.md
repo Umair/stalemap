@@ -1,0 +1,1 @@
+Let people sign in with Acme SSO in `src/auth.ts` (better-auth), using the provider id `acme`; the server's endpoints, scopes and quirks are in `docs/acme-sso.md`, and its URL and client credentials come from the variables in `.env.example`. A first sign-in should create the user from Acme's user info (email, name, verified email).

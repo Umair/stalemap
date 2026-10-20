@@ -72,3 +72,11 @@ test("renamePairs reads config paths and 'deprecate X and recommend Y'", () => {
     [["experimental.dynamicIO", "experimental.cacheComponents"], ["middleware", "proxy"]],
   );
 });
+
+test("a CHANGELOG that stops before the pinned minor counts as lagging; pull request references are read from an item", async () => {
+  const { lagsBehind, pullRequestRefs } = await import("../src/changelog.ts");
+  assert.equal(lagsBehind([{ version: "1.19.0", body: "" }, { version: "1.18.0", body: "" }], "1.20.0"), true);
+  assert.equal(lagsBehind([{ version: "1.20.0", body: "" }], "1.20.3"), false, "a patch behind is normal");
+  assert.equal(lagsBehind([{ version: "1.19.0", body: "" }], "2.0.0-beta.1"), false, "prereleases aren't expected in a CHANGELOG");
+  assert.deepEqual(pullRequestRefs("Hardened option reads; see the PR. (#11141) [#84391](https://github.com/vercel/next.js/pull/84391)"), [11141, 84391]);
+});

@@ -1,0 +1,1 @@
+We upgraded TypeScript in our status-badge component library from 6.0 to 7.0, and `tsc` now fails before it checks any of our code. Fix the project so it type-checks again; the components and formatters must keep rendering exactly as they do now.

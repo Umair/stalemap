@@ -24,10 +24,12 @@ Coding agents learn libraries from training data that stops at a cutoff date. Wh
 stalemap finds the dependencies that changed after your model's training cutoff and tells the agent what changed, in three ways:
 
 - **Notes:** a short, ranked list of changes written into `AGENTS.md` or `CLAUDE.md`, so the agent reads it before it starts.
-- **Edit-time guard:** after each edit, a type-check of the edited file against your installed versions. If the code uses an API that changed after the cutoff, the agent gets the compiler error and the matching note right away.
+- **Edit-time guard:** after each edit, the project's own type-check. If the code uses an API that changed after the cutoff, the agent gets the compiler error and the matching note (or the release-note or upgrade-guide section that explains it) right away. It also reports the code that still compiles but uses something that moved.
 - **`search_changes`:** an MCP tool the agent can ask in its own words, such as "resolve alias in next.config", to get the matching changes with their sources.
 
 It works for JavaScript and TypeScript projects, with Claude Code, Cursor, Codex, OpenCode or any MCP client.
+
+**In a blind, pre-registered benchmark** of 66 tasks built from changes released after June 2026, `claude-sonnet-5-5` agents passed **89%** of sessions with stalemap, against **68%** with no help and **73%** with a plain `tsc --noEmit` hook after each edit. See [Results](#results).
 
 <p align="center">
   <img src=".github/assets/how-it-works.svg" alt="Your pinned versions, what your code uses and your model's cutoff go in; stalemap diffs types, release notes and upgrade guides; your agent gets notes at session start, a guard after each edit, and search_changes on demand." width="100%">
@@ -35,7 +37,7 @@ It works for JavaScript and TypeScript projects, with Claude Code, Cursor, Codex
 
 ## Status
 
-- **npm:** the latest release is [`stalemap` 0.3.1](https://www.npmjs.com/package/stalemap). `npx stalemap`, the Claude Code plugin and the GitHub Action all run it. See the [changelog](CHANGELOG.md).
+- **npm:** the latest release is [`stalemap` 0.4.0](https://www.npmjs.com/package/stalemap), the build tested in held-out v4. `npx stalemap`, the Claude Code plugin and the GitHub Action all run it. See the [changelog](CHANGELOG.md).
 - The project is early, and maintained by one person.
 
 ## Install
@@ -127,7 +129,17 @@ Full output: [examples/next-ai-app.claude-sonnet-4-5.md](examples/next-ai-app.cl
    - **Verified examples** (`--examples`): a Before → After line under the top notes, written by Claude and kept only if it compiles against the version you pin.
 5. **Fit the budget.** Notes about what your project uses come first: imported APIs, members and props, config keys it sets, file names. The default budget is 1,800 tokens (`--budget`).
 
-**The guard** runs after each edit. It reports compile errors in the edited file that come from a dependency that changed after the cutoff, with the matching note as the fix. It also reports a few things that still type-check: config keys that moved (`experimental.ppr` in Next 16), renamed file conventions (`middleware.ts` → `proxy.ts`), and `tsconfig.json` options the project's TypeScript rejects. Other errors in your code are left alone. Deprecations are reported only with `STALEMAP_GUARD_DEPRECATIONS=1`.
+**The guard** runs after each edit. It runs the project's own `tsc` and reports what it finds, in this order:
+
+1. Compile errors that come from a dependency that changed after the cutoff, with the matching note as the fix. When no note explains the error, it shows the matching section from the package's type changes, release notes or upgrade guide, found by searching with the error and the code around it.
+2. Things that still type-check but changed:
+   - config keys that moved (`experimental.ppr` in Next 16);
+   - moved members (`HttpStatusCode.PayloadTooLarge` → `ContentTooLarge` in axios 1.20);
+   - renamed file conventions (`middleware.ts` → `proxy.ts`);
+   - `tsconfig.json` options the project's TypeScript rejects.
+3. The compiler's other errors: in the edited file, new ones in files that import it, and a few elsewhere. These don't claim a dependency changed.
+
+So a plain type-check hook is a subset of the guard. `STALEMAP_GUARD_TSC=0` limits the guard to dependency changes. Deprecations are reported only with `STALEMAP_GUARD_DEPRECATIONS=1`.
 
 **`search_changes`** (also `stalemap search <query>`) searches everything stalemap found for the project's dependencies: every type change, every release-note item, cached upgrade-guide notes and, for a new major, the guides' text. Ranking is BM25 over words and split identifiers (`resolveAlias` matches "resolve alias"), weighted toward what the project uses. The first search builds an index from the analysis caches; later ones are offline and fast.
 
@@ -147,35 +159,53 @@ Caches live in `~/.cache/stalemap` (`$STALEMAP_CACHE` moves them).
 
 ## Results
 
-All results come from headless Claude Code sessions with one model, `claude-sonnet-4-5` (cutoff July 2025), graded by hidden tests the agent never sees. Each task is run in two modes: one-shot (file tools only) and checks (the agent can also run `npm test` and `tsc`). Intervals are 95% bootstrap intervals over tasks, and a difference counts as a win only when its interval excludes zero.
+<p align="center">
+  <img src=".github/assets/results-v4.svg" alt="Held-out v4: claude-sonnet-5-5 passed 68% with no help, 73% with a plain tsc hook, 89% with stalemap, 98% with a one-line hint; claude-sonnet-4-5 passed 46%, 53%, 64% and 78%" width="100%">
+</p>
 
-**Held-out v3** ([results](bench/heldout-v3/RESULTS.md), [protocol](bench/heldout-v3/PROTOCOL.md)): blind and pre-registered, 59 tasks sampled from post-cutoff changes in popular packages, 3 sessions per task, arm and mode, frozen build `c324be8`.
+Every result comes from headless Claude Code sessions graded by hidden tests the agent never sees. Each task is run in two modes: one-shot (file tools only) and checks (the agent can also run `npm test` and `tsc`). Intervals come from a two-level bootstrap (tasks, then runs). A difference counts as a win only when its interval excludes zero.
 
-| setup | pass rate, both modes |
-|---|---|
-| agent alone | 43% |
-| + stalemap (notes and edit-time guard) | 53% |
-| + a plain `tsc --noEmit` hook after each edit, no notes (exploratory) | 55% |
-| + a one-line hand-written hint naming the change (exploratory ceiling) | 91% |
+**Held-out v4** ([protocol](bench/heldout-v4/PROTOCOL.md), [results for `claude-sonnet-5-5`](bench/heldout-v4/RESULTS-claude-sonnet-5-5.md), [for `claude-sonnet-4-5`](bench/heldout-v4/RESULTS-claude-sonnet-4-5.md)) is blind and pre-registered:
 
-- **stalemap helped:** +10.2 points over no help, interval [2.8, 18.1]. This was the pre-registered primary comparison, and it was a win.
-- **It did not beat a plain type-check hook:** −2.0 points [−11.0, 7.1], a tie. Much of what the guard does, a `tsc` hook also does.
-- **It cost a little more** than no help (median $0.091 vs $0.078 per session, 8 vs 7 turns), and it didn't reduce stale first edits (34% vs 35%). Both were pre-registered criteria, and both were missed.
-- The hint arm shows how far the notes are from what a note could do.
-- Results against third-party tools are withheld pending permission.
+- 66 tasks sampled by seed from every breaking, deprecation and behavior change that 33 popular npm packages released between July and October 2026;
+- 3 sessions per task, arm, mode and model;
+- the build frozen as `freeze/v4-final` before any v4 result existed.
 
-**Earlier suites:**
+| setup | `claude-sonnet-5-5` | `claude-sonnet-4-5` |
+|---|---|---|
+| agent alone | 68% | 46% |
+| + a plain `tsc --noEmit` hook after each edit | 73% | 53% |
+| **+ stalemap** (notes, edit-time guard, `search_changes`) | **89%** | **64%** |
+| + a one-line hand-written hint naming the change (ceiling) | 98% | 78% |
 
-- [Held-out v1](bench/heldout/RESULTS.md) (pre-registered, 10 tasks): 83% vs 50% alone, +33 points [12, 57], a win.
-- [Held-out v2](bench/heldout-v2/RESULTS.md) (blind, 10 tasks): 35% vs 23% alone, +12 points [−3, 30], a tie. The notes named only 1 of the 10 target changes.
+All four pre-registered comparisons were wins:
 
-**Since v3 (in 0.3.0, not a claim).** After v3, three problems found in its transcripts were fixed: the guard now asks the project's own TypeScript (v3's TypeScript 7 tasks got no compiler-option checks before), notes are selected by what the project uses, and `search_changes` was added. A post-hoc development check re-ran the 29 v3 tasks where stalemap did worst, with the old and the new build side by side: 25% → 55%. Those tasks were picked because stalemap did badly on them, and the new build was tuned with v3 in view, so this shows the fixes work where they were aimed, not that they generalize. That needs a new blind suite.
+| comparison | model | difference | interval |
+|---|---|---|---|
+| stalemap vs alone (primary) | `claude-sonnet-5-5` | +20.7 points | [13.6, 28.3] (95%) |
+| stalemap vs `tsc` hook | `claude-sonnet-5-5` | +16.4 points | [7.6, 26.0] (98.3%) |
+| stalemap vs alone | `claude-sonnet-4-5` | +17.9 points | [7.6, 28.8] (98.3%) |
+| stalemap vs `tsc` hook | `claude-sonnet-4-5` | +10.6 points | [0.3, 21.7] (98.3%) |
+
+- **One-shot is where it matters most:** on `claude-sonnet-5-5`, 89% vs 60% with no help. With checks, it's 89% vs 77%.
+- **Fewer stale edits:** the agent's first edit used a stale API in 11% of `claude-sonnet-5-5` sessions with stalemap, vs 27% with no help.
+- **Cost:**
+  - `claude-sonnet-5-5`: median $0.050 vs $0.041 per session with no help, with about the same turns (7 vs 8).
+  - `claude-sonnet-4-5`: higher, at $0.124 vs $0.085 and 79 s vs 47 s.
+- **A current model still needs it.** Even `claude-sonnet-5-5` failed a third of these tasks on its own, and a one-line hint fixed almost all of them. stalemap closes about two-thirds of that gap.
+- Results against third-party tools aren't published.
+
+**Earlier suites** (all `claude-sonnet-4-5`):
+
+- [Held-out v1](bench/heldout/RESULTS.md) (pre-registered, 10 tasks): 83% vs 50% alone, a win.
+- [Held-out v2](bench/heldout-v2/RESULTS.md) (blind, 10 tasks): 35% vs 23% alone, a tie.
+- [Held-out v3](bench/heldout-v3/RESULTS.md) (blind, 59 tasks): 53% vs 43% alone, a win. It tied a plain `tsc` hook. The changes in 0.3 and 0.4 came from what v3's transcripts showed: the guard didn't run the project's own TypeScript, notes and search lost the fix text, and search wasn't used enough. v4 is the first blind test of those changes.
 
 **What to keep in mind:**
 
-- **One model.** Newer models with later cutoffs have smaller gaps.
-- **Same author.** stalemap, the harness and the protocols have one author. The v2 and v3 tasks were written by separate sessions that didn't see stalemap's notes or its notes and guard code. The tasks, their hidden tests and the result files are in `bench/` for you to check (v3's per-session results are in [`bench/results/2026-10-19-heldout-v3/`](bench/results/2026-10-19-heldout-v3/), without the third-party arms).
-- **Pre-registered vs post-hoc.** Only the comparisons fixed in a protocol before a run are claims. Anything tuned on a suite after seeing its results is labeled post-hoc.
+- **Same author.** stalemap, the harness and the protocols have one author. The v4 tasks were written by a separate session that never saw stalemap's code, notes or results. An independent, equally blind reviewer checked them and applied the pilot rule. The tasks, hidden tests, sampling files, review, pilot and per-session results are in `bench/` for you to check.
+- **JavaScript and TypeScript, two Claude models.** Other agents and models weren't measured.
+- **Pre-registered vs post-hoc.** Only the comparisons fixed in a protocol before a run are claims. The changes made after v3 were post-hoc, which is why v4 was needed.
 
 ## Limits
 
@@ -184,8 +214,7 @@ All results come from headless Claude Code sessions with one model, `claude-sonn
 - Usage tracking stops at imported names and `x.member` accesses; instance chains like `client.messages.create({ temperature })` aren't traced.
 - Behavior changes that never reach a type signature come only from release notes and (with `--guides`) upgrade guides. If neither names the setting, stalemap can't either.
 - Ranking release notes is heuristic and noisy for prose-heavy changelogs.
-- Agents sometimes ignore correct notes. The guard catches what fails to compile; it can't catch stale code that still compiles unless a note covers it.
-- Measured on one model only.
+- Agents sometimes ignore correct notes. The guard catches what fails to compile and some of what still compiles (moved keys and members, renamed files); other stale code that still compiles is caught only if a note covers it.
 
 ## Run the benchmark
 
@@ -193,14 +222,14 @@ The harness, the tasks, the protocols and the results are in [`bench/`](bench/RE
 
 ```bash
 npm install && npm run build
-mkdir -p bench/.work/template-heldout-v3-latest && cp bench/heldout-v3/templates/latest/*.json bench/.work/template-heldout-v3-latest/
-(cd bench/.work/template-heldout-v3-latest && npm install --ignore-scripts)
-npx tsx bench/heldout-v3/validate.ts      # reference solutions pass, stale versions fail
-npx tsx bench/run.ts --suite heldout-v3 --arms alone,stalemap-guard,tsc-hook,oracle --examples --reps 3
+mkdir -p bench/.work/template-heldout-v4-latest && cp bench/heldout-v4/templates/latest/*.json bench/.work/template-heldout-v4-latest/
+(cd bench/.work/template-heldout-v4-latest && npm install --ignore-scripts)
+npx tsx bench/heldout-v4/validate.ts      # reference solutions pass, stale versions fail
+npx tsx bench/run.ts --suite heldout-v4 --model claude-sonnet-5-5 --arms alone,stalemap-full,tsc-hook,oracle --examples --guides --reps 3
 npx tsx bench/analyze.ts bench/results/<dir>
 ```
 
-Sessions run on whatever Claude Code is signed in with, and a full v3 run is a few thousand sessions, so start with `--reps 1` or `--tasks`. Transcripts go to `bench/results/<dir>/runs/`, which is git-ignored. See [bench/README.md](bench/README.md) for the arms, isolation, sharding and costs.
+Sessions run on whatever Claude Code is signed in with, and a full v4 run is about 1,600 sessions per model, so start with `--reps 1` or `--tasks`. Transcripts go to `bench/results/<dir>/runs/`, which is git-ignored. See [bench/README.md](bench/README.md) for the arms, isolation, sharding and costs.
 
 ## Development
 

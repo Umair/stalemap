@@ -1,5 +1,22 @@
 # Changelog
 
+## 0.4.0
+
+This is the build tested in the blind held-out v4 benchmark ([results](bench/heldout-v4/RESULTS-claude-sonnet-5-5.md)): 66 tasks from changes released after June 2026, with `claude-sonnet-5-5` and `claude-sonnet-4-5`. On `claude-sonnet-5-5`, agents with stalemap passed 89% of sessions, against 68% with no help and 73% with a plain `tsc --noEmit` hook. Both comparisons were pre-registered, and both were wins.
+
+- **The guard reports everything the compiler does.** After every code edit it runs the project's own `tsc` and lists all its errors: first the ones a changed dependency explains, with stalemap's note; then the others, without claiming a dependency changed; then new errors in files that import the edited one, and up to five elsewhere. A plain type-check hook is now a subset of the guard. `STALEMAP_GUARD_TSC=0` turns this off.
+- **The guard looks up the fix when no note has it.** For an error a changed package explains but no note covers, it searches that package's type changes, release notes and upgrade-guide sections with the error and the code around it. It shows the best match that names an identifier from the error's line as a "Related change", for example the mongoose 9 migration guide's section on pre middleware without `next()`. `STALEMAP_GUARD_SEARCH=0` turns this off.
+- **Moved members are caught** when read as a property: `HttpStatusCode.PayloadTooLarge` → `ContentTooLarge` in axios 1.20 still type-checks, and the guard now reports it.
+- **Edit-time notes** include release-note items whose wording says what changed ("now only rejects…", "no longer…") when the edited code uses one of their names exactly. Specific names rank above common ones.
+- **Better Fix notes:** a note that leads with another function (`literal()`'s options) isn't attached to an error in this one (`z.config`). A type name the error quotes (`'string'`) doesn't pick a note. An error about two compiler options needs a note about both.
+- **`search_changes` keeps the fix with the change:**
+  - Release-note sections are indexed whole, with their code blocks.
+  - Results are capped per section instead of per release, and 8 are returned by default.
+  - Stemming joins "intersection" and "intersecting", and `_id` stays whole.
+- **More release notes:**
+  - A package CHANGELOG that stops before the installed version (axios 1.20.0 ships one that ends at 1.19.0) is completed from GitHub releases.
+  - For a terse or "see the PR" release-note item, search also indexes the pull request's description. `STALEMAP_NO_PRS=1` turns this off.
+
 ## 0.3.1
 
 Docs only; no change to what stalemap does.

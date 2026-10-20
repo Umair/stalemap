@@ -1,0 +1,1 @@
+Our digest worker sends through one long-lived SMTP connection to the internal relay (`src/relay.ts`), and the relay hangs up on connections that sit idle. When the relay drops us, call the `onDisconnect` hook (metrics counts those) and make sure the next `send()` still goes through; closing the relay ourselves with `close()` must not count as a disconnect.

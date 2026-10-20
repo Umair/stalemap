@@ -1,0 +1,16 @@
+{
+  "title": "stripe 22.4: payment intent status is an open enum",
+  "template": "latest",
+  "change": "stripe@22.4.0/open-enums-otherstring",
+  "package": "stripe",
+  "scenario": "new-code",
+  "changeType": "breaking",
+  "kind": "compile-error",
+  "stale": [
+    "^(?![\\s\\S]*\\bdefault\\s*:)[\\s\\S]*\\bcase\\s*[\"'`]requires_payment_method[\"'`]",
+    ":\\s*never\\s*=\\s*(?:intent\\.)?status\\b"
+  ],
+  "deprecated": [],
+  "newApi": ["OtherString", "\\bdefault\\b"],
+  "oracle": "Since stripe 22.4, open enums such as PaymentIntent.status also include OtherString (any string), so a switch over the known values is never exhaustive; add a default branch."
+}

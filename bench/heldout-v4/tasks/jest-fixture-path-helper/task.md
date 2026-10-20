@@ -1,0 +1,1 @@
+Implement `fixturePath()` in `src/testing/fixtures.ts`: it should return the absolute path of the named file inside the `__fixtures__` folder next to whichever source file called it, so any test can find its own fixtures. Use the call-site lookup from `@jest/source-map` (it comes with jest) instead of parsing stack strings, and keep this codebase free of deprecated APIs.

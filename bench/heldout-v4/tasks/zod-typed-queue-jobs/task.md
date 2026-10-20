@@ -1,0 +1,1 @@
+Finish `defineJob` in `src/jobs.ts`: it should accept any zod schema, type the handler's payload as the schema's parsed output, and return a job whose `run(raw)` validates the raw queue data and calls the handler, rejecting invalid data. `src/emails.ts` shows how it's used. We keep this codebase free of deprecated APIs.

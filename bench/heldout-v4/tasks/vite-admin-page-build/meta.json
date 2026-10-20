@@ -1,0 +1,13 @@
+{
+  "title": "vite 8.2: multi-page build input without config-loader warnings",
+  "template": "latest",
+  "change": "vite@8.2.0/config-native-loader-incompat-warnings",
+  "package": "vite",
+  "scenario": "new-code",
+  "changeType": "deprecation",
+  "kind": "type-checks",
+  "stale": ["\\b__dirname\\b", "\\b__filename\\b"],
+  "deprecated": ["\\b__dirname\\b", "\\b__filename\\b"],
+  "newApi": ["import\\.meta\\.(?:dirname|url|filename)", "fileURLToPath", "configLoader", "\\bnative\\b"],
+  "oracle": "Since Vite 8.2, a vite.config that uses __dirname/__filename in ESM, extensionless imports or JSON imports without with { type: 'json' } logs a native-loader warning; use import.meta.dirname instead."
+}

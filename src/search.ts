@@ -6,7 +6,8 @@ import { DEFAULT_LLM_MODEL } from "./llm.js";
 import { resolveModel, type ResolvedModel } from "./models.js";
 import { precomputedEnabled } from "./precomputed.js";
 import { loadProject, type ProjectDep } from "./project.js";
-import { chooseBaseline, getPackument, resolveRange } from "./registry.js";
+import { chooseBaseline, getPackument, resolveRange, type Packument } from "./registry.js";
+import { cleanItemText, pullRequestRefs, pullRequestText, type ChangelogItem } from "./changelog.js";
 import { buildPackageNotes, projectUsage, touches, type ProjectUsage } from "./render.js";
 import { TOOL_VERSION, cacheDir, debug, isoDate, mapLimit, readJson, sha256, truncate, writeJsonAtomic } from "./util.js";
 
@@ -40,7 +41,7 @@ export interface SearchDoc {
 }
 
 /** Bump when the documents built from a report change. */
-const DOCS_FORMAT = 3;
+const DOCS_FORMAT = 4;
 /** Docs built without any guide text are rebuilt after this long: the guides may have been unreachable. */
 const NO_GUIDE_TTL_MS = 24 * 60 * 60 * 1000;
 const SECTION_CHARS = 1400;
@@ -63,6 +64,9 @@ export function stem(w: string): string {
   else if (s.length > 3 && s.endsWith("s") && !/(?:ss|us|is|ias|vas)$/.test(s)) s = s.slice(0, -1);
   if (s.length > 6 && s.endsWith("ing")) s = s.slice(0, -3);
   else if (s.length > 5 && s.endsWith("ed")) s = s.slice(0, -2);
+  // "intersection" meets "intersecting", "validation" meets "validate", "migration" meets "migrated".
+  else if (s.length > 6 && /(?:ct|ss)ion$/.test(s)) s = s.slice(0, -3);
+  else if (s.length > 6 && s.endsWith("ation")) s = s.slice(0, -3);
   if (s.length > 4 && s.endsWith("e")) s = s.slice(0, -1);
   return s;
 }
@@ -75,6 +79,11 @@ export function tokenize(text: string): string[] {
   const out: string[] = [];
   for (const m of text.matchAll(/[@A-Za-z_$][\w$]*(?:[./-][A-Za-z_$][\w$]*)*/g)) {
     const raw = m[0];
+    // `_id`, `_v`: a leading underscore is part of the name. Splitting it would make `_id` match every `id`.
+    if (/^_[A-Za-z]+$/.test(raw)) {
+      out.push(raw.toLowerCase());
+      continue;
+    }
     const parts = raw
       .split(/[./\-_$@]+/)
       .flatMap(splitCamel)
@@ -173,15 +182,113 @@ export function reportDocs(r: PackageReport): SearchDoc[] {
       push({ ...base, kind: "types", source: `type declarations (${entry})`, text: `New exports in \`${entry}\` ${r.pinned}: ${names.slice(i, i + 25).map((n) => `\`${n}\``).join(", ")}.`, prior: 0.8 });
     }
   }
-  for (const i of r.changelog?.items ?? []) {
+  for (const g of releaseNoteGroups(r.changelog?.items ?? [])) {
     // The changelog reader's score: breaking-change wording and code names up, chores down.
-    const prior = i.score >= 6 ? 1.15 : i.score >= 2 ? 1 : i.score >= 0 ? 0.85 : 0.7;
-    push({ ...base, kind: "changelog", source: `release notes ${i.version}`, title: i.heading, text: truncate(i.text, 600), prior });
+    const score = Math.max(...g.map((i) => i.score));
+    const prior = score >= 6 ? 1.15 : score >= 2 ? 1 : score >= 0 ? 0.85 : 0.7;
+    const text = g.length > 1 ? truncate(g.map((i) => searchText(i)).join("\n\n"), SECTION_CHARS) : truncate(searchText(g[0]), 900);
+    push({ ...base, kind: "changelog", source: `release notes ${g[0].version}`, title: g[0].heading, text, prior });
   }
   for (const n of r.guideNotes ?? []) {
     push({ ...base, kind: "guide-note", source: `upgrade guide (${n.source})`, text: `${n.text}${n.quote ? ` Guide: “${truncate(n.quote, 160)}”` : ""}` });
   }
   return docs;
+}
+
+/**
+ * A release-note item as search shows it: its cleaned prose with its code blocks kept. The fix is often
+ * the code ("To accept both forms, union the two precisions:" and then the code).
+ */
+function searchText(i: ChangelogItem): string {
+  if (!i.raw || !/```|~~~/.test(i.raw)) return i.text;
+  const parts = i.raw.split(/^\s*(```[^\n]*|~~~[^\n]*)$/m);
+  const out: string[] = [];
+  let code = false;
+  for (const part of parts) {
+    if (/^(```|~~~)/.test(part)) {
+      code = !code;
+      continue;
+    }
+    if (code) {
+      const lines = part.replace(/^\n+|\s+$/g, "").split("\n");
+      if (lines.length && lines.some((l) => l.trim())) out.push(["```", ...lines.slice(0, 24), ...(lines.length > 24 ? ["…"] : []), "```"].join("\n"));
+    } else {
+      const prose = cleanItemText(part);
+      if (prose) out.push(prose);
+    }
+  }
+  return out.join("\n") || i.text;
+}
+
+/**
+ * Release-note items as search documents. The paragraphs under a heading that is itself the change
+ * ("### `z.iso.datetime()` no longer accepts minute precision") are one section: the heading, what
+ * changed and the remedy belong together. Bullets under a generic heading ("Breaking changes") are
+ * separate changes and stay separate.
+ */
+function releaseNoteGroups(items: ChangelogItem[]): ChangelogItem[][] {
+  const sectionKey = (i: ChangelogItem) => `${i.version}\0${i.heading ?? ""}`;
+  const described = new Set(items.filter((i) => i.heading && i.raw === i.heading).map(sectionKey));
+  const groups = new Map<string, ChangelogItem[]>();
+  const out: ChangelogItem[][] = [];
+  for (const i of items) {
+    const key = sectionKey(i);
+    if (!described.has(key) || i.seq === undefined) {
+      out.push([i]);
+      continue;
+    }
+    if (!groups.has(key)) {
+      const g: ChangelogItem[] = [];
+      groups.set(key, g);
+      out.push(g);
+    }
+    groups.get(key)!.push(i);
+  }
+  for (const g of groups.values()) g.sort((a, b) => (a.seq ?? 0) - (b.seq ?? 0));
+  return out;
+}
+
+/** Pull requests read per package: the release-note items most likely to need their description. */
+const MAX_PULL_REQUESTS = Number(process.env.STALEMAP_MAX_PRS) || 12;
+
+/**
+ * The descriptions of the pull requests behind release-note items that say little themselves: a bare
+ * title ("Return client errors for unrecognized Server Actions"), or a pointer ("see the PR for
+ * documented compatibility effects"). A pointer counts in any section; a bare title only if it reads
+ * like a change (breaking or behavior wording, a score of 2 or more).
+ */
+async function pullRequestDocs(p: Packument, r: PackageReport, useCache: boolean): Promise<SearchDoc[]> {
+  if (process.env.STALEMAP_NO_PRS === "1" || !r.baseline || !r.pinned) return [];
+  // An item that sends the reader to its pull request counts whatever its section ("Security fixes").
+  const pointer = (i: ChangelogItem) => /\bsee (?:the )?(?:pr|pull request)s?\b|(?:compatibility|migration) (?:effects|notes|details)\b/i.test(i.text);
+  const wanted = (r.changelog?.items ?? [])
+    .filter((i) => (pointer(i) ? i.score > -3 : i.score >= 2 && i.text.length < 140) && pullRequestRefs(i.raw).length)
+    .sort((a, b) => Number(pointer(b)) - Number(pointer(a)) || b.score - a.score)
+    .slice(0, MAX_PULL_REQUESTS);
+  const docs: SearchDoc[] = [];
+  const seen = new Set<number>();
+  await mapLimit(wanted, 4, async (i) => {
+    for (const n of pullRequestRefs(i.raw).slice(0, 2)) {
+      if (seen.has(n)) continue;
+      seen.add(n);
+      const pr = await pullRequestText(p, n, useCache).catch(() => undefined);
+      const body = pr?.body ? searchText({ ...i, raw: stripTemplate(pr.body), text: cleanItemText(stripTemplate(pr.body)) }) : "";
+      if (body.length < 80) continue;
+      docs.push({ pkg: r.name, from: r.baseline!.version, to: r.pinned!, kind: "changelog", source: `release notes ${i.version}`, title: `#${n} ${pr!.title}`, text: truncate(`${i.text}\n${body}`, SECTION_CHARS), prior: 0.95 });
+    }
+  });
+  return docs;
+}
+
+/** A pull request's description without its template: checklists, HTML comments, "Fixes #123" lines. */
+function stripTemplate(body: string): string {
+  return body
+    .replace(/<!--[\s\S]*?-->/g, "")
+    .replace(/^\s*[-*] \[[ xX]\].*$/gm, "")
+    .replace(/^#+\s*(?:checklist|testing|test plan|screenshots?|related issues?)\b[\s\S]*?(?=^#+\s|$(?![\s\S]))/gim, "")
+    .replace(/^\s*(?:fixes|closes|resolves)\s+#\d+.*$/gim, "")
+    .replace(/\n{3,}/g, "\n\n")
+    .trim();
 }
 
 interface CachedDocs {
@@ -226,6 +333,7 @@ export async function packageDocs(dep: ProjectDep, model: ResolvedModel, opts: {
     );
     if (r.status !== "changed") return [];
     const docs = reportDocs(r);
+    docs.push(...(await pullRequestDocs(p, r, opts.useCache)));
     let guides = 0;
     try {
       // A guide's text is about a major: within one (react 19.1 → 19.3) it's the previous major's
@@ -276,6 +384,8 @@ export function buildIndex(docs: SearchDoc[]): SearchIndex {
   return { docs, tf, lengths, df, avgLength };
 }
 
+/** Results per search when the agent doesn't ask for a number. */
+export const DEFAULT_LIMIT = 8;
 const KIND_WEIGHT: Record<DocKind, number> = { note: 1.15, types: 1.1, "guide-note": 1.15, changelog: 1, guide: 1 };
 
 export interface SearchHit {
@@ -333,17 +443,19 @@ export function searchIndex(
   const perGroup = new Map<string, number>();
   for (const { i, score } of scored) {
     const d = index.docs[i];
-    const group = `${d.pkg}|${d.source}|${d.kind === "guide" ? d.title : ""}`;
+    // At most two hits from one guide section or one release-note section (two from the same release
+    // under different headings are different changes).
+    const group = `${d.pkg}|${d.source}|${d.kind === "guide" || d.kind === "changelog" ? (d.title ?? d.text.slice(0, 80)) : ""}`;
     if ((perGroup.get(group) ?? 0) >= 2) continue;
     perGroup.set(group, (perGroup.get(group) ?? 0) + 1);
     out.push({ doc: d, score, snippet: snippet(d.text, q) });
-    if (out.length >= (opts.limit ?? 6)) break;
+    if (out.length >= (opts.limit ?? DEFAULT_LIMIT)) break;
   }
   return out;
 }
 
 /** The part of a long text with the most query terms: a few lines around the best one. */
-export function snippet(text: string, queryTokens: string[], max = 700): string {
+export function snippet(text: string, queryTokens: string[], max = 900): string {
   if (text.length <= max) return text;
   const lines = text.split(/\n/);
   const want = new Set(queryTokens);
@@ -427,7 +539,7 @@ export interface SearchResult {
 /** `search_changes`: the changes in the project's dependencies that best match `query`, as text for the agent. */
 export async function searchChanges(opts: { cwd: string; query: string; package?: string; limit?: number; model?: string; cutoff?: string; useCache?: boolean }): Promise<SearchResult> {
   const p = await projectIndex(opts.cwd, { model: opts.model, cutoff: opts.cutoff, useCache: opts.useCache, extra: opts.package });
-  const limit = Math.min(15, Math.max(1, opts.limit ?? 6));
+  const limit = Math.min(15, Math.max(1, opts.limit ?? DEFAULT_LIMIT));
   const known = p.packages.map((x) => `\`${x.name}\` ${x.from} → ${x.to}`).join(", ");
   const cutoff = isoDate(p.model.cutoff);
   if (opts.package && !p.packages.some((x) => x.name === opts.package)) {

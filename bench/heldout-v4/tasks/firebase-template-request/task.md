@@ -1,0 +1,1 @@
+Implement `writeProductDescription` in `src/descriptions.ts`. It should run our server prompt template `product-description` (already set up in the Firebase console; it takes the variables `name`, `category` and `features`) for the given product and return the generated text.

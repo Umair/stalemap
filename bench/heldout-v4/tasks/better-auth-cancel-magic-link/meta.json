@@ -1,0 +1,18 @@
+{
+  "title": "better-auth 1.7.7: cancelling a pending magic link by its token",
+  "template": "latest",
+  "change": "better-auth@1.7.7/magic-link-verification-prefixes",
+  "package": "better-auth",
+  "scenario": "new-code",
+  "changeType": "default-behavior",
+  "kind": "type-checks",
+  "stale": [
+    "^(?![\\s\\S]*(?:magic-link:|\\b[lL][iI][kK][eE]\\b|endsWith))[\\s\\S]*\\bcancelSignInLink\\b[\\s\\S]*(?:\\bidentifier\\b|VerificationValue|VerificationByIdentifier)"
+  ],
+  "deprecated": [],
+  "newApi": [
+    "magic-link:",
+    "\\bprefix"
+  ],
+  "oracle": "Since better-auth 1.7.7 Magic Link verification records are stored under the identifier \"magic-link:<stored token>\" instead of the bare token; look them up or delete them by that prefixed identifier."
+}

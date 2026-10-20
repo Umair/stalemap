@@ -1,0 +1,1 @@
+Implement `listTests(root)` in `src/tooling/list-tests.ts`: using Vitest's Node API, return the full name ("suite > test") of every test in the Vitest project at `root`, without running or importing any test files, since ours connect to a staging database on import (`fixtures/shop` is an example). We keep this codebase free of deprecated APIs.

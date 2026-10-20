@@ -1,0 +1,13 @@
+{
+  "title": "multer 2.4: photo count limit from the environment after the upgrade",
+  "template": "latest",
+  "change": "multer@2.4.0/limits-validated-at-construction",
+  "package": "multer",
+  "scenario": "upgrade",
+  "changeType": "default-behavior",
+  "kind": "type-checks",
+  "stale": ["files\\s*:\\s*(?:Number(?:\\.parseInt|\\.parseFloat)?|parseInt|parseFloat)\\(\\s*(?:process\\.)?env\\.MAX_PHOTOS_PER_UPLOAD\\s*(?:,\\s*10\\s*)?\\)\\s*[,}]"],
+  "deprecated": [],
+  "newApi": ["\\bInfinity\\b", "\\bTypeError\\b", "non-negative integer", "\\binvalid\\b"],
+  "oracle": "Since multer 2.4, multer() throws a TypeError when a limits value isn't a non-negative integer or Infinity (e.g. NaN from an unset env var) instead of silently disabling that limit; pass Infinity or omit the key for no limit."
+}

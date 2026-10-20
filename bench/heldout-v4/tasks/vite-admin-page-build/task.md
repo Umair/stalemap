@@ -1,0 +1,1 @@
+We added an admin page in `admin/index.html`, but `vite build` still only outputs the storefront. Update `vite.config.ts` so the production build includes both pages, and keep Vite loading the config without printing any warnings.

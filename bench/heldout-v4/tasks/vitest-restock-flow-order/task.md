@@ -1,0 +1,1 @@
+Our Vitest config runs tests concurrently. In `src/inventory.test.ts`, add a `describe("restock flow")` block whose tests share one `Inventory` and run one after another in the order written: receive 10 units of SKU-1, then reserve 4 of them, then check that 6 are available. The other tests in the file should keep running concurrently.

@@ -1,0 +1,13 @@
+{
+  "title": "better-auth 1.7.3: email/password auth on an app-owned lean SQLite schema",
+  "template": "latest",
+  "change": "better-auth@1.7.3/schema-validation-on-init",
+  "package": "better-auth",
+  "scenario": "new-code",
+  "changeType": "default-behavior",
+  "kind": "type-checks",
+  "stale": ["^(?![\\s\\S]*\\bvalidateSchema\\b)[\\s\\S]*\\bbetterAuth\\s*\\("],
+  "deprecated": [],
+  "newApi": ["validateSchema", "\\bvalidat", "\\bmismatch"],
+  "oracle": "Since better-auth 1.7.3 the database schema is checked by default and requests are rejected while tables or columns it expects are missing; set advanced.database.validateSchema: false to use a schema you manage yourself."
+}

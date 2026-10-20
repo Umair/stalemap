@@ -1,0 +1,1 @@
+Add a test to `src/slugify.test.ts` for every entry in `src/fixtures/slugs.json` (each `input` should slugify to its `slug`), driven from the fixture file rather than copied by hand. Our flaky-test tracker matches tests by name, so name each new test exactly like the existing ones: `slugify '<input>'`.

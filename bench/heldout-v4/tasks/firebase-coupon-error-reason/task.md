@@ -1,0 +1,1 @@
+Implement `redeemCoupon` in `src/coupons.ts` with our `redeemCoupon` callable function. When the function turns the code down, it throws an `HttpsError` whose message says why (for example "This coupon has expired"); return `{ ok: false, reason }` with exactly that text, since checkout shows it to the shopper as is. Other failures should still throw.

@@ -1,0 +1,13 @@
+{
+  "title": "Next 16.4: upgrade a config with the scroll/focus flag",
+  "template": "latest",
+  "change": "next@16.4.0/appnewscrollhandler-flag-removed",
+  "package": "next",
+  "scenario": "upgrade",
+  "changeType": "breaking",
+  "kind": "type-checks",
+  "stale": ["\\bappNewScrollHandler\\s*:"],
+  "deprecated": [],
+  "newApi": ["appNewScrollHandler", "[Dd]efault", "removed", "no longer"],
+  "oracle": "Next 16.4 removed `experimental.appNewScrollHandler`: the new scroll/focus handling (blur instead of focusing the new segment) is always on since 16.3, so delete the key."
+}

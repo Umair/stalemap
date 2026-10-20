@@ -1,0 +1,22 @@
+{
+  "title": "TypeScript 7: legacy CommonJS helpers checked with checkJs",
+  "template": "latest",
+  "change": "typescript@7.0.2/js-commonjs-patterns-dropped",
+  "package": "typescript",
+  "scenario": "upgrade",
+  "changeType": "breaking",
+  "kind": "compile-error",
+  "stale": [
+    "module\\.exports\\.(separator|maxLength)\\s*=",
+    "=\\s*module\\.exports\\s*;"
+  ],
+  "deprecated": [],
+  "newApi": [
+    "Object\\.assign",
+    "expando",
+    "TS2309",
+    "export assignment",
+    "module\\.exports\\.\\w+\\s*="
+  ],
+  "oracle": "TypeScript 7.0 no longer understands JS CommonJS modules that mix module.exports = x with module.exports.y = ... or alias module.exports to a variable; set properties on x (x.y = ...) before module.exports = x, or use exports.y."
+}

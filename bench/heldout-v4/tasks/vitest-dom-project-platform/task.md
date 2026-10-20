@@ -1,0 +1,1 @@
+Our `src/**/*.dom.test.ts` files aren't run yet. Set up `vitest.config.ts` with two named test projects: `dom` runs `src/**/*.dom.test.ts` in jsdom, and `unit` runs every other test in `src/` in Node. Keep the `#platform` alias plugin working so each project gets the right platform implementation.

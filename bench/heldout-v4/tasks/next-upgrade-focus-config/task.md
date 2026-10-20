@@ -1,0 +1,1 @@
+We upgraded next from 16.2 to 16.4, and `npm test` now fails type-checking `next.config.ts`. Fix the config so the project type-checks and builds again, keeping the navigation focus behavior we set up there and all our other settings.

@@ -1,0 +1,13 @@
+{
+  "title": "vitest 5: test.each titles no longer quote $ string values",
+  "template": "latest",
+  "change": "vitest@5.0.0/each-title-strings-unquoted",
+  "package": "vitest",
+  "scenario": "new-code",
+  "changeType": "breaking",
+  "kind": "type-checks",
+  "stale": ["slugify \\$[\\w.]+"],
+  "deprecated": [],
+  "newApi": ["'\\$\\w+'", "'%s'", "\\bunquoted\\b"],
+  "oracle": "In Vitest 5, string values interpolated into test.each/test.for titles with $name are no longer wrapped in quotes; put the quotes in the title template ('$name') if the name needs them."
+}

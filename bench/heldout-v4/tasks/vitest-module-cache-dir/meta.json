@@ -1,0 +1,13 @@
+{
+  "title": "vitest 5: storing the module cache in a CI-cached folder",
+  "template": "latest",
+  "change": "vitest@5.0.0/experimental-fsmodulecache-deprecated",
+  "package": "vitest",
+  "scenario": "new-code",
+  "changeType": "deprecation",
+  "kind": "compile-error",
+  "stale": ["experimental\\s*:\\s*\\{[^}]*fsModuleCache"],
+  "deprecated": ["experimental\\s*:\\s*\\{[^}]*fsModuleCache"],
+  "newApi": ["fsModuleCache"],
+  "oracle": "In Vitest 5, experimental.fsModuleCache and experimental.fsModuleCachePath are deprecated (and gone from the types); use the top-level test.fsModuleCache and test.fsModuleCachePath options."
+}

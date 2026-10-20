@@ -1,0 +1,1 @@
+We upgraded TypeScript in our next-auth setup from 6.0 to 7.0, and `tsc` now fails. Fix it so the project type-checks again; the session must still carry the API access token that `src/auth.ts` copies into it.

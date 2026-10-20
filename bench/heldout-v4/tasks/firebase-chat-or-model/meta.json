@@ -1,0 +1,21 @@
+{
+  "title": "firebase 13: ChatSession is an interface, not a class",
+  "template": "latest",
+  "change": "firebase@13.0.0/ai-chatsession-interface",
+  "package": "firebase",
+  "scenario": "new-code",
+  "changeType": "breaking",
+  "kind": "compile-error",
+  "stale": [
+    "\\binstanceof\\s+ChatSession\\b",
+    "\\bnew\\s+ChatSession\\s*\\(",
+    "\\bextends\\s+ChatSession\\b",
+    "\\bChatSession\\.prototype\\b"
+  ],
+  "deprecated": [],
+  "newApi": [
+    "\\binterface\\b",
+    "[\"']sendMessage[\"']\\s+in\\b"
+  ],
+  "oracle": "In firebase 13 (firebase/ai 3), ChatSession is exported as an interface, not a class: it can't be used as a value (no instanceof/new/extends); tell chats apart structurally, e.g. 'sendMessage' in x."
+}

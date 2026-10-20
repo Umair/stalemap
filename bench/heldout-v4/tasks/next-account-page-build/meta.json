@@ -1,0 +1,13 @@
+{
+  "title": "Next 16.3: personal account page under Cache Components",
+  "template": "latest",
+  "change": "next@16.3.0/unstable-instant-renamed",
+  "package": "next",
+  "scenario": "new-code",
+  "changeType": "breaking",
+  "kind": "type-checks",
+  "stale": ["\\bunstable_instant\\b"],
+  "deprecated": [],
+  "newApi": ["\\binstant\\b", "unstable_instant", "[Bb]locking", "Suspense"],
+  "oracle": "Next 16.3 renamed the `unstable_instant` route segment config to `instant`; `unstable_instant` is no longer read, so write `export const instant = false` to let a Cache Components route block."
+}

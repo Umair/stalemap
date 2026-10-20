@@ -1,0 +1,13 @@
+{
+  "title": "better-auth 1.7: id_token sign-in for a custom OAuth provider",
+  "template": "latest",
+  "change": "better-auth@1.7.0/upstream-provider-verifyidtoken-removed",
+  "package": "better-auth",
+  "scenario": "new-code",
+  "changeType": "breaking",
+  "kind": "type-checks",
+  "stale": ["(?:^|[\\s,{])(?:async\\s+)?verifyIdToken\\s*\\("],
+  "deprecated": [],
+  "newApi": ["\\bidToken\\s*:", "verifyIdToken", "\\bverify\\s*:", "\\bjwks\\s*:"],
+  "oracle": "Since better-auth 1.7 a custom OAuthProvider no longer has a verifyIdToken method (it is ignored); declare an idToken config instead ({ jwks, issuer, audience } or { verify }) or set options.verifyIdToken."
+}

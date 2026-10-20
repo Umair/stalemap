@@ -1,0 +1,16 @@
+{
+  "title": "dotenv 18.0.8: populate() output values may be undefined",
+  "template": "latest",
+  "change": "dotenv@18.0.8/populate-output-values-maybe-undefined",
+  "package": "dotenv",
+  "scenario": "new-code",
+  "changeType": "breaking",
+  "kind": "compile-error",
+  "stale": [
+    "return\\s+(?:dotenv\\.)?populate\\(",
+    ":\\s*Record<string,\\s*string>\\s*=\\s*(?:dotenv\\.)?populate\\("
+  ],
+  "deprecated": [],
+  "newApi": ["undefined", "DotenvPopulateOutput"],
+  "oracle": "Since dotenv 18.0.8, populate() returns DotenvPopulateOutput whose values are string | undefined; filter or narrow them before treating the result as Record<string, string>."
+}

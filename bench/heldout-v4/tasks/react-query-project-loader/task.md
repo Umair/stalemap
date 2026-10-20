@@ -1,0 +1,1 @@
+Implement `projectLoader()` in `src/loaders.ts`, which the project page's route calls before rendering: it should return the project through our React Query client, using the cached project if we already have one and otherwise fetching it with `projectQuery()` from `src/queries.ts`, so it ends up in the cache either way. We keep this codebase free of deprecated APIs.

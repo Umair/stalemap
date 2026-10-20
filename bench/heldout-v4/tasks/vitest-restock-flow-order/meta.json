@@ -1,0 +1,13 @@
+{
+  "title": "vitest 5: test.sequential, describe.sequential and the sequential option removed",
+  "template": "latest",
+  "change": "vitest@5.0.0/sequential-api-removed",
+  "package": "vitest",
+  "scenario": "new-code",
+  "changeType": "breaking",
+  "kind": "compile-error",
+  "stale": ["\\b(?:describe|test|it|suite)\\.sequential\\b", "\\bsequential\\s*:\\s*true\\b"],
+  "deprecated": [],
+  "newApi": ["concurrent\\s*:\\s*false"],
+  "oracle": "Vitest 5 removed test.sequential, describe.sequential and the sequential option; pass { concurrent: false } as the test or describe options instead."
+}

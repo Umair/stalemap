@@ -1,0 +1,15 @@
+{
+  "title": "zod 4.5: fromJSONSchema tuples are open-ended",
+  "template": "latest",
+  "change": "zod@4.5.0/from-json-schema-tuples-open-ended",
+  "package": "zod",
+  "scenario": "new-code",
+  "changeType": "default-behavior",
+  "kind": "type-checks",
+  "stale": [
+    "^(?![\\s\\S]*\\bitems\"?\\s*[:=]\\s*false)(?![\\s\\S]*additionalItems)(?![\\s\\S]*maxItems)(?![\\s\\S]*\\.length\\b)(?![\\s\\S]*\\.max\\()(?![\\s\\S]*(?:super)?[rR]efine\\()(?![\\s\\S]*\\.check\\()[\\s\\S]*fromJSONSchema\\("
+  ],
+  "deprecated": [],
+  "newApi": ["items\"?\\s*:\\s*false", "additionalItems", "maxItems", "open-ended", "extra elements"],
+  "oracle": "Since zod 4.5, z.fromJSONSchema() builds an open-ended tuple from prefixItems unless the schema has items: false (or maxItems), so extra elements pass; close the tuple in the schema or check the length."
+}

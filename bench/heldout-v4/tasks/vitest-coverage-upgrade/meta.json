@@ -1,0 +1,13 @@
+{
+  "title": "vitest 5: coverage include/exclude match relative to the project root",
+  "template": "latest",
+  "change": "vitest@5.0.0/coverage-include-exclude-relative",
+  "package": "vitest",
+  "scenario": "upgrade",
+  "changeType": "breaking",
+  "kind": "type-checks",
+  "stale": ["[\"'`]\\*\\.stories\\.ts[\"'`]", "[\"'`]api/generated"],
+  "deprecated": [],
+  "newApi": ["\\*\\*/\\*\\.stories", "src/api/generated/\\*\\*", "\\brelative\\b", "\\bcontains\\b"],
+  "oracle": "In Vitest 5, coverage.include/exclude globs match paths relative to the project root (no picomatch contains), so a bare pattern like '*.test.ts' or 'dir/**' no longer matches nested files; anchor it, e.g. '**/*.test.ts'."
+}

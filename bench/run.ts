@@ -11,7 +11,7 @@
  *
  *   npx tsx bench/run.ts --model claude-sonnet-4-5 [--arms alone,context7,stalemap]
  *     [--modes oneshot,checks] [--tasks a,b] [--reps 1] [--concurrency 3] [--out bench/results/<date>]
- *     [--suite dev|heldout|heldout-v2|heldout-v3] [--notes per-task|per-template] [--guides] [--notes-only]
+ *     [--suite dev|heldout|heldout-v2|heldout-v3|heldout-v4] [--notes per-task|per-template] [--guides] [--notes-only]
  *     [--shard 1/2] [--resume] [--stop-on-limit]
  *   npx tsx bench/run.ts --report bench/results/<date>
  *   npx tsx bench/run.ts --merge bench/results/<run> bench/results/<run>-shard-1-of-2 bench/results/<run>-shard-2-of-2
@@ -35,6 +35,8 @@ import { Context7Keys, context7Answered, context7Connected, context7Errors, cont
 const BENCH = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(BENCH, "..");
 const WORK = join(BENCH, ".work");
+/** Per-model working folders: runs of two models at once must not share a session's workspace or notes. */
+let MODEL_TAG = "default";
 const TEMPLATE_MODULES = join(WORK, "template", "node_modules");
 
 type Arm = "alone" | "context7" | "stalemap" | "stalemap-guard" | "context7-stalemap" | "oracle" | "tsc-hook" | "stalemap-full";
@@ -47,12 +49,28 @@ const usesStalemapMcp = (a: Arm) => a === "stalemap-full";
 /** Arms with a post-edit hook: stalemap's guard, or the plain `tsc --noEmit` hook (bench/arms/tsc-hook.mjs). */
 const usesHook = (a: Arm) => usesGuard(a) || a === "tsc-hook";
 
-type Suite = "dev" | "heldout" | "heldout-v2" | "heldout-v3";
-const SUITES: Suite[] = ["dev", "heldout", "heldout-v2", "heldout-v3"];
+type Suite = "dev" | "heldout" | "heldout-v2" | "heldout-v3" | "heldout-v4";
+const SUITES: Suite[] = ["dev", "heldout", "heldout-v2", "heldout-v3", "heldout-v4"];
+/** heldout-v4 is built and run the way heldout-v3 is: per-task notes, the oracle line in meta.json, stale patterns over every file. */
+const v3Style = (s: Suite) => s === "heldout-v3" || s === "heldout-v4";
 /** Suites from v2 on keep their own templates and install them under .work/template-<suite>-<name>. */
-const ownTemplates = (s: Suite) => s === "heldout-v2" || s === "heldout-v3";
+const ownTemplates = (s: Suite) => s === "heldout-v2" || v3Style(s);
 let SUITE: Suite = "dev";
 const tasksDir = () => (SUITE === "dev" ? join(BENCH, "tasks") : join(BENCH, SUITE, "tasks"));
+/**
+ * A session's node_modules: its own folder whose entries link to the shared install, so caches tools
+ * write there (Vite's and Vitest's `node_modules/.vite`) stay in the session's workspace instead of
+ * leaking between concurrent sessions. Packages still resolve their dependencies in the shared install.
+ */
+async function linkModules(shared: string, target: string): Promise<void> {
+  await mkdir(target, { recursive: true });
+  for (const e of await readdir(shared, { withFileTypes: true })) {
+    // Dot entries are tool state (.vite, .vitest-cache, .cache), except the ones installs need.
+    if (e.name.startsWith(".") && ![".bin", ".package-lock.json", ".pnpm", ".modules.yaml"].includes(e.name)) continue;
+    await symlink(join(shared, e.name), join(target, e.name), e.isDirectory() || e.isSymbolicLink() ? "dir" : "file");
+  }
+}
+
 /** Template folder (package.json + tsconfig) and its installed node_modules for a task. */
 function templateOf(templateName: string): { files: string; modules: string } {
   if (SUITE === "dev") return { files: join(BENCH, "template"), modules: TEMPLATE_MODULES };
@@ -170,7 +188,7 @@ async function stalemapNotes(model: string, examples: boolean, templateName = "l
  * starting project, so imports and config files decide what's covered and how it ranks.
  */
 async function stalemapTaskNotes(model: string, extra: string[], task: string, guard: boolean): Promise<string> {
-  const dir = join(WORK, `notes-${SUITE}-${task}`);
+  const dir = join(WORK, `notes-${SUITE}-${MODEL_TAG}-${task}`);
   await prepareWorkspace(dir, task);
   const args = ["scan", "--cwd", dir, "--model", model, "-q", guard ? "--guard" : "--no-guard", ...extra];
   const { stdout } = await sh(process.execPath, [join(ROOT, "dist", "cli.js"), ...args], {
@@ -186,8 +204,8 @@ async function stalemapTaskNotes(model: string, extra: string[], task: string, g
 async function oracleNote(task: string): Promise<string> {
   const file = join(BENCH, "arms", "oracle", `${SUITE}.json`);
   const line =
-    SUITE === "heldout-v3" ? (await taskMeta(task)).oracle : existsSync(file) ? (JSON.parse(await readFile(file, "utf8")) as Record<string, string>)[task] : undefined;
-  if (!line) throw new Error(`No oracle note for ${task} in ${SUITE === "heldout-v3" ? "its meta.json" : relative(ROOT, file)}`);
+    v3Style(SUITE) ? (await taskMeta(task)).oracle : existsSync(file) ? (JSON.parse(await readFile(file, "utf8")) as Record<string, string>)[task] : undefined;
+  if (!line) throw new Error(`No oracle note for ${task} in ${v3Style(SUITE) ? "its meta.json" : relative(ROOT, file)}`);
   return [
     "## A dependency change that matters for this task",
     "",
@@ -212,7 +230,7 @@ async function systemPrompt(arm: Arm, mode: Mode, notes: string, task: string): 
  * first search reads it from the cache like every later one (and every rep sees the same data).
  */
 async function warmSearch(model: string, task: string): Promise<string> {
-  const dir = join(WORK, `notes-${SUITE}-${task}`);
+  const dir = join(WORK, `notes-${SUITE}-${MODEL_TAG}-${task}`);
   if (!existsSync(join(dir, "package.json"))) await prepareWorkspace(dir, task);
   const { stdout } = await sh(process.execPath, [join(ROOT, "dist", "cli.js"), "search", "--cwd", dir, "--model", model, "-q", "configuration options"], { maxBuffer: 8 * 1024 * 1024 });
   return stdout;
@@ -224,7 +242,7 @@ async function prepareWorkspace(dir: string, task: string): Promise<void> {
   await mkdir(dir, { recursive: true });
   for (const f of ["package.json", "tsconfig.json"]) await cp(join(t.files, f), join(dir, f));
   await cp(join(tasksDir(), task, "files"), dir, { recursive: true });
-  await symlink(t.modules, join(dir, "node_modules"), "dir");
+  await linkModules(t.modules, join(dir, "node_modules"));
   await sh("git", ["init", "-q"], { cwd: dir });
 }
 
@@ -315,7 +333,7 @@ async function agentFiles(dir: string): Promise<string> {
   // heldout-v2 also has stale patterns for Prisma schemas, stylesheets and tsconfig.json; heldout-v3 for any
   // source, style or config file an agent may write (but not the lockfile).
   const scanned =
-    SUITE === "heldout-v3"
+    v3Style(SUITE)
       ? /^(?!package-lock\.json$).*\.(ts|tsx|mts|cts|js|jsx|mjs|cjs|json|prisma|css|ya?ml)$/
       : SUITE === "heldout-v2"
         ? /\.(ts|tsx|js|mjs|prisma|css)$|^tsconfig\.json$/
@@ -408,9 +426,9 @@ async function runSession(opts: {
   stopOnLimit?: boolean;
 }): Promise<SessionResult> {
   const runId = runIdOf(SUITE, opts);
-  const dir = join(WORK, "runs", runId);
+  const dir = join(WORK, "runs", MODEL_TAG, runId);
   await prepareWorkspace(dir, opts.task);
-  const sysFile = join(WORK, "runs", `${runId}.system.md`);
+  const sysFile = join(WORK, "runs", MODEL_TAG, `${runId}.system.md`);
   const meta = await taskMeta(opts.task);
   // Per-task notes when the run made them, otherwise the template's.
   const taskKey = notesKey(`task:${opts.task}`, usesGuard(opts.arm));
@@ -436,12 +454,12 @@ async function runSession(opts: {
   ];
   if (usesStalemapMcp(opts.arm)) {
     // The build under test, serving this workspace for the session's model, on the same cache the notes warmed.
-    const mcpFile = join(WORK, "runs", `${runId}.mcp.json`);
+    const mcpFile = join(WORK, "runs", MODEL_TAG, `${runId}.mcp.json`);
     await writeFile(mcpFile, JSON.stringify(stalemapMcpConfig(join(ROOT, "dist", "cli.js"), dir, opts.model, process.env.STALEMAP_CACHE), null, 2) + "\n");
     args.push("--mcp-config", mcpFile);
   }
   // The guard arm installs stalemap's post-edit hook; --settings applies even under --restricted.
-  const guardLog = join(WORK, "runs", `${runId}.guard.jsonl`);
+  const guardLog = join(WORK, "runs", MODEL_TAG, `${runId}.guard.jsonl`);
   await rm(guardLog, { force: true });
   if (usesGuard(opts.arm)) {
     // The notes are in the system prompt, where the hook can't see them: point it at the same text.
@@ -612,7 +630,7 @@ export function report(results: SessionResult[]): string {
 
 /** The suite a session belongs to, from its run id. */
 const suiteOfRunId = (runId: string): Suite =>
-  runId.startsWith("heldout-v3.") ? "heldout-v3" : runId.startsWith("heldout-v2.") ? "heldout-v2" : runId.startsWith("heldout.") ? "heldout" : "dev";
+  runId.startsWith("heldout-v4.") ? "heldout-v4" : runId.startsWith("heldout-v3.") ? "heldout-v3" : runId.startsWith("heldout-v2.") ? "heldout-v2" : runId.startsWith("heldout.") ? "heldout" : "dev";
 
 /**
  * One cheap session that calls Context7 the way the arms do, with the same MCP config and environment.
@@ -738,9 +756,10 @@ async function main(): Promise<void> {
   // Record the stalemap build that writes the notes and runs the guard, once per invocation, with what
   // else a shard on another machine must share: Claude Code's version and the installed template versions.
   // Per-template notes (one `scan --all` per template) for the suites run that way; per-task notes from v3 on.
-  const notesMode = values.notes ?? (SUITE === "heldout-v3" ? "per-task" : "per-template");
+  const notesMode = values.notes ?? (v3Style(SUITE) ? "per-task" : "per-template");
   if (notesMode !== "per-task" && notesMode !== "per-template") throw new Error("--notes must be per-task or per-template");
   const extra = [...(values.examples ? ["--examples"] : []), ...(values.guides ? ["--guides"] : [])];
+  MODEL_TAG = (values.model ?? "default").replace(/[^\w.-]+/g, "_");
   const run = { startedAt: new Date().toISOString(), suite: SUITE, model: values.model, tasks, arms, modes, reps, examples: !!values.examples, guides: !!values.guides, notes: notesMode };
   const installs: Record<string, string | null> = {};
   for (const t of templates) {

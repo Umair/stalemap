@@ -55,12 +55,14 @@ const COMPARISONS_V2: Comparison[] = [
   ["context7-stalemap", "stalemap-guard"],
   ["context7", "alone", "exploratory"],
 ];
-const SUITES = ["heldout", "heldout-v2", "heldout-v3"];
+const SUITES = ["heldout", "heldout-v2", "heldout-v3", "heldout-v4"];
 /** The suite a session belongs to, from its run id (as bench/run.ts names them). */
 const suiteOfRunId = (runId: string | undefined) =>
   runId === undefined
     ? "unknown"
-    : runId.startsWith("heldout-v3.")
+    : runId.startsWith("heldout-v4.")
+      ? "heldout-v4"
+      : runId.startsWith("heldout-v3.")
       ? "heldout-v3"
       : runId.startsWith("heldout-v2.")
         ? "heldout-v2"
@@ -154,7 +156,7 @@ function loadSafety(rows: Row[]): { summary: string; table: string[] } {
 }
 
 async function main(): Promise<void> {
-  const { values, positionals } = parseArgs({ allowPositionals: true, options: { out: { type: "string" }, suite: { type: "string" } } });
+  const { values, positionals } = parseArgs({ allowPositionals: true, options: { out: { type: "string" }, suite: { type: "string" }, "no-context7": { type: "boolean" } } });
   const dir = positionals[0];
   if (!dir) throw new Error("usage: analyze.ts <results dir> [--suite heldout|heldout-v2|heldout-v3] [--out file]");
   const rows = (await readFile(join(dir, "results.jsonl"), "utf8")).trim().split("\n").map((l) => JSON.parse(l) as Row);
@@ -164,7 +166,12 @@ async function main(): Promise<void> {
   const suite = values.suite ?? [...found.keys()][0];
   if (!SUITES.includes(suite)) throw new Error(`--suite must be one of ${SUITES.join(", ")} (this folder has ${[...found.keys()].join(", ")} sessions)`);
   if (found.size > 1 || !found.has(suite)) throw new Error(`${dir} mixes suites or doesn't match --suite ${suite}: ${[...found].map(([s, n]) => `${n} ${s}`).join(", ")} sessions`);
-  if (suite === "heldout-v3") return analyzeV3(rows, dir, values.out);
+  if (suite === "heldout-v3") return analyzeV3(rows, dir, values.out, V3);
+  if (suite === "heldout-v4") {
+    // The public report leaves the Context7 arms out (PROTOCOL.md: exploratory, never part of a claim).
+    const kept = values["no-context7"] ? rows.filter((r) => !r.arm.startsWith("context7")) : rows;
+    return analyzeV3(kept, dir, values.out, V4);
+  }
   const comparisons = suite === "heldout-v2" ? COMPARISONS_V2 : COMPARISONS;
   const comparisonTable = (rs: Row[], ts: string[]) => {
     const lines = ["| comparison | pass-rate difference | 95% interval | verdict |", "|---|---|---|---|"];
@@ -295,6 +302,58 @@ const REPS_V3 = 3;
 const BOOTSTRAPS_V3 = 10_000;
 const SEED_V3 = 20261016;
 
+/** What a v3-style suite's analysis compares, per model. */
+interface SuiteAnalysis {
+  name: string;
+  title: string;
+  arms: string[];
+  /** Outside the decision rule and the completeness check. */
+  exploratoryArms: string[];
+  /** Models the protocol names, with that model's primary (if any) and secondary comparisons. */
+  models: Record<string, { primary?: Comparison; secondary: Comparison[]; label: string }>;
+  /** How many secondary comparisons the Bonferroni level is split over, across all models. */
+  secondaryCount: number;
+  exploratory: Comparison[];
+  reps: number;
+  seed: number;
+}
+
+const V3: SuiteAnalysis = {
+  name: "heldout-v3",
+  title: "Held-out v3 benchmark results",
+  arms: ARMS_V3,
+  exploratoryArms: EXPLORATORY_ARMS_V3,
+  models: { [MODEL_V3]: { primary: PRIMARY_V3, secondary: SECONDARY_V3, label: "the pre-registered model" } },
+  secondaryCount: 3,
+  exploratory: EXPLORATORY_V3,
+  reps: REPS_V3,
+  seed: SEED_V3,
+};
+
+// heldout-v4 (bench/heldout-v4/PROTOCOL.md): stalemap-full is the product; Context7 arms are exploratory.
+const V4: SuiteAnalysis = {
+  name: "heldout-v4",
+  title: "Held-out v4 benchmark results",
+  arms: ["alone", "stalemap-full", "tsc-hook", "oracle", "context7", "context7-stalemap"],
+  exploratoryArms: ["oracle", "context7", "context7-stalemap"],
+  models: {
+    "claude-sonnet-5-5": { primary: ["stalemap-full", "alone"], secondary: [["stalemap-full", "tsc-hook"]], label: "the primary model" },
+    "claude-sonnet-4-5": { secondary: [["stalemap-full", "alone"], ["stalemap-full", "tsc-hook"]], label: "the secondary model" },
+  },
+  secondaryCount: 3,
+  exploratory: [
+    ["tsc-hook", "alone"],
+    ["oracle", "alone"],
+    ["oracle", "stalemap-full"],
+    ["context7", "alone"],
+    ["stalemap-full", "context7"],
+    ["context7-stalemap", "context7"],
+    ["context7-stalemap", "stalemap-full"],
+  ],
+  reps: 3,
+  seed: 20261020,
+};
+
 interface Estimate {
   diff: number;
   lo: number;
@@ -339,17 +398,22 @@ export function twoLevel(rows: Row[], a: string, b: string, tasks: string[], lev
   };
 }
 
-async function analyzeV3(rows: Row[], dir: string, outFile: string | undefined): Promise<void> {
+async function analyzeV3(rows: Row[], dir: string, outFile: string | undefined, cfg: SuiteAnalysis): Promise<void> {
   const models = [...new Set(rows.map((r) => r.model ?? "?"))];
   if (models.length > 1) throw new Error(`${dir} mixes models (${models.join(", ")}); analyze each model's sessions separately`);
-  const tasksRoot = join(dir, "..", "..", "heldout-v3", "tasks");
+  const plan = cfg.models[models[0]];
+  const PRIMARY = plan?.primary;
+  const SECONDARY = plan?.secondary ?? [];
+  const secondaryLevel = 1 - 0.05 / cfg.secondaryCount;
+  const boot = (rs: Row[], a: string, b: string, ts: string[], level = 0.95) => twoLevel(rs, a, b, ts, level, BOOTSTRAPS_V3, cfg.seed);
+  const tasksRoot = join(dir, "..", "..", cfg.name, "tasks");
   const meta = new Map<string, { kind?: string; changeType?: string; package?: string; scenario?: string }>();
   for (const t of await readdir(tasksRoot, { withFileTypes: true })) {
     if (t.isDirectory()) meta.set(t.name, JSON.parse(await readFile(join(tasksRoot, t.name, "meta.json"), "utf8")));
   }
   const frozen = [...meta.keys()].sort();
   const tasks = [...new Set(rows.map((r) => r.task))].sort();
-  const arms = ARMS_V3.filter((a) => rows.some((r) => r.arm === a));
+  const arms = cfg.arms.filter((a) => rows.some((r) => r.arm === a));
   const modes = ["oneshot", "checks"].filter((m) => rows.some((r) => r.mode === m));
   const errors = rows.filter((r) => r.isError).length;
   const fmt = (x: number) => `${x >= 0 ? "+" : ""}${(100 * x).toFixed(1)} pts`;
@@ -360,21 +424,21 @@ async function analyzeV3(rows: Row[], dir: string, outFile: string | undefined):
   // Completeness: every frozen task × confirmatory arm × mode needs REPS_V3 sessions for the run to count as complete,
   // including arms with no sessions at all.
   const short: string[] = [];
-  for (const t of frozen) for (const a of ARMS_V3.filter((x) => !EXPLORATORY_ARMS_V3.includes(x))) for (const m of ["oneshot", "checks"]) {
+  for (const t of frozen) for (const a of cfg.arms.filter((x) => !cfg.exploratoryArms.includes(x))) for (const m of ["oneshot", "checks"]) {
     const n = rows.filter((r) => r.task === t && r.arm === a && r.mode === m).length;
-    if (n < REPS_V3) short.push(`${t}/${a}/${m}: ${n}`);
+    if (n < cfg.reps) short.push(`${t}/${a}/${m}: ${n}`);
   }
   const extra = tasks.filter((t) => !meta.has(t));
   const out: string[] = [
-    "# Held-out v3 benchmark results",
+    `# ${cfg.title}`,
     "",
     `\`${models[0]}\` · ${rows.length} sessions · ${tasks.length} of ${frozen.length} frozen tasks · ${errors} sessions ended in an error (scored as failures).`,
-    ...(models[0] === MODEL_V3 ? [] : [`**Exploratory second-model run** (\`${models[0]}\`, not the pre-registered \`${MODEL_V3}\`): no claim rests on it.`, ""]),
+    ...(plan ? [`\`${models[0]}\` is ${plan.label} in the protocol.`, ""] : [`**Exploratory run** (\`${models[0]}\` isn't a model the protocol names): no claim rests on it.`, ""]),
     "Analysis as pre-registered in [PROTOCOL.md](PROTOCOL.md): per-task means of pass rates, both modes pooled unless a section says otherwise, with two-level bootstrap intervals (tasks, then runs within each task; 10,000 replicates). A win or loss needs the interval to exclude zero.",
     "",
     short.length || extra.length
-      ? `**Incomplete run:** ${short.length} task × arm × mode cells have fewer than ${REPS_V3} sessions${short.length ? ` (${short.slice(0, 8).join("; ")}${short.length > 8 ? "; …" : ""})` : ""}${extra.length ? `; sessions for tasks not in the frozen suite: ${extra.join(", ")}` : ""}. The confirmatory analysis below is reported as incomplete.`
-      : `Complete: every frozen task has ${REPS_V3} sessions per arm and mode.`,
+      ? `**Incomplete run:** ${short.length} task × arm × mode cells have fewer than ${cfg.reps} sessions${short.length ? ` (${short.slice(0, 8).join("; ")}${short.length > 8 ? "; …" : ""})` : ""}${extra.length ? `; sessions for tasks not in the frozen suite: ${extra.join(", ")}` : ""}. The confirmatory analysis below is reported as incomplete.`
+      : `Complete: every frozen task has ${cfg.reps} sessions per arm and mode.`,
     "",
   ];
   if (existsSync(join(dir, "build.jsonl"))) {
@@ -384,26 +448,34 @@ async function analyzeV3(rows: Row[], dir: string, outFile: string | undefined):
   }
 
   const pooled = rows.filter((r) => meta.has(r.task));
-  const P = twoLevel(pooled, PRIMARY_V3[0], PRIMARY_V3[1], frozen);
+  const P = PRIMARY ? boot(pooled, PRIMARY[0], PRIMARY[1], frozen) : undefined;
+  if (PRIMARY && P) {
+    out.push(
+      "## Primary comparison",
+      "",
+      ...header,
+      row(`${PRIMARY[0]} vs ${PRIMARY[1]}`, P, 0.95),
+      "",
+      `Decision: ${P.lo > 0 ? "**stalemap helps** (the interval excludes zero)." : P.hi < 0 ? "**stalemap hurts** (the interval is below zero)." : "**not shown**: the interval includes zero."}`,
+      "",
+    );
+  }
+  if (SECONDARY.length) {
+    out.push(
+      `## Secondary comparisons (Bonferroni over ${cfg.secondaryCount}: ${Math.round(1000 * secondaryLevel) / 10}% intervals)`,
+      "",
+      ...header,
+      ...SECONDARY.map(([a, b]) => row(`${a} vs ${b}`, boot(pooled, a, b, frozen, secondaryLevel), secondaryLevel)),
+      "",
+    );
+  }
   out.push(
-    "## Primary comparison",
-    "",
-    ...header,
-    row(`${PRIMARY_V3[0]} vs ${PRIMARY_V3[1]}`, P, 0.95),
-    "",
-    `Decision: ${P.lo > 0 ? "**stalemap helps** (the interval excludes zero)." : P.hi < 0 ? "**stalemap hurts** (the interval is below zero)." : "**not shown**: the interval includes zero."}`,
-    "",
-    "## Secondary comparisons (Bonferroni over three: 98.3% intervals)",
-    "",
-    ...header,
-    ...SECONDARY_V3.map(([a, b]) => row(`${a} vs ${b}`, twoLevel(pooled, a, b, frozen, 1 - 0.05 / 3), 1 - 0.05 / 3)),
-    "",
     "## Exploratory",
     "",
     "Not part of the decision rule. 95% intervals.",
     "",
     ...header,
-    ...EXPLORATORY_V3.filter(([a, b]) => arms.includes(a) && arms.includes(b)).map(([a, b]) => row(`${a} vs ${b}`, twoLevel(pooled, a, b, frozen), 0.95)),
+    ...cfg.exploratory.filter(([a, b]) => arms.includes(a) && arms.includes(b)).map(([a, b]) => row(`${a} vs ${b}`, boot(pooled, a, b, frozen), 0.95)),
     "",
   );
 
@@ -419,18 +491,19 @@ async function analyzeV3(rows: Row[], dir: string, outFile: string | undefined):
         `| ${arm} | ${r.filter((x) => x.pass).length}/${r.length} (${pct(passRate(r))}) | ${pct(r.filter((x) => x.staleFinal).length / r.length)} | ${first.length ? pct(first.filter((x) => x.staleFirstEdit).length / first.length) : "–"} | ${pct(r.filter((x) => x.deprecatedFinal).length / r.length)} | $${median(r.map((x) => x.costUsd ?? NaN)).toFixed(3)} | ${Math.round(median(r.map((x) => x.durationMs ?? NaN)) / 1000)}s | ${median(r.map((x) => x.turns ?? NaN))} | ${(r.reduce((s, x) => s + x.context7Calls, 0) / r.length).toFixed(1)} | ${(r.reduce((s, x) => s + (x.guardFindings ?? 0), 0) / r.length).toFixed(1)} |`,
       );
     }
-    if (mode !== "both") out.push("", ...header, ...[PRIMARY_V3, ...SECONDARY_V3].map(([a, b]) => row(`${a} vs ${b}`, twoLevel(rs, a, b, frozen), 0.95)));
+    if (mode !== "both") out.push("", ...header, ...[...(PRIMARY ? [PRIMARY] : []), ...SECONDARY].map(([a, b]) => row(`${a} vs ${b}`, boot(rs, a, b, frozen), 0.95)));
     out.push("");
   }
 
   // Breakdowns by task attributes, each with the primary comparison on that subset (exploratory).
+  const headline = PRIMARY ?? SECONDARY[0] ?? (["stalemap-full", "alone"] as Comparison);
   for (const [title, key] of [["kind", "kind"], ["change type", "changeType"], ["package", "package"], ["scenario", "scenario"]] as const) {
     const groups = [...new Set(frozen.map((t) => meta.get(t)?.[key] ?? "?"))].sort();
-    out.push(`### By ${title} (exploratory)`, "", `| ${title} | tasks | ${arms.join(" | ")} | ${PRIMARY_V3[0]} vs ${PRIMARY_V3[1]} |`, `|---|---|${arms.map(() => "---").join("|")}|---|`);
+    out.push(`### By ${title} (exploratory)`, "", `| ${title} | tasks | ${arms.join(" | ")} | ${headline[0]} vs ${headline[1]} |`, `|---|---|${arms.map(() => "---").join("|")}|---|`);
     for (const g of groups) {
       const ts = frozen.filter((t) => (meta.get(t)?.[key] ?? "?") === g);
       const rs = pooled.filter((r) => ts.includes(r.task));
-      const e = twoLevel(rs, PRIMARY_V3[0], PRIMARY_V3[1], ts);
+      const e = boot(rs, headline[0], headline[1], ts);
       out.push(`| ${g} | ${ts.length} | ${arms.map((a) => {
         const r = rs.filter((x) => x.arm === a);
         return r.length ? `${r.filter((x) => x.pass).length}/${r.length} (${pct(passRate(r))})` : "–";

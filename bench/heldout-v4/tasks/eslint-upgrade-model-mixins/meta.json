@@ -1,0 +1,21 @@
+{
+  "title": "ESLint 10.10: no-extra-bind sees through this in class fields and static blocks",
+  "template": "latest",
+  "change": "eslint@10.10.0/no-extra-bind-class-fields-static-blocks",
+  "package": "eslint",
+  "scenario": "upgrade",
+  "changeType": "default-behavior",
+  "kind": "type-checks",
+  "stale": [
+    "\\}\\s*\\.bind\\(\\s*this\\s*\\)",
+    "eslint-disable[^\\n]*no-extra-bind"
+  ],
+  "deprecated": [],
+  "newApi": [
+    "\\.bind",
+    "no-extra-bind",
+    "class field",
+    "static block"
+  ],
+  "oracle": "Since ESLint 10.10, no-extra-bind reports .bind() on a function whose only `this` is inside class field initializers or static blocks (that `this` is the class/instance); drop the .bind()."
+}

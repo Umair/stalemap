@@ -1,0 +1,13 @@
+{
+  "title": "zod 4.5: Zod 3 compat type aliases report as deprecated",
+  "template": "latest",
+  "change": "zod@4.5.0/compat-type-aliases-deprecation-surfaced",
+  "package": "zod",
+  "scenario": "new-code",
+  "changeType": "deprecation",
+  "kind": "type-checks",
+  "stale": ["\\bZodTypeAny\\b", "\\bZodSchema\\b", "\\bz\\.Schema\\b", "\\bz\\.TypeOf<", "\\bZodFirstPartySchemaTypes\\b"],
+  "deprecated": ["\\bZodTypeAny\\b", "\\bZodSchema\\b", "\\bz\\.Schema\\b", "\\bz\\.TypeOf<", "\\bZodFirstPartySchemaTypes\\b"],
+  "newApi": ["ZodType\\b", "\\$ZodType"],
+  "oracle": "Since zod 4.5, TypeScript reports the Zod 3 aliases ZodTypeAny, ZodSchema, Schema and TypeOf as deprecated; use z.ZodType (or z.core.$ZodType) and z.infer/z.output instead."
+}

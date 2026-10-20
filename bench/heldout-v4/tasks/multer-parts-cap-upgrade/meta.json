@@ -1,0 +1,13 @@
+{
+  "title": "multer 2.4: part-count cap after the upgrade",
+  "template": "latest",
+  "change": "multer@2.4.0/parts-limit-inclusive",
+  "package": "multer",
+  "scenario": "upgrade",
+  "changeType": "default-behavior",
+  "kind": "type-checks",
+  "stale": ["parts\\s*:\\s*[\\w.]+\\s*\\+\\s*1\\b"],
+  "deprecated": [],
+  "newApi": ["parts\\s*:\\s*MAX_PARTS\\s*[,}]", "\\binclusive\\b", "exactly limits\\.parts"],
+  "oracle": "Since multer 2.4, a request with exactly limits.parts parts is accepted and LIMIT_PART_COUNT fires only above the limit (before, reaching the limit failed); set parts to the real maximum, with no extra allowance."
+}

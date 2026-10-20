@@ -1,0 +1,19 @@
+{
+  "title": "better-auth 1.7: session history with secondary storage and preserved sessions",
+  "template": "latest",
+  "change": "better-auth@1.7.0/signout-secondary-storage-runs-delete-hooks",
+  "package": "better-auth",
+  "scenario": "new-code",
+  "changeType": "default-behavior",
+  "kind": "type-checks",
+  "stale": [
+    "^(?![\\s\\S]*\\bdelete\\s*:\\s*\\{[\\s\\S]*?\\b(?:before|after)\\b)(?![\\s\\S]*/sign-out)[\\s\\S]*\\blistSessionHistory\\b[\\s\\S]*expiresAt[\\s\\S]*?<=?\\s*now[\\s\\S]*?(?:expired)"
+  ],
+  "deprecated": [],
+  "newApi": [
+    "databaseHooks",
+    "\\bhook",
+    "\\bended\\b"
+  ],
+  "oracle": "Since better-auth 1.7, with secondaryStorage and preserveSessionInDatabase, sign-out and revocation run session.delete hooks and set the kept row's expiresAt to now; record the end in a delete hook."
+}

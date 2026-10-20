@@ -1,0 +1,11 @@
+{"id":"vitest@5.0.0/each-title-strings-unquoted","outcome":"task","task":"vitest-slug-case-names"}
+{"id":"vitest@5.0.0/class-mock-prototype-chain","outcome":"skip","criterion":"S6","reason":"On 4.1.7 class-mock instances simply lacked prototype methods, so working v4 code supplied its own (constructor impls returning objects or assigning this.x, prototype spies, class-field stubs, toEqual on instances) and all of these still pass unchanged on 5.0.5 (checked); only assertions that a method is missing or instanceof is false would break, which no plausible code checks."}
+{"id":"vitest@5.0.0/node22-vite64-minimum","outcome":"skip","criterion":"S4","reason":"Raised minimum Node.js and Vite versions with no API change."}
+{"id":"vitest@5.0.0/pretty-format-inspection","outcome":"task","task":"vitest-full-case-titles"}
+{"id":"vitest@5.0.0/inline-projects-share-vite-server","outcome":"task","task":"vitest-dom-project-platform"}
+{"id":"vitest@5.0.0/sequential-api-removed","outcome":"task","task":"vitest-restock-flow-order"}
+{"id":"vitest@5.0.0/resolveconfig-returns-vite-config","outcome":"task","task":"vitest-ci-test-settings"}
+{"id":"vitest@5.0.0/html-reporter-outputdir","outcome":"skip","criterion":"S3","reason":"The html reporter and its outputDir handling ship in @vitest/ui, a separate package outside the frame; the pinned vitest 5.0.5 never reads the option (it fails at startup with a missing @vitest/ui dependency), so the frame package doesn't behave as the entry says."}
+{"id":"vitest@5.0.0/coverage-include-exclude-relative","outcome":"task","task":"vitest-coverage-upgrade"}
+{"id":"vitest@5.0.0/tomatchscreenshot-screenshotdirectory","outcome":"skip","criterion":"S2","reason":"toMatchScreenshot only runs in Vitest browser mode, which needs a browser provider package (@vitest/browser-playwright or -webdriverio) and a real browser binary that the template cannot install with npm install --ignore-scripts."}
+{"id":"vitest@5.0.0/experimental-api-methods-deprecated","outcome":"task","task":"vitest-list-test-names"}

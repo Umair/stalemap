@@ -1,0 +1,1 @@
+{"id": "@reduxjs/toolkit@2.13.0/min-typescript-5-6", "package": "@reduxjs/toolkit", "version": "2.13.0", "date": "2026-09-29", "type": "breaking", "summary": "The minimum supported TypeScript version is raised to 5.6 (from 5.4 after 2.12.0); older TypeScript versions are no longer tested", "source": "https://github.com/reduxjs/redux-toolkit/releases/tag/v2.13.0"}

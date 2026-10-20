@@ -14,9 +14,11 @@ export interface ChangelogItem {
   heading?: string;
   /** Cleaned single-paragraph text (inline code kept, code blocks dropped). */
   text: string;
-  /** Raw text including code blocks, for the optional LLM pass. */
+  /** Raw text including code blocks, for the optional LLM pass and search. */
   raw: string;
   score: number;
+  /** Position in its release's notes: items under one heading read in this order. */
+  seq?: number;
 }
 
 export interface ChangelogResult {
@@ -166,7 +168,7 @@ export function extractItems(section: Section, usedNames: Set<string>): Changelo
     const text = cleanItemText(raw);
     if (!text) return;
     const score = scoreItem(text, raw, bullet, heading, section.version, usedNames) - (underTitle ? 3 : 0);
-    items.push({ version: section.version, heading, text, raw, score });
+    items.push({ version: section.version, heading, text, raw, score, seq: items.length });
   };
 
   for (const line of section.body.replace(/\r\n?/g, "\n").split("\n")) {
@@ -183,7 +185,7 @@ export function extractItems(section: Section, usedNames: Set<string>): Changelo
       descriptive = isDescriptiveHeading(heading);
       if (descriptive) {
         const text = cleanItemText(heading.replace(/^[^\w`]+/u, ""));
-        if (text) items.push({ version: section.version, heading, text, raw: heading, score: scoreItem(text, heading, true, heading, section.version, usedNames) });
+        if (text) items.push({ version: section.version, heading, text, raw: heading, score: scoreItem(text, heading, true, heading, section.version, usedNames), seq: items.length });
       }
       continue;
     }
@@ -326,6 +328,41 @@ async function githubReleases(p: Packument, since: Date, useCache: boolean, stri
   }
 }
 
+/**
+ * The description of a pull request in the package's repository: what a release-note line like
+ * "Return client errors for unrecognized Server Actions (#84391)" or "see the PR for documented
+ * compatibility effects" leaves out. Cached like the release notes; undefined when there's none.
+ */
+export async function pullRequestText(p: Packument, pr: number, useCache: boolean): Promise<{ title: string; body: string } | undefined> {
+  const or = ownerRepo(p.repository);
+  if (!or) return undefined;
+  const text = await cachedText(
+    `pull:${or.join("/")}#${pr}`,
+    async () => {
+      const token = await githubToken();
+      const headers: Record<string, string> = { accept: "application/vnd.github+json", "user-agent": "stalemap" };
+      if (token) headers.authorization = `Bearer ${token}`;
+      const res = await fetchWithRetry(`https://api.github.com/repos/${or[0]}/${or[1]}/pulls/${pr}`, { headers });
+      if (!res.ok) return undefined;
+      const d = (await res.json()) as { title?: string; body?: string | null };
+      return JSON.stringify({ title: d.title ?? "", body: d.body ?? "" });
+    },
+    useCache,
+  );
+  try {
+    return text ? (JSON.parse(text) as { title: string; body: string }) : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
+/** Pull request numbers a release-note item links to: "(#11141)", "[#84391](…/pull/84391)". */
+export function pullRequestRefs(raw: string): number[] {
+  const out = new Set<number>();
+  for (const m of raw.matchAll(/\/pull\/(\d+)|(?<![\w/])#(\d{2,7})\b/g)) out.add(Number(m[1] ?? m[2]));
+  return [...out];
+}
+
 const inRange = (v: string, from: string, to: string) => semver.gt(v, from) && semver.lte(v, to);
 
 /** Collect and score the changelog entries for releases after `from` up to `to`. */
@@ -390,8 +427,28 @@ export async function changelogSections(opts: {
       if (opts.strict) throw err;
       debug(`GitHub releases for ${p.name}: ${(err as Error).message}`);
     }
+  } else if (lagsBehind(sections, to)) {
+    // A CHANGELOG that stops before the pinned version (axios 1.20.0's ends at 1.19.0): the newer
+    // releases' notes come from GitHub releases.
+    try {
+      const newest = sections.map((s) => s.version).filter((v) => semver.valid(v)).sort(semver.rcompare)[0];
+      const since = new Date(Date.parse(p.time[newest] ?? "") || 0);
+      const later = pick(await githubReleases(p, since, opts.useCache, opts.strict)).filter((s) => semver.valid(s.version) && semver.gt(s.version, newest));
+      sections = [...later, ...sections];
+    } catch (err) {
+      if (opts.strict) throw err;
+      debug(`GitHub releases after ${p.name}'s CHANGELOG: ${(err as Error).message}`);
+    }
   }
   return { source, sections };
+}
+
+/** The notes stop at a stable release older than `to`'s minor line (a patch behind is normal: not every patch gets notes). */
+export function lagsBehind(sections: Section[], to: string): boolean {
+  const versions = sections.map((s) => s.version).filter((v) => semver.valid(v) && !semver.prerelease(v));
+  if (!versions.length || !semver.valid(to) || semver.prerelease(to)) return false;
+  const newest = versions.sort(semver.rcompare)[0];
+  return semver.lt(newest, `${semver.major(to)}.${semver.minor(to)}.0`);
 }
 
 /** Scored, deduplicated entries; `usedNames` ranks the ones that mention APIs the project imports higher. */

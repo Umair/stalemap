@@ -1,0 +1,1 @@
+We upgraded nodemailer from 8 to 10, and now every alert sent through `src/mailer.ts` fails with "Greeting never received". Our relay deliberately waits about 3 seconds before it greets clients (an anti-spam greet pause); get alerts sending again, while a relay that accepts the connection but never answers must still fail within 10 seconds.

@@ -1,0 +1,24 @@
+{
+  "title": "TypeScript 7: Closure-style JSDoc in a checked JavaScript module",
+  "template": "latest",
+  "change": "typescript@7.0.2/js-jsdoc-types-and-tags-dropped",
+  "package": "typescript",
+  "scenario": "upgrade",
+  "changeType": "breaking",
+  "kind": "compile-error",
+  "stale": [
+    "@enum\\b",
+    "\\{\\s*function\\s*\\(",
+    "\\{\\?=?\\}",
+    "@typedef\\s*\\{.*\\}\\s*\\*/\\s*\\n\\s*var\\s+\\w+\\s*;"
+  ],
+  "deprecated": [],
+  "newApi": [
+    "@typedef",
+    "=>",
+    "Closure",
+    "@enum",
+    "typeof"
+  ],
+  "oracle": "TypeScript 7.0 drops Closure JSDoc in .js files: @enum, function(T): R types, the bare ? type and /** @typedef {T} */ var Name; use @typedef {T} Name, (x: T) => R, any, and a typedef plus a typed const for enums."
+}

@@ -1,0 +1,1 @@
+`next build` fails on our account page (`app/account/page.tsx`), which reads the session cookie and greets the signed-in user. That page is personal, so it's fine for it to wait until it has rendered for the request instead of showing a loading state first: make the build pass without adding a loading fallback and without changing what the page shows.

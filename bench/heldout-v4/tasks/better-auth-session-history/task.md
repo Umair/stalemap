@@ -1,0 +1,1 @@
+Implement `listSessionHistory` in `src/session-history.ts` for our security page: every session the user has had (from the database copy our better-auth setup in `src/auth.ts` keeps), newest first, each marked "active", "signed-out" (the user signed out of it or it was revoked) or "expired" (it ran out on its own). You may change `src/auth.ts` if you need to.

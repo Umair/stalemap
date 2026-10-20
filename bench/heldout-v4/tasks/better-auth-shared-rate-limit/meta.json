@@ -1,0 +1,13 @@
+{
+  "title": "better-auth 1.7: rate-limit counters in a shared key-value store",
+  "template": "latest",
+  "change": "better-auth@1.7.0/rate-limit-storage-consume-required",
+  "package": "better-auth",
+  "scenario": "new-code",
+  "changeType": "breaking",
+  "kind": "compile-error",
+  "stale": ["customStorage\\s*:\\s*\\{(?![^]*?\\bconsume\\b)[^]*?\\b(?:get|set)\\s*(?:\\(|:)"],
+  "deprecated": [],
+  "newApi": ["\\bconsume\\b", "\\bincrement\\b", "secondary-?storage"],
+  "oracle": "Since better-auth 1.7 rateLimit.customStorage must implement one consume(key, { window, max }) method returning { allowed, retryAfter }; get/set storage is no longer accepted."
+}

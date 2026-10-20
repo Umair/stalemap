@@ -1,0 +1,1 @@
+We run several instances of our API, and each one currently keeps its own better-auth rate-limit counters, so the limits in `src/auth.ts` don't hold across instances. Make `createAuth` keep the rate-limit counters in the shared key-value store it's given (`KvStore` in `src/kv.ts`), keeping the current limits.

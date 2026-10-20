@@ -1,0 +1,1 @@
+Implement `generateProductPhoto` in `src/images.ts`: given a product description, it should generate a photo of the product with Firebase AI Logic (the `ai` instance in `src/firebase.ts`) and return the image's MIME type and base64 data.

@@ -1,0 +1,1 @@
+In `src/useAppForm.ts`, make the forms' `handleSubmit` show an error toast (`notify.error` from `src/notify.ts`, with the error's message) when the submit handler throws, instead of leaving an unhandled rejection. Apart from that, `handleSubmit` should work exactly like react-hook-form's.

@@ -1,0 +1,13 @@
+{
+  "title": "firebase 12.18: FunctionsError messages end with the HTTP status",
+  "template": "latest",
+  "change": "firebase@12.18.0/functionserror-status-in-message",
+  "package": "firebase",
+  "scenario": "new-code",
+  "changeType": "default-behavior",
+  "kind": "type-checks",
+  "stale": ["\\breason\\s*:\\s*(?:\\w+\\.)?(?:err|error|e)\\.message\\s*[,}\\n]", "\\breason\\s*:\\s*(?:\\(\\s*\\w+\\s+as\\s+\\w+\\s*\\))\\.message\\s*[,}\\n]"],
+  "deprecated": [],
+  "newApi": ["\\[\\\\d", "\\[400\\]", "HTTP status"],
+  "oracle": "Since firebase 12.18, a callable function's FunctionsError message ends with the HTTP status, e.g. \"Not found [404]\" (and customData.url is set); strip the \" [NNN]\" suffix to get the server's own message."
+}

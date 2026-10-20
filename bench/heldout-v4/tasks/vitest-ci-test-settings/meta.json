@@ -1,0 +1,13 @@
+{
+  "title": "vitest 5: resolveConfig returns the resolved Vite config",
+  "template": "latest",
+  "change": "vitest@5.0.0/resolveconfig-returns-vite-config",
+  "package": "vitest",
+  "scenario": "new-code",
+  "changeType": "breaking",
+  "kind": "compile-error",
+  "stale": ["\\{\\s*(?:\\w+\\s*,\\s*)*vitestConfig\\s*(?:,[^}]*)?\\}\\s*=\\s*(?:await\\s+)?resolveConfig|\\.vitestConfig\\b", "\\{[^}]*\\bviteConfig\\b[^}]*\\}\\s*=\\s*await\\s+resolveConfig"],
+  "deprecated": [],
+  "newApi": ["\\bresolveConfig\\b", "\\.test\\b"],
+  "oracle": "In Vitest 5, resolveConfig from vitest/node returns the resolved Vite config instead of { vitestConfig, viteConfig }; read the resolved Vitest config from its test property."
+}

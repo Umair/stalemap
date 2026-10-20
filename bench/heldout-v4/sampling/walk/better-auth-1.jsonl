@@ -1,0 +1,8 @@
+{"id":"better-auth@1.7.3/schema-validation-on-init","outcome":"task","task":"better-auth-lean-sqlite-schema"}
+{"id":"better-auth@1.7.0/scim-decoupled-from-organization","outcome":"skip","criterion":"S3","reason":"The change ships only in @better-auth/scim (PR 10390), a separate package outside the frame; the pinned better-auth 1.7.11 contains no SCIM code, so the frame package doesn't behave as the entry says."}
+{"id":"better-auth@1.7.0/generic-oauth-pkce-default","outcome":"task","task":"better-auth-acme-sso"}
+{"id":"better-auth@1.7.0/rate-limit-storage-consume-required","outcome":"task","task":"better-auth-shared-rate-limit"}
+{"id":"better-auth@1.7.7/magic-link-verification-prefixes","outcome":"task","task":"better-auth-cancel-magic-link"}
+{"id":"better-auth@1.7.0/upstream-provider-verifyidtoken-removed","outcome":"task","task":"better-auth-mobile-id-token"}
+{"id":"better-auth@1.7.7/oauth-state-purpose-keys","outcome":"skip","criterion":"S6","reason":"The key derivation is internal: no public API or option changed, and its only visible effects are OAuth sign-ins left in flight across a deploy and OAuth Proxy pairs running mixed versions (deployment state, not code); tried an app reading the state cookie and a custom proxy receiver, neither of which plausible code does since both payloads are opaque encrypted blobs."}
+{"id":"better-auth@1.7.0/signout-secondary-storage-runs-delete-hooks","outcome":"task","task":"better-auth-session-history"}

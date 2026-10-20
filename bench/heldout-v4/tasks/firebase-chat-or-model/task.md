@@ -1,0 +1,1 @@
+Change `ask` in `src/help.ts` so it can also be given an ongoing chat (one started with `helpModel.startChat()`), in which case the question continues that conversation. Given a model, it should keep answering one-off questions as it does now.

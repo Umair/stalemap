@@ -1,0 +1,1 @@
+We upgraded ESLint from 10.4 to 10.13, and `npm run lint` now fails on `src/charts/registry.js`. Make lint pass again without loosening `eslint.config.js`; the dashboard still creates charts with `new charts[name](series)`, so every chart type must stay a constructor.

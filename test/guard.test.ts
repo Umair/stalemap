@@ -476,3 +476,51 @@ test("an edit that sets one experimental flag gets no notes about the other keys
   const own = await guardFile({ cwd: await project(files("ppr")), file: "next.config.ts", reports: [next] });
   assert.ok(own!.findings.some((f) => /`experimental\.ppr` still type-checks/.test(f.problem)), JSON.stringify(own));
 });
+
+test("a note that leads with another function isn't the fix for an error in this one, though both name the option", async () => {
+  const dir = await project({
+    "package.json": JSON.stringify({ name: "app", dependencies: { zod: "2.0.0" } }),
+    "node_modules/zod/package.json": JSON.stringify({ name: "zod", version: "2.0.0", types: "index.d.ts" }),
+    "node_modules/zod/index.d.ts": "export interface Config { locale?: string }\nexport declare function config(c: Partial<Config>): void;\nexport declare function literal(v: string, o?: { error?: string }): unknown;\n",
+    "src/i18n.ts": `import * as z from "zod";\nz.config({ errorMap: () => "x" });\nz.literal("a", { errorMap: () => "y" });\n`,
+  });
+  const zod = changed("zod", [
+    { subpath: ".", symbol: "literal", kind: "signature", detail: "`literal()` options no longer accept `errorMap`; use `error` instead", used: true, severity: 7, meta: { removedOptions: ["errorMap"] } },
+  ]);
+  const result = await guardFile({ cwd: dir, file: "src/i18n.ts", reports: [zod] });
+  const all = JSON.stringify(result!.findings, null, 2);
+  const byLine = (n: number) => result!.findings.find((f) => f.line === n);
+  assert.ok(byLine(2), all);
+  assert.equal(byLine(2)!.hint, undefined, `z.config's error gets no literal() note: ${all}`);
+  assert.match(byLine(3)?.hint ?? "", /`literal\(\)` options no longer accept `errorMap`/, all);
+});
+
+test("a moved member read as a property of something the package exports is reported, though it still type-checks", async () => {
+  const dir = await project({
+    "package.json": JSON.stringify({ name: "app", dependencies: { axios: "2.0.0" } }),
+    "node_modules/axios/package.json": JSON.stringify({ name: "axios", version: "2.0.0", types: "index.d.ts" }),
+    "node_modules/axios/index.d.ts": "export declare enum HttpStatusCode { ContentTooLarge = 413, PayloadTooLarge = 413 }\ndeclare const axios: { HttpStatusCode: typeof HttpStatusCode };\nexport default axios;\n",
+    "src/upload.ts": `import axios, { HttpStatusCode } from "axios";\nexport const a = HttpStatusCode.PayloadTooLarge;\nexport const b = axios.HttpStatusCode.PayloadTooLarge;\nexport const c = HttpStatusCode.ContentTooLarge;\nconst local = { HttpStatusCode: { PayloadTooLarge: 1 } };\nexport const d = local.HttpStatusCode.PayloadTooLarge;\n`,
+  });
+  const axios = changed("axios", [
+    { subpath: ".", symbol: "AxiosStatic", kind: "deprecated", detail: "`AxiosStatic`: `HttpStatusCode.PayloadTooLarge` moved", used: true, severity: 6, meta: { movedKeys: { "HttpStatusCode.PayloadTooLarge": "use `ContentTooLarge`" } } },
+  ]);
+  const result = await guardFile({ cwd: dir, file: "src/upload.ts", reports: [axios] });
+  const moved = result!.findings.filter((f) => /still type-checks/.test(f.problem));
+  assert.deepEqual(moved.map((f) => f.line), [2, 3], JSON.stringify(result!.findings, null, 2));
+  assert.match(moved[0].problem, /`HttpStatusCode\.PayloadTooLarge` still type-checks, but axios 2\.0\.0 moved it: use `ContentTooLarge`/);
+});
+
+test("a type name the error quotes ('string') doesn't pick a note that happens to mention that type", async () => {
+  const dir = await project({
+    "package.json": JSON.stringify({ name: "app", dependencies: { openai: "2.0.0" } }),
+    "node_modules/openai/package.json": JSON.stringify({ name: "openai", version: "2.0.0", types: "index.d.ts" }),
+    "node_modules/openai/index.d.ts": "export declare function send(event: { type: 'x' }): void;\n",
+    "src/rt.ts": `import { send } from "openai";\nsend("hello");\n`,
+  });
+  const openai = changed("openai", [], ["`ToolOutput.output` now returns `string | Array` instead of `string` only."]);
+  const result = await guardFile({ cwd: dir, file: "src/rt.ts", reports: [openai] });
+  const f = result!.findings.find((x) => x.line === 2);
+  assert.ok(f, JSON.stringify(result!.findings));
+  assert.equal(f!.hint, undefined, JSON.stringify(f));
+});

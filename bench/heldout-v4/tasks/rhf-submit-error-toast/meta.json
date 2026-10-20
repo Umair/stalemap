@@ -1,0 +1,13 @@
+{
+  "title": "react-hook-form 7.84: handleSubmit resolves to the onValid result",
+  "template": "latest",
+  "change": "react-hook-form@7.84.0/handle-submit-returns-onvalid-result",
+  "package": "react-hook-form",
+  "scenario": "new-code",
+  "changeType": "breaking",
+  "kind": "compile-error",
+  "stale": ["(?<!(?:return|=)\\s*)\\bawait\\s+onValid\\(", "Promise<void>"],
+  "deprecated": [],
+  "newApi": ["TResult", "resolves to", "return value", "returns? what"],
+  "oracle": "Since react-hook-form 7.84, handleSubmit(onValid)() resolves to onValid's return value (Promise<Awaited<TResult> | undefined>), so a wrapper typed UseFormHandleSubmit must return the handler's result."
+}

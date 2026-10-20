@@ -1,0 +1,15 @@
+{
+  "title": "stripe 23: verifyHeader checks the timestamp by default",
+  "template": "latest",
+  "change": "stripe@23.0.0/verifyheader-default-tolerance",
+  "package": "stripe",
+  "scenario": "new-code",
+  "changeType": "breaking",
+  "kind": "type-checks",
+  "stale": [
+    "\\.verifyHeader(?:Async)?\\(\\s*[^,()]+,\\s*[^,()]+,\\s*[^,()]+\\)"
+  ],
+  "deprecated": [],
+  "newApi": ["\\btolerance\\b", "DEFAULT_TOLERANCE"],
+  "oracle": "Since stripe 23, webhooks.signature.verifyHeader()/verifyHeaderAsync() reject timestamps older than DEFAULT_TOLERANCE (300 s) when tolerance is omitted; pass 0 to check only the signature."
+}

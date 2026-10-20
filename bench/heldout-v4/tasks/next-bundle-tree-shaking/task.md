@@ -1,0 +1,1 @@
+Our pages each import one or two helpers from big shared modules like `app/lib/format.ts`, but the Turbopack chunks include the whole module. Turn on Turbopack's experimental tree shaking in `next.config.ts`, the option that splits modules up so each chunk only pulls in the parts it uses; keep our existing settings.

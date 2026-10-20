@@ -1,0 +1,13 @@
+{
+  "title": "Next 16.3: Turbopack module tree shaking",
+  "template": "latest",
+  "change": "next@16.3.0/turbopacktreeshaking-renamed",
+  "package": "next",
+  "scenario": "new-code",
+  "changeType": "breaking",
+  "kind": "compile-error",
+  "stale": ["\\bturbopackTreeShaking\\b"],
+  "deprecated": [],
+  "newApi": ["turbopackModuleFragments", "[Ff]ragment", "turbopackTreeShaking", "renamed"],
+  "oracle": "Next 16.3 renamed `experimental.turbopackTreeShaking` to `experimental.turbopackModuleFragments`; the old key is no longer recognized."
+}

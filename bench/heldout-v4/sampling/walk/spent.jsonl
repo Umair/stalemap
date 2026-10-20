@@ -1,0 +1,15 @@
+{"id":"typescript@7.0.2/remove-target-es5","outcome":"skip","criterion":"S5","reason":"Spent: v3 task `ts-upgrade-checkout-widget` was built from this change (sampling/spent.md)."}
+{"id":"axios@1.20.0/fetch-maxredirects-zero","outcome":"skip","criterion":"S5","reason":"Spent: v3 task `axios-download-redirects` was built from this change (sampling/spent.md)."}
+{"id":"zod@4.5.0/record-keys-intersection-match-typescript","outcome":"skip","criterion":"S5","reason":"Spent: v3 task `zod-theme-overrides` was built from this change (sampling/spent.md)."}
+{"id":"typescript@7.0.2/remove-moduleresolution-classic","outcome":"skip","criterion":"S5","reason":"Spent: v3 task `ts-upgrade-browser-app` was built from this change (sampling/spent.md)."}
+{"id":"typescript@7.0.2/remove-baseurl","outcome":"skip","criterion":"S5","reason":"Spent: v3 task `ts-upgrade-path-aliases` was built from this change (sampling/spent.md)."}
+{"id":"lucide-react@1.42.0/absolute-stroke-width-deprecated","outcome":"skip","criterion":"S5","reason":"Spent: v3 task `lucide-crisp-strokes` was built from this change (sampling/spent.md)."}
+{"id":"typescript@7.0.2/template-literal-unicode-code-points","outcome":"skip","criterion":"S5","reason":"Spent: v3 task `ts-nav-label-length` was built from this change (sampling/spent.md)."}
+{"id":"jest@30.5.0/module-register-throws-in-test","outcome":"skip","criterion":"S5","reason":"Spent: v3 task `jest-sql-require-hook` was built from this change (sampling/spent.md)."}
+{"id":"axios@1.20.0/payloadtoolarge-deprecated","outcome":"skip","criterion":"S5","reason":"Spent: v3 task `axios-upload-too-large` was built from this change (sampling/spent.md)."}
+{"id":"zod@4.5.0/json-schema-output-changes","outcome":"skip","criterion":"S5","reason":"Spent: v3 task `zod-assistant-tools` was built from this change (sampling/spent.md)."}
+{"id":"typescript@7.0.2/remove-alwaysstrict-false","outcome":"skip","criterion":"S5","reason":"Spent: v3 task `ts-upgrade-parcel-tracking` was built from this change (sampling/spent.md)."}
+{"id":"typescript@7.0.2/remove-module-amd-umd-system-none","outcome":"skip","criterion":"S5","reason":"Spent: v3 task `ts-upgrade-slug-library` was built from this change (sampling/spent.md)."}
+{"id":"lucide-react@1.42.0/icon-module-exports-icondata","outcome":"skip","criterion":"S5","reason":"Spent: v3 task `lucide-icon-shapes` was built from this change (sampling/spent.md)."}
+{"id":"zod@4.5.0/iso-datetime-requires-seconds","outcome":"skip","criterion":"S5","reason":"Spent: v3 task `zod-partner-event-times` was built from this change (sampling/spent.md)."}
+{"id":"typescript@7.0.2/remove-downleveliteration","outcome":"skip","criterion":"S5","reason":"Spent: v3 task `ts-upgrade-build-config` was built from this change (sampling/spent.md)."}

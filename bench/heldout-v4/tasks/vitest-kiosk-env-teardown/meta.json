@@ -1,0 +1,13 @@
+{
+  "title": "vitest 5: restoring globals in a custom environment's teardown",
+  "template": "latest",
+  "change": "vitest@5.0.0/populateglobal-originals-descriptors",
+  "package": "vitest",
+  "scenario": "new-code",
+  "changeType": "breaking",
+  "kind": "type-checks",
+  "stale": ["originals\\.forEach\\(\\s*\\(\\s*(\\w+)\\s*,\\s*(\\w+)\\s*\\)\\s*=>\\s*\\(?\\s*\\w+\\[\\s*\\2\\s*\\]\\s*=\\s*\\1\\b"],
+  "deprecated": [],
+  "newApi": ["Object\\.defineProperty", "PropertyDescriptor"],
+  "oracle": "In Vitest 5, populateGlobal's originals map holds property descriptors, not values; restore them with Object.defineProperty(global, key, descriptor) instead of assigning global[key] = value."
+}

@@ -1,0 +1,13 @@
+{
+  "title": "Next 16.3: og:image share card route",
+  "template": "latest",
+  "change": "next@16.3.0/edge-runtime-deprecated",
+  "package": "next",
+  "scenario": "new-code",
+  "changeType": "deprecation",
+  "kind": "type-checks",
+  "stale": ["\\bruntime\\s*=\\s*[\"'`](?:experimental-)?edge[\"'`]", "\\bpreferredRegion\\b"],
+  "deprecated": ["\\bruntime\\s*=\\s*[\"'`](?:experimental-)?edge[\"'`]", "\\bpreferredRegion\\b"],
+  "newApi": ["[Ee]dge", "nodejs", "Node\\.js", "\\bruntime\\b"],
+  "oracle": "Since Next 16.3, the Edge runtime (`export const runtime = 'edge'`) and `preferredRegion` are deprecated (next build warns); leave route handlers such as `next/og` image routes on the default Node.js runtime."
+}

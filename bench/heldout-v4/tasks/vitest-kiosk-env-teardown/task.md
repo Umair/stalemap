@@ -1,0 +1,1 @@
+Our custom Vitest environment in `src/testing/kiosk-environment.ts` installs the kiosk shell's window as globals, but its teardown never undoes that, so the jsdom globals (and the replaced `navigator`, `Event` and so on) leak past the end of each test file. Make teardown remove the globals the environment added and put back exactly what was there before.

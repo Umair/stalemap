@@ -1,0 +1,13 @@
+{
+  "title": "next-auth 4.24.15: tenant subdomain sign-in redirects",
+  "template": "latest",
+  "change": "next-auth@4.24.15/nextauth-url-wins-over-forwarded-host",
+  "package": "next-auth",
+  "scenario": "new-code",
+  "changeType": "default-behavior",
+  "kind": "type-checks",
+  "stale": ["new URL\\(\\s*url\\s*\\)\\.origin\\s*===\\s*baseUrl", "baseUrl\\s*===\\s*new URL\\(\\s*url\\s*\\)\\.origin", "url\\.startsWith\\(\\s*baseUrl\\s*\\)"],
+  "deprecated": [],
+  "newApi": ["precedence", "forwarded", "X-Forwarded", "AUTH_TRUST_HOST", "baseUrl"],
+  "oracle": "Since next-auth 4.24.15, a set NEXTAUTH_URL wins over the forwarded host even on Vercel or with AUTH_TRUST_HOST, so callbacks' `baseUrl` is NEXTAUTH_URL, not the request's host; check tenant hosts yourself."
+}

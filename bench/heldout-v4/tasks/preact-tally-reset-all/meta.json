@@ -1,0 +1,13 @@
+{
+  "title": "preact 11: refs are forwarded as props, so a ref on a class component no longer gets the instance",
+  "template": "latest",
+  "change": "preact@11.0.0/refs-forwarded-by-default",
+  "package": "preact",
+  "scenario": "new-code",
+  "changeType": "breaking",
+  "kind": "type-checks",
+  "stale": ["^(?=[\\s\\S]*\\bclass\\s+TallyCounter\\s+extends\\s+(?:preact\\.)?Component\\b)(?=[\\s\\S]*<TallyCounter\\b[^>]*\\sref=\\{)"],
+  "deprecated": [],
+  "newApi": ["\\bref\\b", "useImperativeHandle"],
+  "oracle": "In Preact 11, ref is passed to components as an ordinary prop, so a ref on a class component no longer receives the instance (stays null); read props.ref in the component (e.g. useImperativeHandle) or lift state."
+}

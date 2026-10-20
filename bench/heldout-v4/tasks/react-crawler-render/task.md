@@ -1,0 +1,1 @@
+Implement `renderForCrawler` in `src/crawler.tsx` with react-dom's server renderer: it should resolve with status 200 and the complete HTML once everything, including content inside Suspense boundaries such as the product details in `src/ProductPage.tsx`, has rendered. If the page throws while rendering, it should resolve with status 500 and `errorPageHtml` instead.

@@ -1,0 +1,15 @@
+{
+  "title": "stripe 23: v2 account capability status gains rejected",
+  "template": "latest",
+  "change": "stripe@23.0.0/response-enums-new-values",
+  "package": "stripe",
+  "scenario": "new-code",
+  "changeType": "breaking",
+  "kind": "compile-error",
+  "stale": [
+    "^(?![\\s\\S]*(?:\\brejected\\b|\\bdefault\\s*:))[\\s\\S]*\\bcase\\s*[\"'`]unsupported[\"'`]"
+  ],
+  "deprecated": [],
+  "newApi": ["\\brejected\\b"],
+  "oracle": "In stripe 23, v2 account capability status (e.g. configuration.merchant.capabilities.card_payments.status) can also be 'rejected'; handle it, or a switch over the old four values is no longer exhaustive."
+}

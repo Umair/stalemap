@@ -1,0 +1,21 @@
+{
+  "title": "TypeScript 7: a next-auth Session augmentation whose base types conflict",
+  "template": "latest",
+  "change": "typescript@7.0.2/skiplibcheck-conflict-errors-all-sites",
+  "package": "typescript",
+  "scenario": "upgrade",
+  "changeType": "default-behavior",
+  "kind": "compile-error",
+  "stale": [
+    "interface\\s+Session\\s+extends\\s+ApiSession\\b"
+  ],
+  "deprecated": [],
+  "newApi": [
+    "TS2320",
+    "simultaneously extend",
+    "skipLibCheck",
+    "Omit<",
+    "\\bexpires\\b"
+  ],
+  "oracle": "TypeScript 7.0 reports conflicting declarations at every site, so a conflict skipLibCheck used to hide in a .d.ts (e.g. TS2320 from an augmentation's extends clashing with a library base) now errors in your code; remove the conflict."
+}

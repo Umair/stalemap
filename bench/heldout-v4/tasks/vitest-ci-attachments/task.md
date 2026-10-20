@@ -1,0 +1,1 @@
+Our CI job only uploads the `test-artifacts/` folder at the repo root, but the files the `api` and `web` packages' Vitest tests attach with `annotate` end up somewhere else. Change the Vitest config so those attachments are saved in `test-artifacts/` when the whole suite runs from the root.

@@ -1,0 +1,13 @@
+{
+  "title": "vitest 5: inline projects share the declaring config's Vite server",
+  "template": "latest",
+  "change": "vitest@5.0.0/inline-projects-share-vite-server",
+  "package": "vitest",
+  "scenario": "new-code",
+  "changeType": "default-behavior",
+  "kind": "type-checks",
+  "stale": ["^(?![\\s\\S]*sharedViteServer\\s*:\\s*false)[\\s\\S]*plugins\\s*:\\s*\\[\\s*platformAlias\\(\\)\\s*\\][\\s\\S]*\\bprojects\\s*:"],
+  "deprecated": [],
+  "newApi": ["sharedViteServer", "\\bshared?\\b.*\\bserver\\b"],
+  "oracle": "In Vitest 5, inline projects that don't change Vite options share the root config's Vite server, so root plugins' config hooks run once, not per project; set test.sharedViteServer: false if a plugin depends on per-project config."
+}

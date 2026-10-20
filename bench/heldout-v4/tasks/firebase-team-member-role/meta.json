@@ -1,0 +1,13 @@
+{
+  "title": "firebase 13: Firestore UpdateData<T> types dot paths into Record fields",
+  "template": "latest",
+  "change": "firebase@13.0.0/firestore-updatedata-indexed-types",
+  "package": "firebase",
+  "scenario": "new-code",
+  "changeType": "breaking",
+  "kind": "compile-error",
+  "stale": ["updateDoc\\([^;]*\\{\\s*\\[\\s*`members\\.\\$\\{"],
+  "deprecated": [],
+  "newApi": ["\\bFieldPath\\b", "\\bUpdateData\\b", "merge"],
+  "oracle": "In firebase 13, UpdateData<T> types dot-path keys into Record/index-signature fields (no longer any), so a computed key like { [`members.${id}.role`]: v } fails; pass the path as updateDoc(ref, path, value)."
+}

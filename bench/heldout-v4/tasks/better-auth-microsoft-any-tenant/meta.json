@@ -1,0 +1,13 @@
+{
+  "title": "better-auth 1.7: the microsoftEntraId helper rejects common/organizations/consumers tenants",
+  "template": "latest",
+  "change": "better-auth@1.7.0/microsoft-entra-helper-tenant-guid",
+  "package": "better-auth",
+  "scenario": "new-code",
+  "changeType": "breaking",
+  "kind": "type-checks",
+  "stale": ["microsoftEntraId\\s*\\(\\s*\\{[^}]*tenantId\\s*:\\s*[\"'`](common|organizations|consumers)[\"'`]"],
+  "deprecated": [],
+  "newApi": ["socialProviders", "tenant"],
+  "oracle": "Since better-auth 1.7 the generic microsoftEntraId helper needs a concrete tenant GUID and throws for common/organizations/consumers; use the built-in socialProviders.microsoft provider for multi-tenant sign-in."
+}

@@ -1,0 +1,13 @@
+{
+  "title": "better-auth 1.7: the synchronous OAuth2 request builders are removed",
+  "template": "latest",
+  "change": "better-auth@1.7.0/sync-oauth2-request-builders-removed",
+  "package": "better-auth",
+  "scenario": "new-code",
+  "changeType": "breaking",
+  "kind": "compile-error",
+  "stale": ["\\bcreate(AuthorizationCode|RefreshAccessToken|ClientCredentialsToken)Request\\b"],
+  "deprecated": [],
+  "newApi": ["\\bauthorizationCodeRequest\\b", "\\brefreshAccessTokenRequest\\b"],
+  "oracle": "better-auth 1.7 removes createAuthorizationCodeRequest/createRefreshAccessTokenRequest/createClientCredentialsTokenRequest; await authorizationCodeRequest/refreshAccessTokenRequest/clientCredentialsTokenRequest instead."
+}

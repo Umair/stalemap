@@ -1,0 +1,21 @@
+{
+  "title": "ESLint 10.11: no-unsafe-finally reports labeled continue out of finally",
+  "template": "latest",
+  "change": "eslint@10.11.0/no-unsafe-finally-labeled-continue",
+  "package": "eslint",
+  "scenario": "upgrade",
+  "changeType": "default-behavior",
+  "kind": "type-checks",
+  "stale": [
+    "continue\\s+jobs\\b",
+    "eslint-disable[^\\n]*no-unsafe-finally"
+  ],
+  "deprecated": [],
+  "newApi": [
+    "no-unsafe-finally",
+    "continue",
+    "\\bbreak\\b",
+    "label"
+  ],
+  "oracle": "Since ESLint 10.11, no-unsafe-finally (recommended) reports a labeled continue in a finally block that jumps to a loop outside the try; use break on the inner loop or restructure instead."
+}

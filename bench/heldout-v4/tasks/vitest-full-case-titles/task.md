@@ -1,0 +1,1 @@
+In our CI report, the names of the permission tests in `src/permissions.test.ts` get cut off with an ellipsis, so we can't tell the billing-admin cases apart. Make every test name show its role's complete list of actions, without changing what the tests check.

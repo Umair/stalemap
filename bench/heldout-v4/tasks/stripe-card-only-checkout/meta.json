@@ -1,0 +1,13 @@
+{
+  "title": "stripe 23: card-only Checkout",
+  "template": "latest",
+  "change": "stripe@23.0.0/payment-method-types-param-removed",
+  "package": "stripe",
+  "scenario": "new-code",
+  "changeType": "breaking",
+  "kind": "compile-error",
+  "stale": ["(?<![\\w.])payment_method_types\\s*:"],
+  "deprecated": [],
+  "newApi": ["allowed_payment_method_types", "payment_method_types", "excluded_payment_method_types"],
+  "oracle": "stripe 23 removed the `payment_method_types` param from Checkout Session, PaymentIntent and SetupIntent create/update; pass `allowed_payment_method_types` (a filter on the eligible methods) instead."
+}

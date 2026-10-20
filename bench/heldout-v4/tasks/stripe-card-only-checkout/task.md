@@ -1,0 +1,1 @@
+Our Checkout page (created in `src/checkout.ts`) currently offers every payment method Stripe considers eligible. Our refund tooling only handles cards, so change it so customers can only pay by card; everything else about the session stays as it is.

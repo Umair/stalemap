@@ -1,0 +1,1 @@
+Implement `parseWidget` in `src/widgets.ts` so saved dashboard widgets are validated against the shared JSON Schema in `schemas/widget.schema.json`, converted with zod rather than a second hand-written copy. `position` and `size` are pairs, so a widget with more or fewer than two numbers in either must be rejected.

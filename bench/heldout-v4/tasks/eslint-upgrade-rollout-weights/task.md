@@ -1,0 +1,1 @@
+We upgraded ESLint from 10.4 to 10.13, and `npm run lint` now fails on `src/rollout/weights.js`. Make lint pass again without loosening `eslint.config.js`, and keep the rollout functions splitting traffic exactly as they do now.

@@ -1,0 +1,1 @@
+Implement `downloadReport()` in `src/client.ts` for our CLI: it should download a report from the reports API in `src/app.ts` and return the CSV text together with the filename the API suggests saving it under.

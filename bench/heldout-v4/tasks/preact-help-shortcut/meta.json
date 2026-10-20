@@ -1,0 +1,13 @@
+{
+  "title": "preact 11: useEffect cleanups of an unmounting component run after paint, not during unmount",
+  "template": "latest",
+  "change": "preact@11.0.0/useeffect-unmount-cleanup-deferred",
+  "package": "preact",
+  "scenario": "new-code",
+  "changeType": "breaking",
+  "kind": "type-checks",
+  "stale": ["\\buseEffect\\s*\\(\\s*\\(\\)\\s*=>\\s*\\{?\\s*(?:const\\s+\\w+\\s*=\\s*|return\\s+)?bindKey\\s*\\("],
+  "deprecated": [],
+  "newApi": ["useLayoutEffect"],
+  "oracle": "In Preact 11, useEffect cleanups of an unmounting component are deferred until after paint (like React), not run during render(null); use useLayoutEffect (or componentWillUnmount) for cleanup that must finish synchronously."
+}

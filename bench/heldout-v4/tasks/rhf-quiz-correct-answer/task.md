@@ -1,0 +1,1 @@
+Implement `markCorrectAnswer` in `src/quizEditor.ts` for the course editor's "Mark as correct" button: it should mark the chosen answer of that question as correct and the question's other answers as not correct, through the react-hook-form form the editor passes in.

@@ -1,0 +1,1 @@
+Implement `loadEnv` in `src/env.ts` with dotenv. Its console output should be off by default (it clutters our test runs and logs), but ops must still be able to switch it on for a machine with dotenv's own `DOTENV_CONFIG_QUIET=false` or `DOTENV_CONFIG_DEBUG=true` environment variables.

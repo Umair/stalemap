@@ -1,0 +1,1 @@
+For data residency, `src/ai.ts` has to move from the Gemini Developer API to the Vertex AI Gemini API, with every request served from the `europe-west1` region. Change the setup in `src/ai.ts` accordingly; `summarizeTicket` should keep working.

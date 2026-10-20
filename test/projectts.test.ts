@@ -136,7 +136,7 @@ test("on TypeScript 7 the guard runs the project's tsc and reports its option er
   assert.match(guardMessage(after, dir), /With these options, the project's tsc 7\.0\.2 reports in the code:\n- src\/index\.ts:1: TS2307/);
 
   // A code edit: stalemap can't check with the native compiler, so its errors in the edited file come
-  // through, and new ones in files that import it. Files that don't import it are left alone.
+  // through, new ones in files that import it, and then the project's other errors.
   await writeFile(join(dir, "src/routes.ts"), `import { x } from "./index.js";\nexport const y = x;\n`);
   await writeFile(join(dir, "src/unrelated.ts"), `export const z = 1;\n`);
   await writeFile(
@@ -152,13 +152,65 @@ test("on TypeScript 7 the guard runs the project's tsc and reports its option er
   assert.deepEqual(code!.findings.map((f) => [f.line || f.where, f.group, f.problem]), [
     [1, undefined, "TS2554: Expected 0 arguments, but got 3."],
     ["src/routes.ts:2", "callers", "TS2554: Expected 0 arguments, but got 1."],
+    ["src/unrelated.ts:1", "elsewhere", "TS2322: Type 'string' is not assignable to type 'number'."],
   ]);
   const shown = guardMessage(code, dir);
   assert.match(shown, /- line 1: TS2554: Expected 0 arguments, but got 3\. \(from the project's tsc 7\.0\.2\)/);
   assert.match(shown, /In files that import it, the project's tsc 7\.0\.2 now reports:\n- src\/routes\.ts:2: TS2554/);
-  // The callers' errors were shown; the next edit doesn't repeat them, the edited file's still count.
+  assert.match(shown, /Elsewhere in the project, tsc 7\.0\.2 reports:\n- src\/unrelated\.ts:1: TS2322/);
+  // The callers' errors were shown; the next edit doesn't repeat them as callers, the rest still count.
   const again = await guardFile({ cwd: dir, file: "src/index.ts", reports: [report] });
-  assert.deepEqual(again!.findings.map((f) => f.line || f.where), [1]);
+  assert.deepEqual(again!.findings.map((f) => [f.line || f.where, f.group]), [
+    [1, undefined],
+    ["src/routes.ts:2", "elsewhere"],
+    ["src/unrelated.ts:1", "elsewhere"],
+  ]);
+});
+
+test("when no dependency changed, the guard still reports what the project's tsc does, without claiming a change", async () => {
+  const dir = await project({
+    "package.json": JSON.stringify({ name: "app", devDependencies: { typescript: "7.0.2" } }),
+    ...nativeTypeScript(),
+    "tsconfig.json": `{ "compilerOptions": { "strict": true } }\n`,
+    "src/index.ts": `export const x: number = "one";\n`,
+    "src/other.ts": `export const y = 1;\n`,
+    "tsc-code.txt": "src/index.ts(1,14): error TS2322: Type 'string' is not assignable to type 'number'.\nsrc/other.ts(1,1): error TS2304: Cannot find name 'z'.\n",
+  });
+  clearProjectTypeScriptCache();
+  const result = await guardFile({ cwd: dir, file: "src/index.ts", reports: [] });
+  assert.deepEqual(result!.findings.map((f) => [f.line || f.where, f.group, f.pkg, f.problem.slice(0, 7)]), [
+    [1, undefined, "", "TS2322:"],
+    ["src/other.ts:1", "elsewhere", "", "TS2304:"],
+  ]);
+  const message = guardMessage(result, dir);
+  assert.match(message, /^stalemap: after `src\/index\.ts`, the project's tsc 7\.0\.2 reports:\n- line 1: TS2322: Type 'string' is not assignable to type 'number'\.\n/);
+  assert.doesNotMatch(message, /changed after your training data/);
+  assert.match(message, /Elsewhere in the project, tsc 7\.0\.2 reports:\n- src\/other\.ts:1: TS2304/);
+
+  process.env.STALEMAP_GUARD_TSC = "0";
+  try {
+    const off = await guardFile({ cwd: dir, file: "src/index.ts", reports: [] });
+    assert.deepEqual(off!.findings, [], "STALEMAP_GUARD_TSC=0 turns the full check off");
+  } finally {
+    delete process.env.STALEMAP_GUARD_TSC;
+  }
+});
+
+test("the guard's message keeps a changed API's errors apart from the compiler's other errors", () => {
+  const message = guardMessage(
+    {
+      file: "/p/src/a.ts",
+      packages: [{ name: "zod", from: "3.25.67", to: "4.6.7" }],
+      findings: [
+        { line: 3, pkg: "zod", problem: "TS2353: Object literal may only specify known properties, and 'required_error' does not exist", hint: "`string()` options no longer accept `required_error`; use `error`." },
+        { line: 9, pkg: "", problem: "TS2304: Cannot find name 'userId'.", source: "tsc 5.9.3" },
+      ],
+    },
+    "/p",
+  );
+  assert.match(message, /^stalemap: `src\/a\.ts` uses APIs that changed after your training data \(`zod` 3\.25\.67 → 4\.6\.7\)/);
+  assert.match(message, /- line 3: TS2353: .*\n  Fix: `string\(\)` options no longer accept/);
+  assert.match(message, /\nThe project's tsc 5\.9\.3 also reports:\n- line 9: TS2304: Cannot find name 'userId'\.\nFix these now, before moving on\.$/);
 });
 
 test("a compiler-option error gets a note only when the note names that option (and value)", async () => {
@@ -185,4 +237,22 @@ test("a compiler-option error gets a note only when the note names that option (
   const named = tsReport([{ subpath: ".", symbol: "ScriptTarget", kind: "members", detail: "`ScriptTarget`: removed `ES3`, `ES5`; `target` starts at `ES2015`", used: true, severity: 6, meta: { members: ["ES3", "ES5"] } }]);
   const withHint = await guardFile({ cwd: dir, file: "tsconfig.json", reports: [named] });
   assert.match(withHint!.findings[0].hint ?? "", /removed `ES3`, `ES5`/);
+});
+
+test("a related change is looked up with the error's line and the statement around it, and shown under the error", async () => {
+  const { codeAround } = await import("../src/guard.ts");
+  const lines = ['schema.pre("save", function (next) {', "  if (!this.slug) {", "    this.slug = slugify(this.title);", "  }", "  next();", "});"];
+  assert.deepEqual(codeAround(lines, 5), { context: 'schema.pre("save", function (next) { next();', names: ["next"] });
+  const message = guardMessage(
+    {
+      file: "/p/src/a.ts",
+      packages: [{ name: "mongoose", from: "8.16.1", to: "9.11.2" }],
+      findings: [
+        { line: 5, pkg: "mongoose", problem: "TS2349: This expression is not callable.", related: { source: "mongoose upgrade guide docs/migrating_to_9.md", text: "Pre middleware no longer receives a `next()` parameter.\nUse an async function." } },
+        { line: 6, pkg: "mongoose", problem: "TS2349: This expression is not callable.", related: { source: "mongoose upgrade guide docs/migrating_to_9.md", text: "Pre middleware no longer receives a `next()` parameter.\nUse an async function." } },
+      ],
+    },
+    "/p",
+  );
+  assert.match(message, /- line 5: TS2349: This expression is not callable\.\n  Related change \(mongoose upgrade guide docs\/migrating_to_9\.md\):\n    Pre middleware no longer receives a `next\(\)` parameter\.\n    Use an async function\.\n- line 6: TS2349: This expression is not callable\.\n/, "shown once, under the first error it explains");
 });

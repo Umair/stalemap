@@ -3,7 +3,7 @@ import { mkdir, readFile, writeFile, rename } from "node:fs/promises";
 import { homedir } from "node:os";
 import { dirname, join } from "node:path";
 
-export const TOOL_VERSION = "0.3.1";
+export const TOOL_VERSION = "0.4.0";
 
 let verbose = false;
 let quiet = false;

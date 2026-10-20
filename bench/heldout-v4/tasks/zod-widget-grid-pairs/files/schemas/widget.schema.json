@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://dash.example.com/schemas/widget.schema.json",
+  "title": "Widget",
+  "description": "One widget on a saved dashboard. Shared with the dashboard frontend.",
+  "type": "object",
+  "properties": {
+    "id": { "type": "string", "minLength": 1 },
+    "kind": { "enum": ["chart", "table", "note"] },
+    "title": { "type": "string" },
+    "position": {
+      "description": "[column, row] of the top-left cell on the grid",
+      "type": "array",
+      "prefixItems": [
+        { "type": "integer", "minimum": 0 },
+        { "type": "integer", "minimum": 0 }
+      ],
+      "minItems": 2
+    },
+    "size": {
+      "description": "[width, height] in grid cells",
+      "type": "array",
+      "prefixItems": [
+        { "type": "integer", "minimum": 1 },
+        { "type": "integer", "minimum": 1 }
+      ],
+      "minItems": 2
+    }
+  },
+  "required": ["id", "kind", "position", "size"],
+  "additionalProperties": false
+}

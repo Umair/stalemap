@@ -1,0 +1,1 @@
+Ushers keep asking for a way to zero the door counts between shows. Add a "Reset all" button to the dashboard in `src/Dashboard.tsx` that puts every gate's counter (`src/TallyCounter.tsx`) back to 0 at once; each counter must still count up and reset on its own as before.

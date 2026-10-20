@@ -1,0 +1,13 @@
+{
+  "title": "better-auth 1.7: dynamic baseURL ignores x-forwarded-host unless proxy headers are trusted",
+  "template": "latest",
+  "change": "better-auth@1.7.0/dynamic-baseurl-ignores-forwarded-headers",
+  "package": "better-auth",
+  "scenario": "new-code",
+  "changeType": "breaking",
+  "kind": "type-checks",
+  "stale": ["^(?![\\s\\S]*trustedProxyHeaders\\s*:\\s*true)[\\s\\S]*allowedHosts\\s*:"],
+  "deprecated": [],
+  "newApi": ["trustedProxyHeaders"],
+  "oracle": "Since better-auth 1.7, a dynamic baseURL ({ allowedHosts }) resolves the host from Host only; set advanced.trustedProxyHeaders: true to honor x-forwarded-host/x-forwarded-proto behind a proxy."
+}

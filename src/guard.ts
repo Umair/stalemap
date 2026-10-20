@@ -12,6 +12,7 @@ import { editNotesFor, MAX_EDIT_NOTES, type EditNote } from "./editnotes.js";
 import { buildPackageNotes, type Bullet } from "./render.js";
 import { checkProject, type ProjectCheck, type ProjectDiagnostic } from "./projectts.js";
 import { readTsconfig } from "./tsoptions.js";
+import { buildIndex, packageDocs, searchIndex, snippet, tokenize, type SearchDoc } from "./search.js";
 import { cacheDir, debug, mapLimit, readJson, sha256, truncate, writeJsonAtomic } from "./util.js";
 
 const CHECKED_EXT = /\.(?:[cm]?tsx?|[cm]?jsx?)$/;
@@ -30,18 +31,24 @@ export interface GuardFinding {
   /** 0 for problems that aren't in the edited file (tsconfig options); `where` says where they are. */
   line: number;
   where?: string;
+  /** The changed package the problem comes from; "" for the project's other compiler errors. */
   pkg: string;
   /** "TS2353: Object literal may only specify known properties…" or "deprecated: `nativeEnum`" */
   problem: string;
   /** The stalemap note that explains the change, when one matches. */
   hint?: string;
+  /**
+   * When no note matches: the change from the package's release notes, upgrade guides and type diffs
+   * that best matches the error and the code around it (what `search_changes` would return).
+   */
+  related?: { source: string; text: string };
   /** Who reported it, when not stalemap's own type-check: "tsc 7.0.2" (the project's TypeScript). */
   source?: string;
   /**
    * Listed after the edited file's own findings: source errors a tsconfig edit led to ("config"), or
-   * new errors in files that import the edited one ("callers").
+   * new errors in files that import the edited one ("callers"), or the project's other errors ("elsewhere").
    */
-  group?: "config" | "callers";
+  group?: "config" | "callers" | "elsewhere";
 }
 
 export interface GuardResult {
@@ -151,8 +158,11 @@ function optionHint(r: PackageReport | undefined, message: string): string | und
   const { names, values } = optionNames(message);
   if (!names.length) return undefined;
   const bullets = buildPackageNotes(r, 4).bullets;
-  const fits = (text: string) => names.some((n) => namesIdentifier(text, n)) && values.every((v) => new RegExp(`\\b${v.replace(/[^\w]/g, "\\$&")}\\b`, "i").test(text));
-  const hit = bullets.find((b) => fits(b.text));
+  const valuesFit = (text: string) => values.every((v) => new RegExp(`\\b${v.replace(/[^\w]/g, "\\$&")}\\b`, "i").test(text));
+  // An error about two options ("Option 'module' must be set to 'NodeNext' when option
+  // 'moduleResolution' is set to 'NodeNext'") is about the pair: a note on only one of them (the
+  // `module` default) sends the agent the wrong way.
+  const hit = bullets.find((b) => names.every((n) => namesIdentifier(b.text, n)) && valuesFit(b.text)) ?? (names.length === 1 ? bullets.find((b) => namesIdentifier(b.text, names[0]) && valuesFit(b.text)) : undefined);
   return hit?.text;
 }
 
@@ -181,32 +191,42 @@ function projectTsFindings(
   configFile: string,
   report: PackageReport | undefined,
   edited: { file: string; isConfig: boolean; reported?: Set<string>; callers?: ProjectDiagnostic[] },
+  /** TypeScript changed after the model's cutoff: its errors are a dependency change's, with option hints. */
+  tsChanged = true,
 ): GuardFinding[] {
   const out: GuardFinding[] = [];
+  const pkg = tsChanged ? "typescript" : "";
   const configName = relative(root, configFile) || "tsconfig.json";
   for (const d of check.options) {
-    out.push({ line: 0, where: located(root, d, configName), pkg: "typescript", problem: diagnosticText(d), hint: optionHint(report, d.message), source: check.source });
+    out.push({ line: 0, where: located(root, d, configName), pkg, problem: diagnosticText(d), hint: tsChanged ? optionHint(report, d.message) : undefined, source: check.source });
   }
   const code = check.code ?? [];
-  const group = (list: ProjectDiagnostic[], name: "config" | "callers", max: number) => {
-    for (const d of list.slice(0, max)) out.push({ line: 0, where: located(root, d, "?"), pkg: "typescript", problem: diagnosticText(d), source: check.source, group: name });
-    if (list.length > max) out.push({ line: 0, where: "", pkg: "typescript", problem: `…and ${list.length - max} more`, source: check.source, group: name });
+  const group = (list: ProjectDiagnostic[], name: "config" | "callers" | "elsewhere", max: number) => {
+    for (const d of list.slice(0, max)) out.push({ line: 0, where: located(root, d, "?"), pkg, problem: diagnosticText(d), source: check.source, group: name });
+    if (list.length > max) out.push({ line: 0, where: "", pkg, problem: `…and ${list.length - max} more`, source: check.source, group: name });
   };
   if (edited.isConfig) {
     // The config parses; what it changed for the code (a `paths` entry that no longer resolves, a strict check now on).
     group(code, "config", MAX_CONFIG_FOLLOWUPS);
-  } else if (check.via === "cli") {
+  } else if (check.code) {
     for (const d of code) {
       if (d.file !== edited.file || !d.line || edited.reported?.has(`${d.line}|${d.code}`)) continue;
-      out.push({ line: d.line, pkg: "typescript", problem: diagnosticText(d), source: check.source });
+      out.push({ line: d.line, pkg, problem: diagnosticText(d), source: check.source });
     }
-    group(edited.callers ?? [], "callers", MAX_CALLER_ERRORS);
+    const callers = edited.callers ?? [];
+    group(callers, "callers", MAX_CALLER_ERRORS);
+    // What a plain `tsc --noEmit` hook would also show: the rest of the project's errors, so nothing
+    // the compiler knows about is hidden (an earlier edit's errors, a test the change broke).
+    const listed = new Set(callers);
+    group(code.filter((d) => d.file !== edited.file && !listed.has(d)), "elsewhere", MAX_ELSEWHERE_ERRORS);
   }
   return out;
 }
 
 /** Errors listed from files that import the edited one. */
 const MAX_CALLER_ERRORS = 3;
+/** The project's other errors listed after an edit. */
+const MAX_ELSEWHERE_ERRORS = 5;
 const CODE_EXT = /\.(?:[cm]?tsx?|[cm]?jsx?)$/;
 
 /** `src/models/user.ts` → the specifiers that can import it from `fromFile`: `./models/user`, `./models/user.js`… */
@@ -418,6 +438,43 @@ function movedKeyFindings(sf: ts.SourceFile, checker: ts.TypeChecker, reports: M
           const bullet = buildPackageNotes(r, 4).bullets.find((b) => b.text.startsWith(`\`${owner}\` keys that moved`));
           out.push({ line, pkg, problem: `\`${key}\` still type-checks, but ${pkg} ${r.pinned ?? ""} moved it: ${change.meta!.movedKeys![key]}`.replace(/\s+:/, ":"), hint: bullet?.text });
         }
+      }
+    }
+    ts.forEachChild(node, visit);
+  };
+  visit(sf);
+  return out;
+}
+
+/**
+ * A moved member read as a property (`HttpStatusCode.PayloadTooLarge`, `axios.HttpStatusCode.X`)
+ * on something imported from the package that moved it: it still type-checks while the old name is
+ * kept as an alias, so no error will point it out.
+ */
+function movedMemberFindings(sf: ts.SourceFile, reports: Map<string, PackageReport>, watched: Set<string>, localToPkg: Map<string, string>): GuardFinding[] {
+  const out: GuardFinding[] = [];
+  const moved = new Map<string, Array<{ key: string; successor: string; pkg: string; pinned?: string }>>();
+  for (const pkg of watched) {
+    const r = reports.get(pkg);
+    for (const c of r?.types?.changes ?? []) {
+      for (const [key, successor] of Object.entries(c.meta?.movedKeys ?? {})) {
+        const last = key.slice(key.lastIndexOf(".") + 1);
+        if (!key.includes(".")) continue;
+        moved.set(last, [...(moved.get(last) ?? []), { key, successor, pkg, pinned: r?.pinned }]);
+      }
+    }
+  }
+  if (!moved.size) return out;
+  const visit = (node: ts.Node): void => {
+    if (ts.isPropertyAccessExpression(node) && moved.has(node.name.text) && !ts.isPropertyAccessExpression(node.parent)) {
+      const text = node.getText(sf).replace(/\s+/g, "").replace(/\?\./g, ".");
+      let root: ts.Expression = node;
+      while (ts.isPropertyAccessExpression(root)) root = root.expression;
+      const rootPkg = ts.isIdentifier(root) ? localToPkg.get(root.text) : undefined;
+      const hit = moved.get(node.name.text)!.find((m) => m.pkg === rootPkg && (text === m.key || text.endsWith(`.${m.key}`)));
+      if (hit) {
+        const line = sf.getLineAndCharacterOfPosition(node.getStart(sf)).line + 1;
+        out.push({ line, pkg: hit.pkg, problem: `\`${hit.key}\` still type-checks, but ${hit.pkg} ${hit.pinned ?? ""} moved it: ${hit.successor}`.replace(/\s+:/, ":") });
       }
     }
     ts.forEachChild(node, visit);
@@ -651,11 +708,21 @@ function hintFor(r: PackageReport | undefined, problem: string, callee: string |
   // A lowercase name the message quotes is what it's about (`'temperature'` does not exist…): another
   // option's note from the same function doesn't fix it. Type names (`'CallOptions'`) only say where,
   // so they count only when the message names nothing else.
-  const subjects = quoted.filter((n) => /^[a-z_$]/.test(n));
+  // `'string'` in "Argument of type 'string' is not assignable" is a type, not the API it's about.
+  const subjects = quoted.filter((n) => /^[a-z_$]/.test(n) && !KEYWORDS.has(n));
   const wanted = subjects.length ? subjects : quoted;
+  // A note that leads with another API (`literal()` options no longer accept `errorMap`) isn't about
+  // an `errorMap` error in `z.config({...})`, though both name the option.
+  const typeNames = quoted.filter((n) => /^[A-Z$]/.test(n));
+  const elsewhere = (text: string) => {
+    const lead = text.match(/^`([\w$.]+?)\(\)`/)?.[1]?.split(".").pop();
+    if (!lead || wanted.includes(lead)) return false;
+    if (callee) return lead !== callee && !quoted.includes(lead);
+    return typeNames.length > 0 && !typeNames.some((t) => t.includes(lead) || lead.includes(t.replace(/^\$/, "")));
+  };
   const naming = (list: Bullet[]) => {
     for (const n of wanted) {
-      const b = list.find((x) => namesIdentifier(x.text, n));
+      const b = list.find((x) => namesIdentifier(x.text, n) && !elsewhere(x.text));
       if (b) return b;
     }
   };
@@ -676,7 +743,7 @@ function hintFor(r: PackageReport | undefined, problem: string, callee: string |
     }
   }
   const facts: Bullet[] = (r.types?.changes ?? [])
-    .filter((c) => c.kind !== "added" && wanted.some((n) => about(c.detail, n)))
+    .filter((c) => c.kind !== "added" && wanted.some((n) => about(c.detail, n)) && !elsewhere(c.detail))
     .sort((x, y) => Number(problem.includes(y.symbol.split(".")[0])) - Number(problem.includes(x.symbol.split(".")[0])) || y.severity - x.severity)
     .map((c) => ({ text: c.detail.endsWith(".") ? c.detail : `${c.detail}.`, tag: "types", priority: c.severity }));
   const b = naming(own) ?? naming(typed) ?? moved[0] ?? facts[0] ?? (subjects.length ? undefined : own[0]);
@@ -687,6 +754,65 @@ function hintFor(r: PackageReport | undefined, problem: string, callee: string |
  * Type-check one file against the versions the project has installed and report the problems
  * that come from dependencies changed after the model's training cutoff.
  */
+/** How long the guard spends looking up related changes for errors no note explains. */
+const RELATED_BUDGET_MS = Number(process.env.STALEMAP_GUARD_SEARCH_MS) || 6_000;
+const MAX_RELATED = 3;
+const KEYWORDS = new Set(
+  "abstract any as async await boolean break case catch class const constructor continue debugger declare default delete do else enum export extends false finally for from function get if implements import in instanceof interface is keyof let module namespace never new null number object of package private protected public readonly require return set static string super switch symbol this throw true try type typeof undefined unique unknown var void while with yield".split(" "),
+);
+
+/** The error's line, and the lines above it up to the statement it's in (`schema.pre("save", function (next) {`). */
+export function codeAround(lines: string[], line: number): { context: string; names: string[] } {
+  const at = lines[line - 1] ?? "";
+  const indent = (l: string) => l.match(/^\s*/)![0].length;
+  const out = [at];
+  let level = indent(at);
+  for (let i = line - 2; i >= 0 && out.length < 8 && level > 0; i--) {
+    const l = lines[i];
+    if (!l.trim() || indent(l) >= level) continue;
+    out.unshift(l);
+    level = indent(l);
+  }
+  const names = [...new Set(at.match(/[A-Za-z_$][\w$]*/g) ?? [])].filter((n) => n.length > 2 && !KEYWORDS.has(n));
+  return { context: out.map((l) => l.trim()).join(" "), names };
+}
+
+/**
+ * For errors the guard ties to a changed package but has no note for: search that package's changes
+ * (type diffs, release notes, upgrade-guide sections) with the error and the code around it. A match
+ * counts only if it names an identifier from the error's line or message, so an unrelated change
+ * isn't offered as the reason.
+ */
+async function relatedChanges(findings: GuardFinding[], text: string, deps: ProjectDep[], model: ResolvedModel, useCache: boolean): Promise<void> {
+  const lines = text.split("\n");
+  const wanted = findings.filter((f) => f.pkg && f.line && !f.group && !f.hint && !f.source).slice(0, MAX_RELATED);
+  if (!wanted.length) return;
+  const docsOf = new Map<string, Promise<SearchDoc[]>>();
+  const lookup = async (f: GuardFinding) => {
+    const dep = deps.find((d) => d.name === f.pkg);
+    if (!dep) return;
+    if (!docsOf.has(f.pkg)) docsOf.set(f.pkg, packageDocs(dep, model, { useCache, marginDays: 30 }));
+    const docs = await docsOf.get(f.pkg)!;
+    if (!docs.length) return;
+    const { context, names } = codeAround(lines, f.line);
+    const quoted = [...f.problem.matchAll(/'([A-Za-z_$][\w$.]*)'/g)].map((m) => m[1].split(".").pop()!);
+    const subjects = [...new Set([...names, ...quoted])].filter((n) => n.length > 2 && !KEYWORDS.has(n));
+    if (!subjects.length) return;
+    const query = `${f.problem.replace(/^TS\d+:\s*/, "")} ${context}`;
+    // As a name in code, not part of a path or a word (`openai/client` doesn't mention a `client` option).
+    const mentions = (d: SearchDoc) => subjects.some((n) => new RegExp(`(?<![\\w$/@-])${n.replace(/[$]/g, "\\$")}(?![\\w$/-])`).test(d.text));
+    // A list of new exports names things; it doesn't say what changed about the code that errs.
+    const usable = (d: SearchDoc) => !/^New exports in /.test(d.text);
+    const hit = searchIndex(buildIndex(docs), query, { limit: 8 }).find((h) => usable(h.doc) && mentions(h.doc));
+    if (!hit) return;
+    const d = hit.doc;
+    const where = d.kind === "guide" ? `${d.source}${d.title ? ` § ${d.title}` : ""}` : d.kind === "changelog" ? d.source : `${d.kind === "types" ? "type changes" : "notes"} ${d.from} → ${d.to}`;
+    f.related = { source: `${d.pkg} ${where}`, text: snippet(d.text, tokenize(query), 600) };
+  };
+  const all = Promise.all(wanted.map((f) => lookup(f).catch((err: Error) => debug(`guard: related change for ${f.pkg}: ${err.message}`))));
+  await Promise.race([all, new Promise((done) => setTimeout(done, RELATED_BUDGET_MS).unref())]);
+}
+
 export async function guardFile(opts: {
   cwd: string;
   file: string;
@@ -767,7 +893,25 @@ export async function guardFile(opts: {
   if (ts6?.status === "changed") ts6.tsconfig ??= readTsconfig(root);
   const candidates = [...imported, ...configured];
   const watched = new Set(model || opts.reports ? [...reports.values()].filter((r) => candidates.includes(r.name) && (r.status === "changed" || r.status === "new")).map((r) => r.name) : candidates);
-  if (!watched.size) return { file, findings: [], packages: [] };
+
+  // The project's own TypeScript, in the background while the file is checked. On every code edit
+  // (unless STALEMAP_GUARD_TSC=0): its full `tsc` run, so the guard reports everything a plain
+  // type-check hook would, with stalemap's notes on the errors a changed dependency explains. And when
+  // TypeScript itself changed after the cutoff, its options too.
+  const allErrors = process.env.STALEMAP_GUARD_TSC !== "0" && (code || isTsconfig(file));
+  const tsChanged = watched.has("typescript");
+  const tsPinned = deps.find((d) => d.name === "typescript")?.pinned;
+  const configFile = !tsChanged && !allErrors ? undefined : isTsconfig(file) ? file : ts.findConfigFile(root, ts.sys.fileExists, "tsconfig.json");
+  const checking = configFile && dirname(resolve(configFile)).startsWith(root)
+    ? checkProject(root, configFile, { declaredVersion: tsPinned, full: isTsconfig(file) || allErrors, timeoutMs: TSC_TIMEOUT_MS }).catch(() => undefined)
+    : undefined;
+  if (!watched.size) {
+    const check = await checking;
+    if (!check || !configFile) return { file, findings: [], packages: [] };
+    const callers = check.via === "cli" && check.code ? await callerErrors(root, configFile, file, check.code, opts.session) : [];
+    const findings = projectTsFindings(check, root, configFile, undefined, { file, isConfig: isTsconfig(file), callers }, false);
+    return { file, findings, packages: [] };
+  }
   const watchedReports = [...watched].map((n) => reports.get(n)).filter((r): r is PackageReport => !!r);
   const packagesOf = (findings: GuardFinding[], notes: EditNote[]) =>
     [...watched]
@@ -777,19 +921,11 @@ export async function guardFile(opts: {
         return { name, from: r?.baseline?.version, to: r?.pinned ?? deps.find((d) => d.name === name)?.pinned ?? "?" };
       });
 
-  // TypeScript changed after the cutoff: ask the project's own TypeScript about its options (and,
-  // when that means running `tsc`, about the code), in the background while the file is checked.
-  const tsPinned = deps.find((d) => d.name === "typescript")?.pinned;
-  const configFile = !watched.has("typescript") ? undefined : isTsconfig(file) ? file : ts.findConfigFile(root, ts.sys.fileExists, "tsconfig.json");
-  const checking = configFile && dirname(resolve(configFile)).startsWith(root)
-    ? checkProject(root, configFile, { declaredVersion: tsPinned, full: isTsconfig(file), timeoutMs: TSC_TIMEOUT_MS }).catch(() => undefined)
-    : undefined;
-
   // A config file isn't type-checked as code: its option errors (an edited tsconfig) and the notes it touches.
   if (!code) {
     const findings: GuardFinding[] = [];
     const check = isTsconfig(file) ? await checking : undefined;
-    if (check && configFile) findings.push(...projectTsFindings(check, root, configFile, reports.get("typescript"), { file, isConfig: true }));
+    if (check && configFile) findings.push(...projectTsFindings(check, root, configFile, reports.get("typescript"), { file, isConfig: true }, tsChanged));
     const notes = editNotesFor(text, watchedReports, findings.map((f) => f.problem));
     return { file, findings, notes, packages: packagesOf(findings, notes) };
   }
@@ -869,6 +1005,7 @@ export async function guardFile(opts: {
   const compileErrorAt = (f: GuardFinding) => findings.some((e) => e.line === f.line && /^TS\d+:/.test(e.problem) && f.problem.match(/`[\w$]+\.([\w$]+)`/)?.[1] && e.problem.includes(`'${f.problem.match(/`[\w$]+\.([\w$]+)`/)![1]}'`));
   findings.push(
     ...movedKeyFindings(sf, checker, reports, watched).filter((f) => !compileErrorAt(f)),
+    ...movedMemberFindings(sf, reports, watched, localToPkg).filter((f) => !findings.some((e) => e.line === f.line && /^TS\d+:/.test(e.problem))),
     ...conventionFindings(file, root, sf, reports, watched),
     ...suppressionFindings(sf, text, checker, bindings, reports, watched),
   );
@@ -876,7 +1013,7 @@ export async function guardFile(opts: {
   if (check && configFile) {
     const reported = new Set(findings.filter((f) => f.line).map((f) => `${f.line}|${f.problem.match(/^TS(\d+)/)?.[1] ?? ""}`));
     const callers = check.via === "cli" && check.code ? await callerErrors(root, configFile, file, check.code, opts.session) : [];
-    findings.push(...projectTsFindings(check, root, configFile, reports.get("typescript"), { file, isConfig: false, reported, callers }));
+    findings.push(...projectTsFindings(check, root, configFile, reports.get("typescript"), { file, isConfig: false, reported, callers }, tsChanged));
   }
   debug(`guard: type-checked ${relative(root, file)} in ${Date.now() - started}ms, ${findings.length} finding(s)`);
 
@@ -888,7 +1025,8 @@ export async function guardFile(opts: {
     seen.add(k);
     return true;
   });
-  const notes = editNotesFor(text, watchedReports, unique.map((f) => `${f.problem}\n${f.hint ?? ""}`));
+  if (model && process.env.STALEMAP_GUARD_SEARCH !== "0") await relatedChanges(unique, text, deps, model, opts.useCache ?? true);
+  const notes = editNotesFor(text, watchedReports, unique.map((f) => `${f.problem}\n${f.hint ?? ""}\n${f.related?.text ?? ""}`));
   return { file, findings: unique, notes, packages: packagesOf(unique, notes) };
 }
 
@@ -908,36 +1046,54 @@ export function guardMessage(result: GuardResult | undefined, cwd: string, max =
         .join("\n")}\nCheck whether they change what this code does.`
     : "";
   if (!result.findings.length) return notesText;
-  const pkgs = versions((n) => result.findings.some((f) => f.pkg === n));
   // A note that explains several findings is shown once, under the first.
   const shownHints = new Set<string>();
-  // The edited file's findings first, then what a tsconfig edit did to the code, or what an edit did
-  // to the files that import it (projectTsFindings caps those, with a "…and N more" line of its own).
-  const main = result.findings.filter((f) => !f.group);
-  const shownMain = main.slice(0, max);
   const line = (f: GuardFinding) => {
     const key = f.hint?.replace(/ Before: .*$/, "");
     const hint = f.hint && !shownHints.has(key!) ? f.hint : undefined;
     if (hint) shownHints.add(key!);
-    const from = f.source && !f.group ? ` (from the project's ${f.source})` : "";
+    const from = f.source && !f.group && f.pkg ? ` (from the project's ${f.source})` : "";
     const at = f.line ? `line ${f.line}: ` : f.where === "" ? "" : `${f.where ?? "project"}: `;
-    return `- ${at}${f.problem}${from}${hint ? `\n  Fix: ${truncate(hint, 420)}` : ""}`;
+    const related = !hint && f.related && !shownHints.has(f.related.text) ? f.related : undefined;
+    if (related) shownHints.add(related.text);
+    const relatedText = related ? `\n  Related change (${related.source}):\n${related.text.split("\n").map((l) => `    ${l}`).join("\n")}` : "";
+    return `- ${at}${f.problem}${from}${hint ? `\n  Fix: ${truncate(hint, 420)}` : ""}${relatedText}`;
   };
-  const lines = shownMain.map(line);
-  const groups: Array<[GuardFinding["group"], string]> = [
-    ["config", "With these options, the project's %s reports in the code:"],
-    ["callers", "In files that import it, the project's %s now reports:"],
-  ];
-  for (const [name, title] of groups) {
-    const list = result.findings.filter((f) => f.group === name);
-    if (list.length) lines.push(title.replace("%s", list[0].source ?? "tsc"), ...list.map(line));
+  // The edited file's findings first, then what a tsconfig edit did to the code, what an edit did to
+  // the files that import it, and the project's other errors (projectTsFindings caps those, with a
+  // "…and N more" line of its own).
+  const block = (list: GuardFinding[], limit: number) => {
+    const main = list.filter((f) => !f.group);
+    const lines = main.slice(0, limit).map(line);
+    if (main.length > limit) lines.push(`- …and ${main.length - limit} more`);
+    const groups: Array<[GuardFinding["group"], string]> = [
+      ["config", "With these options, the project's %s reports in the code:"],
+      ["callers", "In files that import it, the project's %s now reports:"],
+      ["elsewhere", "Elsewhere in the project, %s reports:"],
+    ];
+    for (const [name, title] of groups) {
+      const g = list.filter((f) => f.group === name);
+      if (g.length) lines.push(title.replace("%s", g[0].source ?? "tsc"), ...g.map(line));
+    }
+    return lines.join("\n");
+  };
+  const changed = result.findings.filter((f) => f.pkg);
+  const plain = result.findings.filter((f) => !f.pkg);
+  const parts: string[] = [];
+  if (changed.length) {
+    const pkgs = versions((n) => changed.some((f) => f.pkg === n));
+    // Everything from the project's own compiler: it's TypeScript's options and checks that changed.
+    const compilerOnly = changed.every((f) => f.pkg === "typescript" && f.source);
+    const intro = compilerOnly
+      ? `stalemap: after \`${rel}\`, the project's TypeScript reports errors, and TypeScript changed after your training data (${pkgs}). Your memory of its options and checks is out of date; go by what the compiler says:`
+      : `stalemap: \`${rel}\` uses APIs that changed after your training data (${pkgs}). Your memory of these APIs is out of date; use the installed versions' APIs:`;
+    parts.push(`${intro}\n${block(changed, max)}`);
   }
-  const more = main.length > shownMain.length ? `\n- …and ${main.length - shownMain.length} more` : "";
-  // Everything from the project's own compiler: it's TypeScript's options and checks that changed.
-  const compilerOnly = result.findings.every((f) => f.pkg === "typescript" && f.source);
-  const intro = compilerOnly
-    ? `stalemap: after \`${rel}\`, the project's TypeScript reports errors, and TypeScript changed after your training data (${pkgs}). Your memory of its options and checks is out of date; go by what the compiler says:`
-    : `stalemap: \`${rel}\` uses APIs that changed after your training data (${pkgs}). Your memory of these APIs is out of date; use the installed versions' APIs:`;
-  const findingsText = `${intro}\n${lines.join("\n")}${more}\nFix these now, before moving on.`;
+  if (plain.length) {
+    const source = plain.find((f) => f.source)?.source ?? "tsc";
+    const intro = changed.length ? `The project's ${source} also reports:` : `stalemap: after \`${rel}\`, the project's ${source} reports:`;
+    parts.push(`${intro}\n${block(plain, max)}`);
+  }
+  const findingsText = `${parts.join("\n")}\nFix these now, before moving on.`;
   return notesText ? `${findingsText}\n\n${notesText}` : findingsText;
 }

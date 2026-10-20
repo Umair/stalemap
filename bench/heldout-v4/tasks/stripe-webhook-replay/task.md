@@ -1,0 +1,1 @@
+We keep every raw Stripe webhook delivery (body and `Stripe-Signature` header) and replay them after outages, sometimes days later. Implement `verifiedEvent()` in `src/replay.ts`: return the event if the delivery's signature is genuine for our endpoint secret, and throw if it isn't.

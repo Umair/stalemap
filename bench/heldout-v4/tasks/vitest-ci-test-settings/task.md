@@ -1,0 +1,1 @@
+Implement `getTestSettings(root)` in `src/tooling/test-settings.ts` for our CI dashboard: it should return the `environment`, `testTimeout` and `include` that Vitest resolves for the project at `root` from its `vitest.config.ts`, with Vitest's own defaults for anything the config leaves out. `fixtures/web-app` and `fixtures/api` are two example projects.

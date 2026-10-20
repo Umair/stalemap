@@ -1,0 +1,13 @@
+{
+  "title": "@tanstack/react-query 5.102: imperative fetch methods deprecated",
+  "template": "latest",
+  "change": "@tanstack/react-query@5.102.0/imperative-fetch-methods-deprecated",
+  "package": "@tanstack/react-query",
+  "scenario": "new-code",
+  "changeType": "deprecation",
+  "kind": "type-checks",
+  "stale": ["\\.(?:ensureQueryData|fetchQuery|prefetchQuery|ensureInfiniteQueryData|fetchInfiniteQuery|prefetchInfiniteQuery)\\s*(?:<[^>]*>)?\\s*\\("],
+  "deprecated": ["\\.(?:ensureQueryData|fetchQuery|prefetchQuery|ensureInfiniteQueryData|fetchInfiniteQuery|prefetchInfiniteQuery)\\s*(?:<[^>]*>)?\\s*\\("],
+  "newApi": ["\\.query\\s*(?:<[^>]*>)?\\s*\\(", "staleTime:\\s*[\"']static[\"']"],
+  "oracle": "In @tanstack/react-query 5.102+, queryClient.fetchQuery/prefetchQuery/ensureQueryData (and the infinite variants) are @deprecated; use queryClient.query(options), adding staleTime: 'static' for ensureQueryData's reuse-cached behavior."
+}

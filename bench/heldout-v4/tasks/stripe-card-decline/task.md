@@ -1,0 +1,1 @@
+At checkout a declined card currently surfaces as a 500. Export a `declineMessage(error)` helper from `src/declines.ts` that takes the SDK's card error and returns what we show the shopper (the table is in that file), and make `chargeOrder()` in `src/checkout.ts` return `{ ok: false, message }` for declined cards; other errors should still throw.

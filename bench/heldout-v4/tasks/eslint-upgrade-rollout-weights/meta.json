@@ -1,0 +1,22 @@
+{
+  "title": "ESLint 10.9: no-loss-of-precision reports literals that underflow to 0",
+  "template": "latest",
+  "change": "eslint@10.9.0/no-loss-of-precision-underflow",
+  "package": "eslint",
+  "scenario": "upgrade",
+  "changeType": "default-behavior",
+  "kind": "type-checks",
+  "stale": [
+    "\\b\\d+(\\.\\d+)?e-(32[5-9]|3[3-9]\\d|[4-9]\\d\\d|\\d{4,})\\b",
+    "eslint-disable[^\\n]*no-loss-of-precision"
+  ],
+  "deprecated": [],
+  "newApi": [
+    "underflow",
+    "MIN_VALUE",
+    "EPSILON",
+    "no-loss-of-precision",
+    "precision"
+  ],
+  "oracle": "Since ESLint 10.9, no-loss-of-precision reports nonzero literals that underflow to 0 (e.g. 1e-350, below 5e-324); write 0, Number.MIN_VALUE or a representable value instead."
+}

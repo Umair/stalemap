@@ -1,0 +1,20 @@
+{
+  "title": "TypeScript 7: a component library configured with allowSyntheticDefaultImports off",
+  "template": "latest",
+  "change": "typescript@7.0.2/remove-allowsyntheticdefaultimports-false",
+  "package": "typescript",
+  "scenario": "upgrade",
+  "changeType": "breaking",
+  "kind": "compile-error",
+  "stale": [
+    "\"allowSyntheticDefaultImports\"\\s*:\\s*false"
+  ],
+  "deprecated": [],
+  "newApi": [
+    "allowSyntheticDefaultImports",
+    "TS5108",
+    "\\bremoved\\b",
+    "default[- ]import"
+  ],
+  "oracle": "TypeScript 7.0 removed allowSyntheticDefaultImports: false (deprecated in 6.0, TS5108 even with ignoreDeprecations); delete the option, as synthetic default imports are always allowed."
+}

@@ -1,0 +1,1 @@
+Right now every square in our commit heatmap (`src/ActivityHeatmap.tsx`) is the same solid green. Fade each day's square by how busy it was: the busiest day stays fully opaque and every other day is drawn at an opacity of its commits divided by the busiest day's, but never below 0.1 so empty days are still visible.

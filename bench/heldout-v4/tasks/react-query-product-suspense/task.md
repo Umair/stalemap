@@ -1,0 +1,1 @@
+We upgraded @tanstack/react-query from 5.100 to 5.104 and `npm test` now fails at type-checking. Fix the code so the product page works as before: `ProductDetails` in `src/ProductDetails.tsx` should suspend (so the page shows its loading fallback) until the product has loaded, then show it.

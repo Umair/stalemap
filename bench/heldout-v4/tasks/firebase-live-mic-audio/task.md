@@ -1,0 +1,1 @@
+Implement `streamMicrophone` in `src/voice.ts` so that, while the user talks, each chunk of microphone audio is sent to the voice assistant's live session as it arrives. The chunks are raw 16 kHz, 16-bit mono PCM.

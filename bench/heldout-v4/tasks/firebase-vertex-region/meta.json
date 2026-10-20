@@ -1,0 +1,13 @@
+{
+  "title": "firebase 13: VertexAIBackend removed in favor of AgentPlatformBackend",
+  "template": "latest",
+  "change": "firebase@13.0.0/ai-vertexaibackend-removed",
+  "package": "firebase",
+  "scenario": "new-code",
+  "changeType": "breaking",
+  "kind": "compile-error",
+  "stale": ["\\bVertexAIBackend\\b", "\\bBackendType\\.VERTEX_AI\\b"],
+  "deprecated": [],
+  "newApi": ["\\bAgentPlatformBackend\\b", "Agent Platform"],
+  "oracle": "In firebase 13 (firebase/ai 3), VertexAIBackend and BackendType.VERTEX_AI are removed; use new AgentPlatformBackend(location) (its default location is 'global', not 'us-central1')."
+}

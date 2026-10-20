@@ -39,7 +39,7 @@ Describe what you are about to do in your own words; old names are fine and ofte
       inputSchema: {
         query: z.string().describe("What you're about to do or look up, in your own words: an API, option, config key, file or error message. Old names are fine."),
         package: z.string().optional().describe("Limit to one npm package of this project, e.g. `next`, `zod`, `typescript` (default: all of them)"),
-        limit: z.number().int().min(1).max(15).optional().describe("Results to return (default 6)"),
+        limit: z.number().int().min(1).max(15).optional().describe("Results to return (default 8)"),
         cwd: z.string().optional().describe("Project directory containing package.json (default: the server's working directory)"),
         ...modelArgs,
       },

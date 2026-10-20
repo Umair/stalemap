@@ -1,0 +1,13 @@
+{
+  "title": "better-auth 1.7.6: an over-long password on sign-in is PASSWORD_TOO_LONG, not invalid credentials",
+  "template": "latest",
+  "change": "better-auth@1.7.6/password-too-long-on-sign-in",
+  "package": "better-auth",
+  "scenario": "new-code",
+  "changeType": "default-behavior",
+  "kind": "type-checks",
+  "stale": ["^(?![\\s\\S]*PASSWORD_TOO_LONG)(?![\\s\\S]*\\.length\\s*>)(?![\\s\\S]*status\\s*===?\\s*400)[\\s\\S]*INVALID_EMAIL_OR_PASSWORD"],
+  "deprecated": [],
+  "newApi": ["PASSWORD_TOO_LONG", "maxPasswordLength"],
+  "oracle": "Since better-auth 1.7.6, signing in with a password longer than maxPasswordLength fails with PASSWORD_TOO_LONG (400) instead of INVALID_EMAIL_OR_PASSWORD; handle both codes."
+}

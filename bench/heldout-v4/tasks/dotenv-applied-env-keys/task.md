@@ -1,0 +1,1 @@
+Implement `applyEnvFile` in `src/env.ts` using dotenv: load the given env file into the target env without overwriting anything already set there, and return only the variables it actually set (`src/startup.ts` logs them).

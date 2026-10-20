@@ -1,0 +1,1 @@
+Our sign-in emails (see `sendMagicLink` in `src/auth.ts`) carry a "Didn't ask for this?" link with the sign-in token. Implement `cancelSignInLink(db, token)` in `src/cancel-sign-in.ts` so that afterwards the sign-in link for that token no longer works; it should return true when it cancelled a pending link and false otherwise, and leave everyone else's links alone.

@@ -1,0 +1,13 @@
+{
+  "title": "vitest 5: where project test attachments are saved",
+  "template": "latest",
+  "change": "vitest@5.0.0/attachmentsdir-root-only",
+  "package": "vitest",
+  "scenario": "new-code",
+  "changeType": "breaking",
+  "kind": "type-checks",
+  "stale": ["attachmentsDir\\s*:\\s*[\"'`]\\.\\./"],
+  "deprecated": [],
+  "newApi": ["attachmentsDir"],
+  "oracle": "In Vitest 5, attachmentsDir is root-only: a project's own attachmentsDir is ignored and every project writes to the root config's attachmentsDir, so set it in the root config."
+}
