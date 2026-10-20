@@ -1,0 +1,294 @@
+# stalemap: full reference
+
+> stalemap tells coding agents which of a JavaScript or TypeScript project's dependencies changed after the agent's model was trained, and what changed. This file is the complete reference for language models: what stalemap does, how to install and configure it for each agent, every command, option, MCP tool, hook and environment variable, how it works inside, the benchmark behind its claims, and its limits. It describes version 0.4.0. Source: https://github.com/Umair/stalemap · npm: https://www.npmjs.com/package/stalemap · site: https://stalemap.com
+
+## 1. The problem
+
+A language model learns libraries from training data that stops at a cutoff date. When a project pins library versions released after that date, a coding agent writes code for the API it remembers:
+
+- AI SDK 7: `streamText({ maxSteps })` no longer exists; use `stopWhen`. `CoreMessage` became `ModelMessage`.
+- zod 4: `z.string({ required_error })` and `invalid_type_error` are gone; use `error`.
+- Next.js 16: `middleware.ts` is renamed `proxy.ts` and exports `proxy`; `revalidateTag()` requires a profile; some `experimental.*` config keys moved.
+- mongoose 9: pre middleware no longer receives `next()`; use an async function.
+- TypeScript 6/7: compiler options such as `baseUrl` are deprecated or removed.
+
+Some of this code fails to compile. Some of it compiles and behaves differently, because a default changed. Docs tools help only when the agent thinks to look something up, and agents rarely do for libraries they believe they know.
+
+## 2. What stalemap gives the agent
+
+1. **Notes (at session start).** A short, ranked block of changes between the version the model knew and the installed version, written into `AGENTS.md` or `CLAUDE.md` between `<!-- stalemap:start -->` and `<!-- stalemap:end -->`. With the Claude Code plugin, it's injected into the session's context instead and no file is written. Text outside the markers is never touched.
+2. **Edit-time guard (after each edit).** A post-edit hook that runs the project's own TypeScript and reports:
+   - compile errors caused by a dependency that changed after the cutoff, with the matching note as the fix;
+   - when no note matches, the release-note, upgrade-guide or type-change section that explains the error, found by searching with the error and the code around it ("Related change");
+   - code that still type-checks but uses something that moved: config keys (`experimental.ppr` in Next 16), members read as properties (`HttpStatusCode.PayloadTooLarge` → `ContentTooLarge` in axios 1.20), renamed file conventions (`middleware.ts` → `proxy.ts`), `tsconfig.json` options the project's TypeScript rejects;
+   - the compiler's other errors, without claiming a dependency changed. They come from the edited file, new errors in files that import it, and up to five errors elsewhere in the project. A plain `tsc --noEmit` hook is therefore a subset of the guard.
+   - edit-time notes: up to three changes that still type-check, below the notes block's cut, whose names the edited code uses. Each is shown once per session.
+3. **`search_changes` (on demand).** An MCP tool the agent queries in its own words ("resolve alias in next.config", an error message, an old API name). It returns the matching changes with their sources and code: type changes of every public entry point, release-note sections with their code blocks, pull-request descriptions behind terse release notes, upgrade-guide notes and sections. Ranking is BM25 over words and split identifiers, weighted toward what the project uses. The first search builds an index from the analysis caches; later ones are offline and fast.
+
+## 3. Install and set up
+
+Requirements: Node.js 20 or later; a project with a `package.json` (npm, pnpm, yarn or bun lockfile, or installed `node_modules`).
+
+### Claude Code (plugin)
+
+```text
+/plugin marketplace add Umair/stalemap
+/plugin install stalemap@stalemap
+```
+
+The plugin adds:
+
+- a SessionStart hook that puts the notes into Claude's context for the session's model (on startup, after `/clear` and after compaction; it writes no files);
+- a PostToolUse hook on Write and Edit that runs the guard;
+- the stalemap MCP server, with tools `search_changes`, `package_changes`, `project_changes` and `check_notes`;
+- two skills: `/stalemap:sync` writes the notes block into the project, and `upgrade` tells Claude to look up a package's changes before using or upgrading it.
+
+The hooks and MCP server run `npx -y stalemap@latest`, so they use the latest npm release.
+
+### Cursor, Codex, OpenCode (and Claude Code without the plugin)
+
+```bash
+npx stalemap setup --agent cursor      # or codex, opencode, claude
+npx stalemap setup --agent codex --dry-run    # print the changes, write nothing
+```
+
+`setup` writes, as project files you can commit:
+
+- the notes block where that agent reads it;
+- the MCP server registration;
+- the guard as the agent's post-edit hook.
+
+It merges into existing config files and keeps entries it didn't write, so re-running it changes nothing. A Codex `config.toml` layout it can't merge safely is left alone, and the entry to add by hand is printed. Cursor doesn't pass a post-tool hook's context to the model yet, so for Cursor `setup` also adds a stop-hook fallback that sends unreported guard findings as a follow-up message. Real Cursor, Codex and OpenCode installs haven't been tested end to end yet.
+
+### Any MCP client
+
+```json
+{ "mcpServers": { "stalemap": { "command": "npx", "args": ["-y", "stalemap@latest", "mcp"] } } }
+```
+
+`stalemap mcp --model <id>` (or `$STALEMAP_MODEL`) sets the model for clients that don't say which model is asking.
+
+### Command line
+
+```bash
+npx stalemap                 # preview what changed and the block it would write
+npx stalemap sync            # write the block into AGENTS.md or CLAUDE.md
+npx stalemap check           # for CI: exit 1 when the block is missing or stale
+npx stalemap guard src/**/*.ts   # run the guard by hand
+npx stalemap search "resolve alias in next.config"
+```
+
+Claude Code reads `CLAUDE.md`. If your notes live in `AGENTS.md`, add `@AGENTS.md` to `CLAUDE.md`, or pass `--target CLAUDE.md`.
+
+### GitHub Action
+
+```yaml
+- uses: Umair/stalemap@main
+  with:
+    model: claude-opus-5-5      # check mode: fail CI when the notes are missing or stale
+    # mode: comment             # or comment on pull requests that change dependencies
+```
+
+Inputs:
+
+- `mode`: `check` (default) or `comment`;
+- `model`, or `cutoff` (YYYY-MM or YYYY-MM-DD);
+- `working-directory`, the folder with `package.json`;
+- `args`, extra stalemap arguments such as `--all --budget 2000`;
+- `version` of stalemap to run (default `latest`);
+- `github-token`, for comment mode, which needs `permissions: pull-requests: write`.
+
+Comment mode lists each changed dependency, from what the model knows to what's pinned, with its notes, and updates the comment on later pushes.
+
+## 4. Commands
+
+| command | what it does |
+|---|---|
+| `stalemap [scan]` | Show what changed and preview the block (default command). `--json` for machine-readable output. |
+| `stalemap sync` | Write the block into AGENTS.md / CLAUDE.md. |
+| `stalemap setup --agent <cursor\|codex\|opencode\|claude>` | Set up an agent in this project: the notes, the MCP server and the post-edit guard. Re-running changes nothing; see `--dry-run`. |
+| `stalemap check` | Exit 1 if the block is missing or out of date (for CI). |
+| `stalemap remove` | Remove the block. |
+| `stalemap models <q>` | Search known models and their training cutoffs. |
+| `stalemap mcp` | Run as an MCP server over stdio. |
+| `stalemap search <q>` | Search what changed in this project's dependencies (`--package <name>` to limit to one). |
+| `stalemap guard <files>` | Type-check files and report APIs that changed after the cutoff. |
+| `stalemap hook session-start \| post-edit [--agent <name>] \| record-edit \| stop` | The agent hooks. `session-start` puts the notes in context (Claude Code). `post-edit` runs the guard, reading Claude Code's payload or `--agent cursor\|codex\|opencode`. `record-edit` and `stop` (`--agent cursor`) send the guard's findings as a follow-up when the agent stops. |
+| `stalemap probe` | Measure which notes each model actually gets wrong. |
+
+## 5. Options
+
+| option | meaning |
+|---|---|
+| `--model <id>` | Model the agent uses. Default: detected from Claude Code, Codex, OpenCode or Gemini CLI settings, or `$ANTHROPIC_MODEL`. |
+| `--cutoff <date>` | Training cutoff to use instead of a model (YYYY-MM[-DD]). |
+| `--margin <days>` | Treat releases this close to the cutoff as unknown (default 30). |
+| `--target <file>` | File to write (default AGENTS.md, or CLAUDE.md if only that exists). |
+| `--all` | Check every direct dependency, not just imported or config-driven ones. |
+| `--guard`, `--no-guard` | Rank the notes for an agent that runs the post-edit guard: what still type-checks (defaults, behavior, moved settings) before removals the guard reports anyway. Default: on when a hook or the plugin runs it. |
+| `--llm` | Summarize each package's changes with Claude (needs Anthropic credentials; cached). |
+| `--llm-model <id>` | Model for `--llm` (default `claude-opus-5-5`). |
+| `--examples` | Add Before → After examples, compiled against the pinned versions (via `claude -p`, or the Anthropic API with `--llm-provider anthropic`). |
+| `--guides` | Add notes from the packages' upgrade guides: changed defaults, moved config options, renamed files. A note is kept only if it quotes the guide. |
+| `--llm-provider <p>` | `claude-code` (default when `claude` is installed) or `anthropic`. |
+| `--budget <tokens>` | Size limit for the block (default 1800). |
+| `--per-package <n>` | Max notes per package (default 8). |
+| `--json` | Machine-readable output (scan). |
+| `--dry-run` | Show what `sync` or `setup` would write without writing. |
+| `--agent <name>` | Agent for `setup` and `hook post-edit`: cursor, codex, opencode, claude. |
+| `-y`, `--yes` | Don't ask before writing. |
+| `--cwd <dir>` | Project directory (default: current directory). |
+| `--no-cache` | Ignore cached registry, changelog and summary data. |
+| `--no-precomputed` | Analyze every package locally instead of using precomputed reports. |
+| `-v`, `--verbose` / `-q`, `--quiet` | More or less logging. |
+
+Probe options:
+
+| option | meaning |
+|---|---|
+| `--models <a,b>` | The models to probe; append `=YYYY-MM` for a custom cutoff (`qwen3:8b=2025-04`). |
+| `--provider <p>` | `anthropic`, `openai` (any OpenAI-compatible endpoint, such as Ollama) or `claude-code`. |
+| `--base-url <url>` | The endpoint for `--provider openai`. |
+| `--api-key-env <var>` | The environment variable that holds the key. |
+| `--max-probes <n>` | How many probes to run per model (default 12). |
+| `--arms bare,notes` | Run without the notes, with them, or both (default both). |
+| `--include-unused` | Also probe APIs the project doesn't import. |
+| `--dry-run` | Print the probes without calling a model. |
+
+## 6. MCP tools
+
+- **`search_changes`**: searches what changed in this project's dependencies since the model's training data, for the installed versions. That covers removed, renamed and moved APIs, options and config keys; new required arguments; changed defaults and behavior; and file conventions. Parameters:
+  - `query` (required): what the agent is about to do or look up, in its own words: an API, option, config key, file or error message. Old names are fine.
+  - `package`: limits the search to one npm package of the project.
+  - `limit`: 1–15 results, default 8.
+  - `cwd`: the project directory.
+
+  The server's instructions tell the agent to search before writing or changing code that uses a third-party package, or editing one of its config files, even when sure.
+- **`package_changes`**: what changed in one package between the version the model knew and a given version. Parameters: `name` (required), `version` (version or range, default latest), and `apis`, the exports about to be used, which are ranked first.
+- **`project_changes`**: what changed across the project's dependencies. Parameters: `cwd`, and `all` to check every direct dependency.
+- **`check_notes`**: whether the project's notes block is missing or out of date for the current dependencies and model. It's offline and fast. Parameter: `cwd`.
+
+## 7. Environment variables
+
+| variable | effect |
+|---|---|
+| `STALEMAP_MODEL` | Model to check against when a client or hook doesn't say. |
+| `ANTHROPIC_MODEL` | Fallback model detection. |
+| `STALEMAP_CACHE` | Cache directory (default `~/.cache/stalemap`). |
+| `STALEMAP_GUARD_TSC=0` | Guard reports only dependency changes, not the compiler's other errors. |
+| `STALEMAP_GUARD_SEARCH=0` | Guard doesn't look up related changes for errors no note explains. |
+| `STALEMAP_GUARD_SEARCH_MS` | Time budget for that lookup (default 6000). |
+| `STALEMAP_TSC_TIMEOUT_MS` | How long the project's `tsc` may run inside the guard (default 15000). |
+| `STALEMAP_GUARD_DEPRECATIONS=1` | Also report uses of deprecated APIs (off by default: deprecated code still works). |
+| `STALEMAP_GUARD_LOG` | JSON-lines file the guard appends one line per run to. |
+| `STALEMAP_NOTES_FILE` | A notes file the guard treats as already shown, so it isn't repeated. |
+| `STALEMAP_NO_PRS=1` | Don't read pull-request descriptions behind terse release notes. |
+| `STALEMAP_MAX_PRS` | Pull requests read per package (default 12). |
+| `STALEMAP_LLM_MODEL` | Model for `--llm`, `--examples` and `--guides` notes. |
+| `STALEMAP_PRECOMPUTED_URL` | Host for precomputed reports (none is hosted yet). |
+| `STALEMAP_NO_PRECOMPUTED=1` | Same as `--no-precomputed`. |
+| `STALEMAP_REGISTRY` | npm registry URL. |
+| `STALEMAP_DEBUG` | Debug logging. |
+| `GITHUB_TOKEN` | Used (or your `gh` login) for GitHub release notes and pull requests, for a higher rate limit. |
+
+## 8. How it works
+
+1. **Which model?** `--model`, or the model configured for Claude Code, Codex, OpenCode or Gemini CLI, or `$ANTHROPIC_MODEL`. The training cutoff comes from models.dev, with a built-in fallback table, or from `--cutoff`.
+2. **What did the model know?** For each dependency, the baseline is the newest stable release published at least 30 days before the cutoff (`--margin`).
+3. **Which dependencies?**
+   - Direct dependencies the code imports, scanned locally.
+   - Dependencies a config file configures: `tsconfig.json`, `next.config.*`, the Prisma schema and `prisma.config.ts`, and the Vitest, Vite, ESLint, Tailwind, Drizzle, Playwright, Astro, Svelte, Nuxt and Wrangler configs.
+   - `--all` checks every direct dependency.
+   - Pinned versions come from `node_modules` or the lockfile.
+4. **What changed?**
+   - **Types:** both versions' `.d.ts` files are downloaded and compared with the TypeScript compiler API. That finds removed, renamed and moved exports, new required parameters, removed or newly required options, moved config keys, and new `@deprecated` tags with their hints.
+   - **Release notes:**
+     - They come from the package's changelog, completed from GitHub releases when the changelog stops before the installed version, or from GitHub releases alone.
+     - They're scored for breaking-change signals and for the APIs the project uses.
+     - A removal gets its replacement from a rename the changelog announces.
+   - **Pull requests:** for terse or "see the PR" release-note items, the pull request's description is indexed for search.
+   - **Upgrade guides:**
+     - `--guides` turns each major's guide into short notes, each of which must quote the guide.
+     - Search also indexes the guide's sections.
+   - **Verified examples** (`--examples`): a Before → After line, kept only if it compiles against the pinned version.
+5. **Fit the budget.** Notes about what the project uses come first: imported APIs, members and component props, config keys it sets (including nested ones and option values), entry points and file names. The default budget is 1,800 tokens.
+
+Library use:
+
+```ts
+import { runStalemap, packageChanges, checkBlock } from "stalemap";
+const { rendered } = await runStalemap({ cwd: ".", model: "claude-opus-5-5" });
+```
+
+## 9. What leaves your machine
+
+- Package names and versions go to the npm registry, GitHub (changelogs, releases and pull requests; `GITHUB_TOKEN` or a `gh` login is used when available) and models.dev.
+- Source code is never uploaded. The import scan is local.
+- With `--llm`, `--examples` or `--guides`: type diffs, release-note excerpts, guide text and the names of APIs the project imports go to Claude (the Anthropic API or `claude -p`). The project's code is not included.
+- With `probe`: the probe prompts go to the provider you choose.
+- With `$STALEMAP_PRECOMPUTED_URL` set: package names (not versions) go to that host.
+
+Caches live in `~/.cache/stalemap` (`$STALEMAP_CACHE` moves them).
+
+## 10. Benchmark evidence
+
+All results come from headless Claude Code sessions graded by hidden tests the agent never sees. Each task is run in two modes: one-shot (file tools only) and checks (the agent can also run `npm test` and `tsc`). Intervals are two-level bootstrap intervals (tasks, then runs). A difference is a win only when its interval excludes zero.
+
+**Held-out v4 (2026-10, blind and pre-registered).**
+
+How the suite was built and run:
+- 66 tasks drawn by a fixed seed from every breaking, deprecation and default or behavior change that 33 popular npm packages released between 2026-07-01 and 2026-10-19. The packages were the top three qualifying ones per category.
+- The tasks were written by an author who never saw stalemap's code, notes or results. A second, equally blind reviewer checked every task and applied the pilot rule.
+- The build was frozen (git tag `freeze/v4-final`, released as 0.4.0) and the analysis pre-registered before any v4 result existed.
+- There were 3 sessions per task, arm, mode and model.
+
+| setup | claude-sonnet-5-5 | claude-sonnet-4-5 |
+|---|---|---|
+| agent alone | 68% | 46% |
+| + a plain `tsc --noEmit` hook after each edit | 73% | 53% |
+| + stalemap (notes, guard, `search_changes`) | 89% | 64% |
+| + a one-line hand-written hint naming the change (ceiling) | 98% | 78% |
+
+Pre-registered comparisons (all wins):
+
+| comparison | model | difference | interval |
+|---|---|---|---|
+| stalemap vs alone (primary) | claude-sonnet-5-5 | +20.7 points | [13.6, 28.3] at 95% |
+| stalemap vs `tsc` hook | claude-sonnet-5-5 | +16.4 points | [7.6, 26.0] at 98.3% |
+| stalemap vs alone | claude-sonnet-4-5 | +17.9 points | [7.6, 28.8] at 98.3% |
+| stalemap vs `tsc` hook | claude-sonnet-4-5 | +10.6 points | [0.3, 21.7] at 98.3% |
+
+Other results for `claude-sonnet-5-5`:
+
+- **By mode:** one-shot was 89% vs 60% with no help, and checks was 89% vs 77%.
+- **Stale first edits:** 11% with stalemap vs 27% with no help.
+- **Cost:** median $0.050 vs $0.041 per session, with 7 vs 8 turns.
+
+On `claude-sonnet-4-5`, stalemap sessions cost more: $0.124 vs $0.085, and 79 s vs 47 s.
+
+**Earlier suites** (`claude-sonnet-4-5`): v1 (10 tasks) 83% vs 50% alone, a win; v2 (10 tasks) 35% vs 23%, a tie; v3 (59 tasks) 53% vs 43%, a win, but a tie with a plain `tsc` hook. The changes in 0.3 and 0.4 came from v3's transcripts; v4 is their first blind test.
+
+Caveats: stalemap, the harness and the protocols have one author; two Claude models were measured; JavaScript and TypeScript only. Results against third-party tools aren't published. Everything (tasks, hidden tests, sampling files, review, pilot, per-session results) is in `bench/` in the repository.
+
+## 11. Limits
+
+- JavaScript and TypeScript only, and one `package.json` (no workspace traversal yet).
+- Packages without bundled types get release-note notes only (`@types/*` aren't diffed).
+- Usage tracking stops at imported names and `x.member` accesses; instance chains like `client.messages.create({ temperature })` aren't traced.
+- Behavior changes that never reach a type signature come only from release notes, pull requests and upgrade guides. If none of them names the setting, stalemap can't either.
+- Ranking release notes is heuristic and noisy for prose-heavy changelogs.
+- Agents sometimes ignore correct notes. The guard catches what fails to compile and some of what still compiles (moved keys and members, renamed files); other stale code that still compiles is caught only if a note covers it.
+- Modules declared without types (a bare `declare module 'x'`) type-check anything, so the guard can't catch misuse of them.
+
+## 12. Guidance for agents using stalemap
+
+- Treat the notes block as describing the installed versions. Where it disagrees with what you remember, it's right.
+- Before writing code against a third-party package, call `search_changes` with what you're about to do, even for well-known libraries.
+- When the guard reports an error, fix it before moving on. A "Fix:" line is stalemap's note for that change; a "Related change" is the source section that best matches the error.
+- Errors listed under "the project's tsc also reports" are ordinary compiler errors, not dependency changes.
+
+## 13. Project
+
+- License: MIT. Copyright Umair Ejaz and stalemap contributors.
+- Issues and contributions: https://github.com/Umair/stalemap (see CONTRIBUTING.md). Security reports: private vulnerability reporting on GitHub (see SECURITY.md).
+- Not affiliated with Anthropic or any library it covers.

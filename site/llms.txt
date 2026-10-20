@@ -1,0 +1,44 @@
+# stalemap
+
+> stalemap tells coding agents which of a JavaScript or TypeScript project's dependencies changed after the agent's model was trained, and what changed. It gives the agent that information three ways: notes written into AGENTS.md or CLAUDE.md at session start, an edit-time guard that runs the project's own `tsc` after every edit and explains errors caused by changed APIs, and an MCP tool, `search_changes`, the agent can query in its own words. It works with Claude Code, Cursor, Codex, OpenCode and any MCP client. MIT-licensed, on npm as `stalemap` (latest 0.4.0).
+
+Key facts:
+
+- **Problem it solves:** a model's knowledge stops at its training cutoff. When a project pins newer library versions, agents write code for the old API: `maxSteps` against AI SDK 7, `required_error` against zod 4, `middleware.ts` against Next.js 16, `next()` in mongoose 9 pre hooks.
+- **How it knows what changed:**
+  - For each direct dependency, it picks the version the model plausibly knew: the newest stable release at least 30 days before the cutoff.
+  - It then compares that version with the installed one: type declarations (removed, renamed and moved exports, new required options), release notes, upgrade guides, and the pull requests behind terse release notes.
+  - It ranks the changes by what the project's code actually imports and configures.
+- **Measured result (held-out v4, blind and pre-registered):**
+  - 66 tasks built from changes released July–October 2026, graded by hidden tests.
+  - `claude-sonnet-5-5` passed 89% of sessions with stalemap, vs 68% with no help (+20.7 points, 95% interval [13.6, 28.3]) and 73% with a plain `tsc --noEmit` hook after each edit (+16.4 points [7.6, 26.0]).
+  - `claude-sonnet-4-5` passed 64% vs 46% (+17.9) and vs 53% (+10.6).
+  - All four pre-registered comparisons were wins.
+- **Privacy:** package names and versions go to the npm registry and GitHub. Source code is scanned locally and never uploaded.
+- **Install for Claude Code:** `/plugin marketplace add Umair/stalemap` then `/plugin install stalemap@stalemap`. Other agents: `npx stalemap setup --agent cursor|codex|opencode`. Any MCP client: `npx -y stalemap@latest mcp`.
+
+## Docs
+
+- [Full reference for LLMs](https://stalemap.com/llms-full.txt): every command, option, MCP tool, hook, environment variable, the benchmark and the limits, in one file
+- [README](https://github.com/Umair/stalemap/blob/main/README.md): overview, install, examples, how it works, results, limits
+- [Changelog](https://github.com/Umair/stalemap/blob/main/CHANGELOG.md): what each release changed
+- [Example notes block](https://github.com/Umair/stalemap/blob/main/examples/next-ai-app.claude-sonnet-4-5.md): real output for a Next.js + AI SDK app
+- [Security policy](https://github.com/Umair/stalemap/blob/main/SECURITY.md): reporting vulnerabilities, scope
+
+## Benchmark
+
+- [Held-out v4 protocol](https://github.com/Umair/stalemap/blob/main/bench/heldout-v4/PROTOCOL.md): sampling, arms, models, pre-registered analysis and decision rule
+- [Held-out v4 results, claude-sonnet-5-5](https://github.com/Umair/stalemap/blob/main/bench/heldout-v4/RESULTS-claude-sonnet-5-5.md): primary model, per mode, per task
+- [Held-out v4 results, claude-sonnet-4-5](https://github.com/Umair/stalemap/blob/main/bench/heldout-v4/RESULTS-claude-sonnet-4-5.md): secondary model
+- [Independent blind review](https://github.com/Umair/stalemap/blob/main/bench/heldout-v4/REVIEW.md) and [pilot](https://github.com/Umair/stalemap/blob/main/bench/heldout-v4/PILOT.md)
+- [Benchmark harness](https://github.com/Umair/stalemap/blob/main/bench/README.md): arms, isolation, running it yourself
+
+## Packages
+
+- [npm: stalemap](https://www.npmjs.com/package/stalemap): CLI, MCP server, library
+- [GitHub: Umair/stalemap](https://github.com/Umair/stalemap): source, Claude Code plugin marketplace, GitHub Action
+
+## Optional
+
+- [Earlier benchmark suites](https://github.com/Umair/stalemap/tree/main/bench): held-out v1–v3 and their results
+- [Contributing](https://github.com/Umair/stalemap/blob/main/CONTRIBUTING.md)
