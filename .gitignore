@@ -21,3 +21,4 @@ bench/results/*/run.log
 *.key
 *.keys
 *.pem
+.vercel
