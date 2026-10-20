@@ -1,0 +1,6 @@
+{
+  "name": "stalemap-claude-plugin",
+  "private": true,
+  "description": "Pins the stalemap version the plugin's hooks, MCP server and skills run with npx.",
+  "dependencies": { "stalemap": "0.4.1" }
+}
