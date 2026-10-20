@@ -1,0 +1,246 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>stalemap: dependency changes your coding agent hasn't seen</title>
+  <meta name="description" content="stalemap tells coding agents which dependencies changed after their training cutoff. In a blind benchmark, claude-sonnet-5-5 passed 89% of tasks with stalemap vs 68% with no help.">
+  <link rel="canonical" href="https://stalemap.com/">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://stalemap.com/">
+  <meta property="og:title" content="stalemap: dependency changes your coding agent hasn't seen">
+  <meta property="og:description" content="Notes, an edit-time guard and a search tool for the APIs that changed after your model's training cutoff. 89% vs 68% on 66 blind tasks.">
+  <meta property="og:image" content="https://stalemap.com/assets/social-preview.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://stalemap.com/assets/social-preview.png">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 44 56'%3E%3Cpath d='M22 0C10 0 0 9.6 0 21.6 0 37 22 56 22 56S44 37 44 21.6C44 9.6 34 0 22 0Z' fill='%23f59e0b'/%3E%3Ccircle cx='22' cy='21' r='11' fill='%230b1220'/%3E%3Cpath d='M22 14v7.5l5 3' stroke='%23f59e0b' stroke-width='3' stroke-linecap='round' fill='none'/%3E%3C/svg%3E">
+  <style>
+    :root {
+      --bg: #0b1220; --bg2: #111a2c; --line: #24304a; --text: #e2e8f0; --muted: #94a3b8; --dim: #64748b;
+      --amber: #f59e0b; --amber2: #fcd34d; --green: #22c55e; --green2: #86efac; --red: #ff7b72;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      --sans: -apple-system, "Segoe UI", Inter, Helvetica, Arial, sans-serif;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { margin: 0; background: var(--bg); color: var(--text); font: 17px/1.6 var(--sans); -webkit-font-smoothing: antialiased; }
+    body::before { content: ""; position: fixed; inset: 0; pointer-events: none; background-image: linear-gradient(rgba(255,255,255,.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.03) 1px, transparent 1px); background-size: 32px 32px; mask-image: linear-gradient(to bottom, #000 0, transparent 900px); }
+    a { color: var(--green2); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    code { font-family: var(--mono); font-size: .9em; background: #16203a; border: 1px solid var(--line); border-radius: 6px; padding: .08em .35em; }
+    .wrap { max-width: 1120px; margin: 0 auto; padding: 0 24px; position: relative; }
+    nav { display: flex; align-items: center; justify-content: space-between; padding: 22px 0; }
+    .brand { display: flex; align-items: center; gap: 10px; color: var(--text); font-weight: 700; font-size: 20px; }
+    .brand:hover { text-decoration: none; }
+    .brand svg { width: 22px; height: 28px; }
+    .navlinks { display: flex; gap: 22px; font-size: 15px; }
+    .navlinks a { color: var(--muted); }
+    .navlinks a:hover { color: var(--text); text-decoration: none; }
+    header.hero { padding: 64px 0 40px; display: grid; grid-template-columns: 1.1fr .9fr; gap: 48px; align-items: center; }
+    .eyebrow { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; color: var(--green2); background: #052e16; border: 1px solid #14532d; border-radius: 999px; padding: 4px 12px; margin-bottom: 20px; }
+    h1 { font-size: clamp(36px, 5vw, 56px); line-height: 1.08; letter-spacing: -1.5px; margin: 0 0 20px; }
+    h1 .hl { background: linear-gradient(90deg, var(--amber), var(--green)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+    .lede { color: var(--muted); font-size: 19px; margin: 0 0 28px; max-width: 560px; }
+    .cta { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+    .cmd { display: inline-flex; align-items: center; gap: 12px; font-family: var(--mono); font-size: 15px; background: #0d1117; border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px 12px 16px; color: var(--text); }
+    .cmd .p { color: var(--green); }
+    button.copy { font: 13px var(--sans); color: var(--muted); background: #1a2440; border: 1px solid var(--line); border-radius: 7px; padding: 4px 10px; cursor: pointer; }
+    button.copy:hover { color: var(--text); }
+    .btn { display: inline-block; font-weight: 600; font-size: 15px; padding: 12px 18px; border-radius: 10px; border: 1px solid var(--line); color: var(--text); background: var(--bg2); }
+    .btn:hover { text-decoration: none; border-color: #3b4a6b; }
+    .stalecard { background: #0d1117; border: 1px solid #30363d; border-radius: 14px; overflow: hidden; font-family: var(--mono); font-size: 14px; box-shadow: 0 20px 60px rgba(0,0,0,.35); }
+    .stalecard .bar { background: #161b22; padding: 10px 14px; display: flex; gap: 7px; align-items: center; color: #8b949e; font-size: 12px; }
+    .dot { width: 11px; height: 11px; border-radius: 50%; display: inline-block; }
+    .stalecard pre { margin: 0; padding: 16px 18px; white-space: pre; overflow-x: auto; line-height: 1.55; }
+    header.hero > *, .ways > *, .stats > *, .faq > * { min-width: 0; }
+    .tablewrap { overflow-x: auto; }
+    .del { color: var(--red); } .add { color: #7ee787; } .c { color: #8b949e; } .y { color: var(--amber2); }
+    section { padding: 64px 0; border-top: 1px solid #16203a; }
+    h2 { font-size: clamp(28px, 3.4vw, 38px); letter-spacing: -.8px; margin: 0 0 12px; }
+    .sub { color: var(--muted); max-width: 720px; margin: 0 0 32px; }
+    .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin: 0 0 28px; }
+    .stat { background: var(--bg2); border: 1px solid var(--line); border-radius: 14px; padding: 22px; }
+    .stat b { display: block; font-size: 38px; letter-spacing: -1px; line-height: 1.1; }
+    .stat span { color: var(--muted); font-size: 15px; }
+    .stat.win { background: #052e16; border-color: #14532d; }
+    .stat.win b { color: var(--green2); }
+    figure { margin: 0; }
+    figure img { width: 100%; height: auto; display: block; border-radius: 16px; border: 1px solid var(--line); }
+    figcaption { color: var(--dim); font-size: 14px; margin-top: 12px; }
+    table { width: 100%; border-collapse: collapse; font-size: 15px; margin-top: 24px; }
+    th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); }
+    th { color: var(--muted); font-weight: 600; font-size: 13px; text-transform: uppercase; letter-spacing: .6px; }
+    td.n { font-variant-numeric: tabular-nums; }
+    .ways { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 28px; }
+    .way { background: var(--bg2); border: 1px solid var(--line); border-radius: 14px; padding: 22px; }
+    .way h3 { margin: 0 0 6px; font-size: 19px; }
+    .way .when { color: var(--green2); font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: .8px; }
+    .way p { color: var(--muted); margin: 8px 0 0; font-size: 15px; }
+    .tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+    .tab { font: 600 14px var(--sans); color: var(--muted); background: var(--bg2); border: 1px solid var(--line); border-radius: 999px; padding: 7px 14px; cursor: pointer; }
+    .tab[aria-selected="true"] { color: #0b1220; background: var(--green2); border-color: var(--green2); }
+    .panel { display: none; }
+    .panel.on { display: block; }
+    .code { position: relative; background: #0d1117; border: 1px solid #30363d; border-radius: 12px; padding: 18px 84px 18px 20px; font: 14px/1.6 var(--mono); white-space: pre; overflow-x: auto; }
+    .code button.copy { position: absolute; top: 10px; right: 10px; }
+    .note { color: var(--dim); font-size: 14px; margin-top: 10px; }
+    .faq { display: grid; grid-template-columns: 1fr 1fr; gap: 16px 32px; }
+    .faq h3 { font-size: 17px; margin: 0 0 6px; }
+    .faq p { color: var(--muted); margin: 0; font-size: 15px; }
+    footer { border-top: 1px solid #16203a; padding: 32px 0 48px; color: var(--dim); font-size: 14px; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; }
+    @media (max-width: 860px) {
+      header.hero { grid-template-columns: 1fr; padding-top: 32px; }
+      .stats, .ways, .faq { grid-template-columns: 1fr; }
+      .navlinks a.hide-sm { display: none; }
+      .cmd { font-size: 13px; }
+      .navlinks { gap: 14px; font-size: 14px; }
+      .stalecard { font-size: 12.5px; }
+      .cta .btn { width: 100%; text-align: center; }
+      th, td { padding: 8px; font-size: 14px; }
+      body { font-size: 16px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <nav>
+      <a class="brand" href="/" aria-label="stalemap home">
+        <svg viewBox="0 0 44 56" aria-hidden="true"><path d="M22 0C10 0 0 9.6 0 21.6 0 37 22 56 22 56S44 37 44 21.6C44 9.6 34 0 22 0Z" fill="#f59e0b"/><circle cx="22" cy="21" r="11" fill="#0b1220"/><path d="M22 14v7.5l5 3" stroke="#f59e0b" stroke-width="3" stroke-linecap="round" fill="none"/></svg>
+        stalemap
+      </a>
+      <div class="navlinks">
+        <a class="hide-sm" href="#how">How it works</a>
+        <a class="hide-sm" href="#results">Results</a>
+        <a href="#install">Install</a>
+        <a href="https://github.com/Umair/stalemap">GitHub</a>
+      </div>
+    </nav>
+
+    <header class="hero">
+      <div>
+        <div class="eyebrow">● 89% vs 68% on 66 blind tasks with claude-sonnet-5-5</div>
+        <h1>Your coding agent learned <span class="hl">last year's APIs</span>.</h1>
+        <p class="lede">stalemap finds the dependencies that changed after your model's training cutoff and tells the agent what changed: before it starts, after every edit, and whenever it asks.</p>
+        <div class="cta">
+          <div class="cmd"><span><span class="p">❯</span> npx stalemap</span><button class="copy" data-copy="npx stalemap">Copy</button></div>
+          <a class="btn" href="#install">Install for your agent</a>
+        </div>
+      </div>
+      <div class="stalecard" aria-label="Example: stale code an agent writes, and the current API">
+        <div class="bar"><span class="dot" style="background:#ff5f57"></span><span class="dot" style="background:#febc2e"></span><span class="dot" style="background:#28c840"></span>&nbsp; stale (what the model learned) → installed</div>
+<pre><span class="c">// ai 7 · AI SDK</span>
+<span class="del">- streamText({ maxSteps: 5 })</span>
+<span class="add">+ streamText({ stopWhen: isStepCount(5) })</span>
+
+<span class="c">// zod 4</span>
+<span class="del">- z.string({ required_error: "…" })</span>
+<span class="add">+ z.string({ error: "…" })</span>
+
+<span class="c">// next 16</span>
+<span class="del">- middleware.ts → middleware()</span>
+<span class="add">+ proxy.ts      → proxy()</span>
+
+<span class="c">// mongoose 9</span>
+<span class="del">- pre("save", function (next) {…})</span>
+<span class="add">+ pre("save", async function () {…})</span></pre>
+      </div>
+    </header>
+  </div>
+
+  <section id="how">
+    <div class="wrap">
+      <h2>Three ways the agent finds out</h2>
+      <p class="sub">stalemap compares each dependency's version the model knew with the one you've installed: type declarations, release notes and upgrade guides. It then puts what changed in front of the agent, ranked by what your code actually uses.</p>
+      <figure><img src="assets/how-it-works.svg" alt="Your pinned versions, what your code uses and your model's cutoff go in; stalemap diffs types, release notes and upgrade guides; your agent gets notes at session start, a guard after each edit, and search_changes on demand." width="1280" height="500"></figure>
+      <div class="ways">
+        <div class="way"><div class="when">At session start</div><h3>Notes</h3><p>A short, ranked block in <code>CLAUDE.md</code> or <code>AGENTS.md</code>: removed and renamed APIs, new required options, changed defaults, each with its replacement.</p></div>
+        <div class="way"><div class="when">After each edit</div><h3>Guard</h3><p>Runs your project's own <code>tsc</code>. Errors a changed dependency explains come with the fix, from the notes or the matching release-note or upgrade-guide section. Moved config keys and renamed files are flagged even when they still compile.</p></div>
+        <div class="way"><div class="when">On demand</div><h3>search_changes</h3><p>An MCP tool the agent asks in its own words, such as "resolve alias in next.config", to get the matching changes with their sources and code.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="results">
+    <div class="wrap">
+      <h2>Measured blind, before launch</h2>
+      <p class="sub">66 tasks drawn by seed from every breaking, deprecation and behavior change that 33 popular npm packages shipped between July and October 2026, after the training cutoff of the models tested. The tasks were written by an author who never saw stalemap. The build was frozen and the analysis pre-registered before any result existed. Hidden tests decide pass or fail.</p>
+      <div class="stats">
+        <div class="stat win"><b>+20.7 pts</b><span>vs no help, claude-sonnet-5-5<br>95% interval [13.6, 28.3]</span></div>
+        <div class="stat"><b>+16.4 pts</b><span>vs a plain <code>tsc</code> hook after each edit<br>98.3% interval [7.6, 26.0]</span></div>
+        <div class="stat"><b>27% → 11%</b><span>first edits that used a stale API<br>claude-sonnet-5-5</span></div>
+      </div>
+      <figure>
+        <img src="assets/results-v4.svg" alt="claude-sonnet-5-5: no help 68%, plain tsc hook 73%, stalemap 89%, one-line hint 98%. claude-sonnet-4-5: 46%, 53%, 64%, 78%." width="1280" height="520">
+        <figcaption>Share of sessions that passed, both modes pooled, 396 sessions per bar. "One-line hint" is a hand-written note naming the exact change, the ceiling for any note.</figcaption>
+      </figure>
+      <div class="tablewrap"><table>
+        <thead><tr><th>Pre-registered comparison</th><th>Model</th><th>Difference</th><th>Interval</th><th>Verdict</th></tr></thead>
+        <tbody>
+          <tr><td>stalemap vs no help (primary)</td><td>claude-sonnet-5-5</td><td class="n">+20.7 pts</td><td class="n">[13.6, 28.3]</td><td>win</td></tr>
+          <tr><td>stalemap vs plain <code>tsc</code> hook</td><td>claude-sonnet-5-5</td><td class="n">+16.4 pts</td><td class="n">[7.6, 26.0]</td><td>win</td></tr>
+          <tr><td>stalemap vs no help</td><td>claude-sonnet-4-5</td><td class="n">+17.9 pts</td><td class="n">[7.6, 28.8]</td><td>win</td></tr>
+          <tr><td>stalemap vs plain <code>tsc</code> hook</td><td>claude-sonnet-4-5</td><td class="n">+10.6 pts</td><td class="n">[0.3, 21.7]</td><td>win</td></tr>
+        </tbody>
+      </table></div>
+      <p class="note">Two-level bootstrap over tasks and runs; secondary comparisons at 98.3% (Bonferroni over three). Median cost per session with stalemap was $0.050 vs $0.041 with no help on claude-sonnet-5-5. Everything is in the repository: <a href="https://github.com/Umair/stalemap/blob/main/bench/heldout-v4/PROTOCOL.md">protocol</a>, <a href="https://github.com/Umair/stalemap/tree/main/bench/heldout-v4/tasks">tasks and hidden tests</a>, <a href="https://github.com/Umair/stalemap/blob/main/bench/heldout-v4/REVIEW.md">blind review</a>, <a href="https://github.com/Umair/stalemap/blob/main/bench/heldout-v4/RESULTS-claude-sonnet-5-5.md">full results</a>.</p>
+    </div>
+  </section>
+
+  <section id="install">
+    <div class="wrap">
+      <h2>Install</h2>
+      <p class="sub">JavaScript and TypeScript projects. stalemap reads your <code>package.json</code>, lockfile and imports locally; your source code never leaves your machine.</p>
+      <div class="tabs" role="tablist">
+        <button class="tab" role="tab" aria-selected="true" data-tab="claude">Claude Code</button>
+        <button class="tab" role="tab" aria-selected="false" data-tab="other">Cursor · Codex · OpenCode</button>
+        <button class="tab" role="tab" aria-selected="false" data-tab="cli">Command line</button>
+        <button class="tab" role="tab" aria-selected="false" data-tab="mcp">Any MCP client</button>
+        <button class="tab" role="tab" aria-selected="false" data-tab="ci">GitHub Action</button>
+      </div>
+      <div class="panel on" id="p-claude"><div class="code"><button class="copy">Copy</button>/plugin marketplace add Umair/stalemap
+/plugin install stalemap@stalemap</div><p class="note">Adds the notes at session start, the guard after each edit, and the <code>search_changes</code> MCP tool.</p></div>
+      <div class="panel" id="p-other"><div class="code"><button class="copy">Copy</button>npx stalemap setup --agent cursor     # or codex, opencode</div><p class="note">Writes the notes, registers the MCP server and installs the guard as the agent's post-edit hook, as project files you can commit. <code>--dry-run</code> shows the plan.</p></div>
+      <div class="panel" id="p-cli"><div class="code"><button class="copy">Copy</button>npx stalemap            # preview what changed
+npx stalemap sync       # write the notes into AGENTS.md or CLAUDE.md
+npx stalemap check      # for CI: fail when the notes are missing or stale</div></div>
+      <div class="panel" id="p-mcp"><div class="code"><button class="copy">Copy</button>{ "mcpServers": { "stalemap": { "command": "npx", "args": ["-y", "stalemap@latest", "mcp"] } } }</div></div>
+      <div class="panel" id="p-ci"><div class="code"><button class="copy">Copy</button>- uses: Umair/stalemap@main
+  with:
+    model: claude-sonnet-5-5
+    # mode: comment   # or comment on PRs that change dependencies</div></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <h2>Questions</h2>
+      <div class="faq">
+        <div><h3>Which model's cutoff?</h3><p>The one your agent uses: detected from Claude Code, Codex, OpenCode or Gemini CLI settings, or passed with <code>--model</code>. Cutoffs come from models.dev.</p></div>
+        <div><h3>What leaves my machine?</h3><p>Package names and versions go to the npm registry and GitHub to fetch type declarations and release notes. Your code is scanned locally and never uploaded.</p></div>
+        <div><h3>Do current models still need this?</h3><p>Yes, for anything released after their cutoff. In v4, claude-sonnet-5-5 failed a third of the tasks on its own; with stalemap it passed 89%.</p></div>
+        <div><h3>Isn't a type-check hook enough?</h3><p>It catches what fails to compile, not what to write instead, and not changed defaults. In v4 a plain <code>tsc</code> hook got 73%; stalemap's guard runs the same check and adds the fix.</p></div>
+        <div><h3>What does it cost?</h3><p>stalemap is free and MIT-licensed. With stalemap, agent sessions cost about 20% more on claude-sonnet-5-5 (median $0.050 vs $0.041 per task).</p></div>
+        <div><h3>What doesn't it do?</h3><p>Other languages, monorepo workspaces, and behavior changes that no release note or guide describes. The <a href="https://github.com/Umair/stalemap#limits">limits</a> are listed in the README.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <div class="wrap">
+    <footer>
+      <span>stalemap · MIT · <a href="https://www.npmjs.com/package/stalemap">npm</a> · <a href="https://github.com/Umair/stalemap">GitHub</a> · <a href="https://github.com/Umair/stalemap/blob/main/CHANGELOG.md">Changelog</a></span>
+      <span>Benchmarks run with Claude Code. Not affiliated with Anthropic.</span>
+    </footer>
+  </div>
+
+  <script>
+    document.querySelectorAll("button.copy").forEach((b) => b.addEventListener("click", async () => {
+      const text = b.dataset.copy ?? b.parentElement.textContent.replace(/^Copy/, "").trim();
+      try { await navigator.clipboard.writeText(text); b.textContent = "Copied"; setTimeout(() => (b.textContent = "Copy"), 1500); } catch {}
+    }));
+    document.querySelectorAll(".tab").forEach((t) => t.addEventListener("click", () => {
+      document.querySelectorAll(".tab").forEach((x) => x.setAttribute("aria-selected", String(x === t)));
+      document.querySelectorAll(".panel").forEach((p) => p.classList.toggle("on", p.id === `p-${t.dataset.tab}`));
+    }));
+  </script>
+</body>
+</html>

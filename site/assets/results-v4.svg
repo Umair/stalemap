@@ -1,0 +1,82 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="520" viewBox="0 0 1280 520" role="img" aria-labelledby="t d">
+  <title id="t">Held-out v4 results</title>
+  <desc id="d">Share of sessions that passed hidden tests on 66 blind tasks. claude-sonnet-5-5: no help 68%, plain tsc hook 73%, stalemap 89%, one-line hint naming the change 98%. claude-sonnet-4-5: no help 46%, tsc hook 53%, stalemap 64%, hint 78%.</desc>
+  <defs>
+    <linearGradient id="sm" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#f59e0b"/>
+      <stop offset="1" stop-color="#22c55e"/>
+    </linearGradient>
+    <pattern id="grid" width="32" height="32" patternUnits="userSpaceOnUse">
+      <path d="M32 0H0V32" fill="none" stroke="#ffffff" stroke-opacity="0.035"/>
+    </pattern>
+  </defs>
+  <rect width="1280" height="520" rx="20" fill="#0b1220"/>
+  <rect width="1280" height="520" rx="20" fill="url(#grid)"/>
+  <g font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif">
+    <text x="64" y="70" font-size="28" font-weight="700" fill="#f8fafc">Held-out v4: 66 blind tasks from changes after June 2026</text>
+    <text x="64" y="102" font-size="16" fill="#94a3b8">Share of agent sessions whose code passed hidden tests · both modes pooled · 396 sessions per bar</text>
+
+    <!-- primary model -->
+    <text x="64" y="152" font-size="15" font-weight="600" fill="#64748b" letter-spacing="1.5">CLAUDE-SONNET-5-5 (PRIMARY)</text>
+    <g font-size="16">
+      <text x="64" y="190" fill="#cbd5e1">No help</text>
+      <rect x="300" y="174" width="580" height="22" rx="5" fill="#1e293b"/>
+      <rect x="300" y="174" width="394" height="22" rx="5" fill="#475569"/>
+      <text x="706" y="191" fill="#cbd5e1" font-weight="600">68%</text>
+
+      <text x="64" y="226" fill="#cbd5e1">Plain tsc --noEmit hook</text>
+      <rect x="300" y="210" width="580" height="22" rx="5" fill="#1e293b"/>
+      <rect x="300" y="210" width="423" height="22" rx="5" fill="#64748b"/>
+      <text x="735" y="227" fill="#cbd5e1" font-weight="600">73%</text>
+
+      <text x="64" y="262" fill="#f8fafc" font-weight="700">stalemap</text>
+      <rect x="300" y="246" width="580" height="22" rx="5" fill="#1e293b"/>
+      <rect x="300" y="246" width="516" height="22" rx="5" fill="url(#sm)"/>
+      <text x="828" y="263" fill="#86efac" font-weight="700">89%</text>
+
+      <text x="64" y="298" fill="#64748b">One-line hint (ceiling)</text>
+      <rect x="300" y="282" width="580" height="22" rx="5" fill="#1e293b"/>
+      <rect x="300" y="282" width="568" height="22" rx="5" fill="none" stroke="#64748b" stroke-dasharray="4 4"/>
+      <text x="880" y="299" fill="#64748b" text-anchor="end" dx="-8">98%</text>
+    </g>
+
+    <!-- secondary model -->
+    <text x="64" y="352" font-size="15" font-weight="600" fill="#64748b" letter-spacing="1.5">CLAUDE-SONNET-4-5 (SECONDARY)</text>
+    <g font-size="16">
+      <text x="64" y="390" fill="#cbd5e1">No help</text>
+      <rect x="300" y="374" width="580" height="22" rx="5" fill="#1e293b"/>
+      <rect x="300" y="374" width="267" height="22" rx="5" fill="#475569"/>
+      <text x="579" y="391" fill="#cbd5e1" font-weight="600">46%</text>
+
+      <text x="64" y="426" fill="#cbd5e1">Plain tsc --noEmit hook</text>
+      <rect x="300" y="410" width="580" height="22" rx="5" fill="#1e293b"/>
+      <rect x="300" y="410" width="307" height="22" rx="5" fill="#64748b"/>
+      <text x="619" y="427" fill="#cbd5e1" font-weight="600">53%</text>
+
+      <text x="64" y="462" fill="#f8fafc" font-weight="700">stalemap</text>
+      <rect x="300" y="446" width="580" height="22" rx="5" fill="#1e293b"/>
+      <rect x="300" y="446" width="371" height="22" rx="5" fill="url(#sm)"/>
+      <text x="683" y="463" fill="#86efac" font-weight="700">64%</text>
+
+      <text x="64" y="498" fill="#64748b">One-line hint (ceiling)</text>
+      <rect x="300" y="482" width="580" height="22" rx="5" fill="#1e293b"/>
+      <rect x="300" y="482" width="452" height="22" rx="5" fill="none" stroke="#64748b" stroke-dasharray="4 4"/>
+      <text x="764" y="499" fill="#64748b">78%</text>
+    </g>
+
+    <!-- callouts -->
+    <g>
+      <rect x="944" y="150" width="272" height="150" rx="14" fill="#052e16" stroke="#22c55e" stroke-opacity="0.6"/>
+      <text x="968" y="200" font-size="40" font-weight="800" fill="#86efac">+20.7</text>
+      <text x="968" y="230" font-size="15" fill="#bbf7d0">points vs no help (5-5)</text>
+      <text x="968" y="254" font-size="13" fill="#86efac">95% interval [13.6, 28.3]</text>
+      <text x="968" y="278" font-size="13" fill="#4ade80">pre-registered · win</text>
+
+      <rect x="944" y="322" width="272" height="150" rx="14" fill="#111a2c" stroke="#334155"/>
+      <text x="968" y="372" font-size="40" font-weight="800" fill="#f8fafc">+16.4</text>
+      <text x="968" y="402" font-size="15" fill="#cbd5e1">vs plain tsc hook (5-5)</text>
+      <text x="968" y="426" font-size="13" fill="#94a3b8">98.3% interval [7.6, 26.0]</text>
+      <text x="968" y="450" font-size="13" fill="#4ade80">pre-registered · win</text>
+    </g>
+  </g>
+</svg>
