@@ -29,6 +29,10 @@
   ],
   "rewrites": [
     {
+      "source": "/privacy",
+      "destination": "/privacy.html"
+    },
+    {
       "source": "/index.md",
       "destination": "/page.md"
     },

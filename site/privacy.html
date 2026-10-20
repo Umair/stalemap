@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>stalemap privacy</title>
+  <meta name="description" content="What stalemap reads, what it sends, and what it stores.">
+  <link rel="canonical" href="https://stalemap.com/privacy">
+  <style>
+    :root { --bg: #0b1220; --text: #e2e8f0; --muted: #94a3b8; --line: #24304a; --green: #86efac; }
+    body { margin: 0; background: var(--bg); color: var(--text); font: 17px/1.65 -apple-system, "Segoe UI", Helvetica, Arial, sans-serif; }
+    main { max-width: 760px; margin: 0 auto; padding: 48px 24px 72px; }
+    h1 { font-size: 34px; margin: 0 0 8px; } h2 { font-size: 21px; margin: 32px 0 8px; }
+    p, li { color: var(--muted); } a { color: var(--green); }
+    code { font: 14px ui-monospace, Menlo, monospace; background: #16203a; border: 1px solid var(--line); border-radius: 6px; padding: .05em .35em; }
+  </style>
+</head>
+<body>
+<main>
+  <p><a href="/">← stalemap</a></p>
+  <h1>Privacy</h1>
+  <p>Last updated 2026-10-21. This page covers the stalemap npm package, its Claude Code plugin, its MCP server, its GitHub Action and this website.</p>
+
+  <h2>What stalemap doesn't do</h2>
+  <ul>
+    <li>It doesn't upload your source code. The scan of your imports and config files runs on your machine.</li>
+    <li>It has no server of its own, no account and no telemetry. It doesn't collect, store or sell personal data.</li>
+  </ul>
+
+  <h2>What it sends, and to whom</h2>
+  <p>To work out what changed in your dependencies, stalemap requests public data from these services:</p>
+  <ul>
+    <li><strong>The npm registry</strong> (or the registry you configure): the names of your dependencies, to read their versions and download their published type declarations.</li>
+    <li><strong>GitHub</strong>: the packages' repositories, to read changelogs, releases, pull requests and upgrade guides. If <code>GITHUB_TOKEN</code> is set or you're logged in with <code>gh</code>, that token is used, for a higher rate limit.</li>
+    <li><strong>models.dev</strong>: the list of models and their training cutoffs.</li>
+  </ul>
+  <p>Those requests contain package names and versions, plus the usual request metadata (your IP address, a user agent). Each service's own privacy policy applies to them.</p>
+
+  <h2>Optional features that use Claude</h2>
+  <p>Only if you turn them on with <code>--llm</code>, <code>--examples</code> or <code>--guides</code>, stalemap sends type diffs, release-note excerpts, upgrade-guide text and the names of APIs your project imports to Claude, through the Anthropic API or your local <code>claude</code> CLI. Your code isn't included. <code>stalemap probe</code> sends its probe prompts to the provider you choose.</p>
+
+  <h2>What it stores</h2>
+  <p>Caches of the downloaded data live on your machine in <code>~/.cache/stalemap</code> (or <code>$STALEMAP_CACHE</code>). Deleting that folder removes them. The notes block it writes goes into your project's <code>CLAUDE.md</code> or <code>AGENTS.md</code>.</p>
+
+  <h2>This website</h2>
+  <p>stalemap.com is a static site hosted on Vercel. It sets no cookies and runs no analytics. Vercel may keep standard server logs.</p>
+
+  <h2>Contact</h2>
+  <p>Questions or concerns: <a href="https://github.com/Umair/stalemap/issues">github.com/Umair/stalemap/issues</a>, or privately through the repository's security advisories.</p>
+</main>
+</body>
+</html>

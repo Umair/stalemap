@@ -17,5 +17,8 @@
     "npm",
     "upgrades"
   ],
-  "icon": "./icon.png"
+  "icon": "./icon.png",
+  "privacyPolicyUrl": "https://stalemap.com/privacy",
+  "documentationUrl": "https://github.com/Umair/stalemap#readme",
+  "supportUrl": "https://github.com/Umair/stalemap/issues"
 }
