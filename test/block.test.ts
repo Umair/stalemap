@@ -58,6 +58,8 @@ test("renderBlock stays within the token budget and keeps each package's top not
   assert.ok(estimateTokens(out.block) <= 650, `block is ${estimateTokens(out.block)} tokens`);
   assert.ok(out.dropped > 0);
   assert.ok(out.block.startsWith(START) && out.block.endsWith(END));
+  // The block says where it comes from and how to look further, inside the budget.
+  assert.match(out.block, /Notes by \[stalemap\]\(https:\/\/stalemap\.com\)\. For a change not listed here, run `npx stalemap search "<what you're doing>"`; `npx stalemap sync` refreshes this block\.\n\n<!-- stalemap:end -->$/);
 });
 
 test("sameBlock ignores the generated-on date and nothing else", () => {

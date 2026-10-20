@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.4.1
+
+- The notes block ends with a line saying where it comes from and how to look further: "Notes by stalemap (stalemap.com). For a change not listed here, run `npx stalemap search "<what you're doing>"`; `npx stalemap sync` refreshes this block." It helps an agent that opens a project someone else set up. `stalemap check` is unaffected: it compares the dependencies, not the text.
+- Listed in the official MCP Registry as `io.github.Umair/stalemap` (`mcpName` in package.json, `server.json` in the repository).
+
+Otherwise the same as 0.4.0, the build tested in held-out v4.
+
 ## 0.4.0
 
 This is the build tested in the blind held-out v4 benchmark ([results](bench/heldout-v4/RESULTS-claude-sonnet-5-5.md)): 66 tasks from changes released after June 2026, with `claude-sonnet-5-5` and `claude-sonnet-4-5`. On `claude-sonnet-5-5`, agents with stalemap passed 89% of sessions, against 68% with no help and 73% with a plain `tsc --noEmit` hook. Both comparisons were pre-registered, and both were wins.

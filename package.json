@@ -1,6 +1,7 @@
 {
   "name": "stalemap",
-  "version": "0.4.0",
+  "version": "0.4.1",
+  "mcpName": "io.github.Umair/stalemap",
   "description": "Tell your coding agent which of your dependencies changed after its training cutoff. Diffs types and changelogs, writes a short block into AGENTS.md / CLAUDE.md.",
   "keywords": [
     "ai",

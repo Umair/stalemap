@@ -579,6 +579,9 @@ export function renderBlock(reports: PackageReport[], opts: RenderOptions, maxCh
     );
   }
 
+  // Where the block comes from, and what to do when it doesn't cover something: for an agent that
+  // opens a project it didn't set up, and for the people who read the file.
+  footer.push(`Notes by [stalemap](https://stalemap.com). For a change not listed here, run \`npx stalemap search "<what you're doing>"\`; \`npx stalemap sync\` refreshes this block.`);
   const fixedTokens = estimateTokens(header + footer.join("\n") + END) + 10;
   let remaining = opts.budgetTokens - fixedTokens;
 

@@ -1,0 +1,30 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.Umair/stalemap",
+  "title": "stalemap",
+  "description": "Tells coding agents which npm dependencies changed after their training cutoff, and what changed.",
+  "websiteUrl": "https://stalemap.com",
+  "repository": {
+    "url": "https://github.com/Umair/stalemap",
+    "source": "github"
+  },
+  "version": "0.4.1",
+  "packages": [
+    {
+      "registryType": "npm",
+      "identifier": "stalemap",
+      "version": "0.4.1",
+      "transport": { "type": "stdio" },
+      "packageArguments": [{ "type": "positional", "value": "mcp" }],
+      "environmentVariables": [
+        {
+          "name": "STALEMAP_MODEL",
+          "description": "Model ID the agent runs as (e.g. claude-sonnet-5-5), for its training cutoff. Detected from agent settings if unset.",
+          "isRequired": false,
+          "isSecret": false,
+          "format": "string"
+        }
+      ]
+    }
+  ]
+}
