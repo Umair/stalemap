@@ -17,6 +17,11 @@ Key facts:
 - **Privacy:** package names and versions go to the npm registry and GitHub. Source code is scanned locally and never uploaded.
 - **Install for Claude Code:** `/plugin marketplace add Umair/stalemap` then `/plugin install stalemap@stalemap`. Other agents: `npx stalemap setup --agent cursor|codex|opencode`. Any MCP client: `npx -y stalemap@latest mcp`.
 
+## Install (for AI agents)
+
+- [Install instructions for agents](https://stalemap.com/install.md): step by step, non-interactive, safe to re-run. Short version: `npx -y stalemap@latest setup --agent <claude|cursor|codex|opencode> --model <your-model-id> --yes`, then `npx -y stalemap@latest check --model <your-model-id>`
+- [This site as Markdown](https://stalemap.com/index.md): also served at `https://stalemap.com/?agent=1`, and at `/` with `Accept: text/markdown`
+
 ## Docs
 
 - [Full reference for LLMs](https://stalemap.com/llms-full.txt): every command, option, MCP tool, hook, environment variable, the benchmark and the limits, in one file

@@ -2,11 +2,15 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
+  <!-- AI agents: install instructions are at https://stalemap.com/install.md (Markdown). This page as Markdown: https://stalemap.com/index.md -->
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>stalemap: dependency changes your coding agent hasn't seen</title>
   <meta name="description" content="stalemap tells coding agents which dependencies changed after their training cutoff. In a blind benchmark, claude-sonnet-5-5 passed 89% of tasks with stalemap vs 68% with no help.">
   <link rel="canonical" href="https://stalemap.com/">
+  <link rel="alternate" type="text/markdown" href="/index.md" title="This page as Markdown">
+  <link rel="alternate" type="text/markdown" href="/install.md" title="Install instructions for AI agents">
   <link rel="alternate" type="text/plain" title="llms.txt" href="/llms.txt">
+  <link rel="alternate" type="text/plain" title="llms-full.txt" href="/llms-full.txt">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://stalemap.com/">
   <meta property="og:title" content="stalemap: dependency changes your coding agent hasn't seen">
@@ -37,6 +41,13 @@
     .navlinks { display: flex; gap: 22px; font-size: 15px; }
     .navlinks a { color: var(--muted); }
     .navlinks a:hover { color: var(--text); text-decoration: none; }
+    .navlinks { align-items: center; }
+    .toggle { display: inline-flex; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; font-size: 13px; }
+    .toggle a { padding: 4px 11px; color: var(--muted); }
+    .toggle a.on { background: var(--green2); color: #0b1220; font-weight: 600; }
+    .agentnote { margin-top: 18px; font-size: 14px; color: var(--dim); }
+    .agentbar { margin: 0; padding: 7px 16px; text-align: center; font-size: 13px; color: var(--muted); background: #0d1424; border-bottom: 1px solid #16203a; position: relative; z-index: 1; }
+    .agentnote code { font-size: 13px; }
     header.hero { padding: 64px 0 40px; display: grid; grid-template-columns: 1.1fr .9fr; gap: 48px; align-items: center; }
     .eyebrow { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; color: var(--green2); background: #052e16; border: 1px solid #14532d; border-radius: 999px; padding: 4px 12px; margin-bottom: 20px; }
     h1 { font-size: clamp(36px, 5vw, 56px); line-height: 1.08; letter-spacing: -1.5px; margin: 0 0 20px; }
@@ -103,6 +114,7 @@
   </style>
 </head>
 <body>
+  <p class="agentbar">AI agent? Read <a href="/install.md">stalemap.com/install.md</a> for install steps, or <a href="/?agent=1">this page as Markdown</a>.</p>
   <div class="wrap">
     <nav>
       <a class="brand" href="/" aria-label="stalemap home">
@@ -110,6 +122,7 @@
         stalemap
       </a>
       <div class="navlinks">
+        <span class="toggle" aria-label="View"><a class="on" href="/" aria-current="page">Human</a><a href="/?agent=1">Agent</a></span>
         <a class="hide-sm" href="#how">How it works</a>
         <a class="hide-sm" href="#results">Results</a>
         <a href="#install">Install</a>
@@ -126,6 +139,7 @@
           <div class="cmd"><span><span class="p">❯</span> npx stalemap</span><button class="copy" data-copy="npx stalemap">Copy</button></div>
           <a class="btn" href="#install">Install for your agent</a>
         </div>
+        <p class="agentnote">Using an AI agent? Ask it to <em>"install stalemap from stalemap.com"</em>. Instructions for agents: <a href="/install.md">stalemap.com/install.md</a></p>
       </div>
       <div class="stalecard" aria-label="Example: stale code an agent writes, and the current API">
         <div class="bar"><span class="dot" style="background:#ff5f57"></span><span class="dot" style="background:#febc2e"></span><span class="dot" style="background:#28c840"></span>&nbsp; stale (what the model learned) → installed</div>
@@ -192,13 +206,15 @@
       <h2>Install</h2>
       <p class="sub">JavaScript and TypeScript projects. stalemap reads your <code>package.json</code>, lockfile and imports locally; your source code never leaves your machine.</p>
       <div class="tabs" role="tablist">
-        <button class="tab" role="tab" aria-selected="true" data-tab="claude">Claude Code</button>
+        <button class="tab" role="tab" aria-selected="true" data-tab="agent">Let your agent do it</button>
+        <button class="tab" role="tab" aria-selected="false" data-tab="claude">Claude Code</button>
         <button class="tab" role="tab" aria-selected="false" data-tab="other">Cursor · Codex · OpenCode</button>
         <button class="tab" role="tab" aria-selected="false" data-tab="cli">Command line</button>
         <button class="tab" role="tab" aria-selected="false" data-tab="mcp">Any MCP client</button>
         <button class="tab" role="tab" aria-selected="false" data-tab="ci">GitHub Action</button>
       </div>
-      <div class="panel on" id="p-claude"><div class="code"><button class="copy">Copy</button>/plugin marketplace add Umair/stalemap
+      <div class="panel on" id="p-agent"><div class="code"><button class="copy">Copy</button>Install stalemap in this project: follow https://stalemap.com/install.md</div><p class="note">Paste this into Claude Code, Cursor, Codex or OpenCode. The agent detects itself and its model, runs <code>stalemap setup</code>, verifies it, and tells you what it changed.</p></div>
+      <div class="panel" id="p-claude"><div class="code"><button class="copy">Copy</button>/plugin marketplace add Umair/stalemap
 /plugin install stalemap@stalemap</div><p class="note">Adds the notes at session start, the guard after each edit, and the <code>search_changes</code> MCP tool.</p></div>
       <div class="panel" id="p-other"><div class="code"><button class="copy">Copy</button>npx stalemap setup --agent cursor     # or codex, opencode</div><p class="note">Writes the notes, registers the MCP server and installs the guard as the agent's post-edit hook, as project files you can commit. <code>--dry-run</code> shows the plan.</p></div>
       <div class="panel" id="p-cli"><div class="code"><button class="copy">Copy</button>npx stalemap            # preview what changed

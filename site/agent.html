@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>stalemap (agent view)</title>
+  <meta name="description" content="stalemap for AI agents: install instructions and the full page as Markdown.">
+  <link rel="canonical" href="https://stalemap.com/">
+  <link rel="alternate" type="text/markdown" href="/index.md" title="This page as Markdown">
+  <link rel="alternate" type="text/markdown" href="/install.md" title="Install instructions for agents">
+  <link rel="alternate" type="text/plain" href="/llms.txt" title="llms.txt">
+  <link rel="alternate" type="text/plain" href="/llms-full.txt" title="llms-full.txt">
+  <style>
+    :root { --bg: #0b1220; --text: #e2e8f0; --muted: #94a3b8; --line: #24304a; --green: #86efac; }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--bg); color: var(--text); font: 15px/1.65 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+    header { position: sticky; top: 0; display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 14px 24px; background: rgba(11,18,32,.92); border-bottom: 1px solid var(--line); font-family: -apple-system, "Segoe UI", Helvetica, Arial, sans-serif; }
+    .brand { color: var(--text); font-weight: 700; text-decoration: none; }
+    .toggle { display: inline-flex; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; font-size: 13px; }
+    .toggle a { padding: 5px 12px; color: var(--muted); text-decoration: none; }
+    .toggle a.on { background: var(--green); color: #0b1220; font-weight: 600; }
+    main { max-width: 900px; margin: 0 auto; padding: 28px 24px 64px; }
+    pre { white-space: pre-wrap; word-wrap: break-word; margin: 0; }
+    a { color: var(--green); }
+  </style>
+</head>
+<body>
+  <header>
+    <a class="brand" href="/">stalemap</a>
+    <nav class="toggle" aria-label="View"><a href="/">Human</a><a class="on" href="/?agent=1" aria-current="page">Agent</a></nav>
+  </header>
+  <main><pre># stalemap
+
+&gt; Your coding agent learned last year's APIs. stalemap finds the dependencies that changed after your model's training cutoff and tells the agent what changed: before it starts, after every edit, and whenever it asks.
+
+**If you are an AI agent:** to install stalemap in the user's project, follow <a href="https://stalemap.com/install.md">https://stalemap.com/install.md</a> (step by step, safe to re-run). The short version:
+
+```bash
+npx -y stalemap@latest setup --agent &lt;claude|cursor|codex|opencode&gt; --model &lt;your-model-id&gt; --yes
+npx -y stalemap@latest check --model &lt;your-model-id&gt;
+```
+
+Full reference: <a href="https://stalemap.com/llms-full.txt">https://stalemap.com/llms-full.txt</a> · Index: <a href="https://stalemap.com/llms.txt">https://stalemap.com/llms.txt</a> · Source: <a href="https://github.com/Umair/stalemap">https://github.com/Umair/stalemap</a> · npm: <a href="https://www.npmjs.com/package/stalemap">https://www.npmjs.com/package/stalemap</a>
+
+## The problem
+
+Coding agents learn libraries from training data that stops at a cutoff date. When a project pins newer versions, the agent writes code for the old API:
+
+```diff
+// ai 7 · AI SDK
+- streamText({ maxSteps: 5 })
++ streamText({ stopWhen: isStepCount(5) })
+
+// zod 4
+- z.string({ required_error: "…" })
++ z.string({ error: "…" })
+
+// next 16
+- middleware.ts → middleware()
++ proxy.ts      → proxy()
+
+// mongoose 9
+- pre("save", function (next) {…})
++ pre("save", async function () {…})
+```
+
+## Three ways the agent finds out
+
+stalemap compares each dependency's version the model knew with the one installed: type declarations, release notes and upgrade guides. It then puts what changed in front of the agent, ranked by what the project's code actually uses.
+
+- **Notes (at session start):** a short, ranked block in `CLAUDE.md` or `AGENTS.md`: removed and renamed APIs, new required options, changed defaults, each with its replacement.
+- **Guard (after each edit):** runs the project's own `tsc`.
+  - Errors that a changed dependency explains come with the fix, either from the notes or from the matching release-note or upgrade-guide section.
+  - Moved config keys, moved members and renamed files are flagged even when they still compile.
+  - The compiler's other errors are listed too.
+- **`search_changes` (on demand):** an MCP tool the agent asks in its own words ("resolve alias in next.config") to get the matching changes with their sources and code.
+
+Works with Claude Code, Cursor, Codex, OpenCode and any MCP client. JavaScript and TypeScript projects.
+
+## Measured blind, before launch
+
+The suite:
+- 66 tasks drawn by seed from every breaking, deprecation and behavior change that 33 popular npm packages shipped between July and October 2026, after the training cutoff of the models tested;
+- written by an author who never saw stalemap;
+- graded by hidden tests.
+
+The build was frozen and the analysis pre-registered before any result existed.
+
+| setup | claude-sonnet-5-5 | claude-sonnet-4-5 |
+|---|---|---|
+| agent alone | 68% | 46% |
+| + plain `tsc --noEmit` hook after each edit | 73% | 53% |
+| **+ stalemap** | **89%** | **64%** |
+| + one-line hint naming the change (ceiling) | 98% | 78% |
+
+| pre-registered comparison | model | difference | interval |
+|---|---|---|---|
+| stalemap vs no help (primary) | claude-sonnet-5-5 | +20.7 pts | [13.6, 28.3] |
+| stalemap vs plain `tsc` hook | claude-sonnet-5-5 | +16.4 pts | [7.6, 26.0] |
+| stalemap vs no help | claude-sonnet-4-5 | +17.9 pts | [7.6, 28.8] |
+| stalemap vs plain `tsc` hook | claude-sonnet-4-5 | +10.6 pts | [0.3, 21.7] |
+
+All four were wins. On claude-sonnet-5-5:
+- the share of first edits that used a stale API fell from 27% to 11%;
+- the median cost per session was $0.050 with stalemap vs $0.041 without.
+
+Protocol, tasks, hidden tests, blind review and per-session results: <a href="https://github.com/Umair/stalemap/tree/main/bench/heldout-v4">https://github.com/Umair/stalemap/tree/main/bench/heldout-v4</a>
+
+## Install
+
+Claude Code (plugin; these are slash commands typed in Claude Code):
+
+```text
+/plugin marketplace add Umair/stalemap
+/plugin install stalemap@stalemap
+```
+
+Cursor, Codex, OpenCode, or Claude Code without the plugin:
+
+```bash
+npx stalemap setup --agent cursor     # or codex, opencode, claude
+```
+
+Command line:
+
+```bash
+npx stalemap            # preview what changed
+npx stalemap sync       # write the notes into AGENTS.md or CLAUDE.md
+npx stalemap check      # for CI: fail when the notes are missing or stale
+```
+
+Any MCP client:
+
+```json
+{ "mcpServers": { "stalemap": { "command": "npx", "args": ["-y", "stalemap@latest", "mcp"] } } }
+```
+
+GitHub Action:
+
+```yaml
+- uses: Umair/stalemap@main
+  with:
+    model: claude-sonnet-5-5
+```
+
+## Questions
+
+- **Which model's cutoff?** The one your agent uses: detected from Claude Code, Codex, OpenCode or Gemini CLI settings, or passed with `--model`. Cutoffs come from models.dev.
+- **What leaves my machine?** Package names and versions go to the npm registry and GitHub to fetch type declarations and release notes. Your code is scanned locally and never uploaded.
+- **Do current models still need this?** Yes, for anything released after their cutoff. In v4, claude-sonnet-5-5 failed a third of the tasks on its own; with stalemap it passed 89%.
+- **Isn't a type-check hook enough?** It catches what fails to compile, but it doesn't say what to write instead, and it misses changed defaults. In v4 a plain `tsc` hook got 73%; stalemap's guard runs the same check and adds the fix.
+- **What does it cost?** stalemap is free and MIT-licensed. With stalemap, agent sessions cost about 20% more on claude-sonnet-5-5 (median $0.050 vs $0.041 per task).
+- **What doesn't it do?** Other languages, monorepo workspaces, and behavior changes that no release note or guide describes. See <a href="https://github.com/Umair/stalemap#limits">https://github.com/Umair/stalemap#limits</a>
+
+stalemap · MIT · Not affiliated with Anthropic.
+</pre></main>
+</body>
+</html>

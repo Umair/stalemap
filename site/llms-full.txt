@@ -27,6 +27,8 @@ Some of this code fails to compile. Some of it compiles and behaves differently,
 
 ## 3. Install and set up
 
+**AI agents installing stalemap for a user:** follow https://stalemap.com/install.md. It covers detecting your agent and model, the one setup command, verification, and what to tell the user.
+
 Requirements: Node.js 20 or later; a project with a `package.json` (npm, pnpm, yarn or bun lockfile, or installed `node_modules`).
 
 ### Claude Code (plugin)

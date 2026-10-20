@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://stalemap.com/sitemap.xml
+# For AI agents: https://stalemap.com/llms.txt · install instructions: https://stalemap.com/install.md

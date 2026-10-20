@@ -1,8 +1,91 @@
 {
   "redirects": [
-    { "source": "/(.*)", "has": [{ "type": "host", "value": "www.stalemap.com" }], "destination": "https://stalemap.com/$1", "permanent": true }
+    {
+      "source": "/(.*)",
+      "has": [
+        {
+          "type": "host",
+          "value": "www.stalemap.com"
+        }
+      ],
+      "destination": "https://stalemap.com/$1",
+      "permanent": true
+    },
+    {
+      "source": "/install",
+      "destination": "/install.md",
+      "permanent": false
+    },
+    {
+      "source": "/agents",
+      "destination": "/install.md",
+      "permanent": false
+    },
+    {
+      "source": "/home.html",
+      "destination": "/",
+      "permanent": true
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/index.md",
+      "destination": "/page.md"
+    },
+    {
+      "source": "/",
+      "has": [
+        {
+          "type": "query",
+          "key": "agent",
+          "value": "1"
+        }
+      ],
+      "destination": "/agent.html"
+    },
+    {
+      "source": "/",
+      "has": [
+        {
+          "type": "header",
+          "key": "accept",
+          "value": "(.*)text/markdown(.*)"
+        }
+      ],
+      "destination": "/page.md"
+    },
+    {
+      "source": "/",
+      "destination": "/home.html"
+    }
   ],
   "headers": [
-    { "source": "/assets/(.*)", "headers": [{ "key": "Cache-Control", "value": "public, max-age=86400" }] }
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "Link",
+          "value": "</llms.txt>; rel=\"alternate\"; type=\"text/plain\", </install.md>; rel=\"alternate\"; type=\"text/markdown\"; title=\"Install instructions for AI agents\""
+        }
+      ]
+    },
+    {
+      "source": "/(.*)\\.md",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "text/markdown; charset=utf-8"
+        }
+      ]
+    },
+    {
+      "source": "/assets/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=86400"
+        }
+      ]
+    }
   ]
 }
