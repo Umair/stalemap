@@ -36,6 +36,7 @@ const html = `<!doctype html>
     pre { white-space: pre-wrap; word-wrap: break-word; margin: 0; }
     a { color: var(--green); }
   </style>
+  <script defer src="/_vercel/insights/script.js"></script>
 </head>
 <body>
   <header>
