@@ -7,6 +7,10 @@ updates:
     groups:
       dependencies:
         patterns: ["*"]
+    ignore:
+      # TypeScript 7 (the Go port) has no JS compiler API; src/configusage.ts and src/guard.ts need it.
+      - dependency-name: typescript
+        versions: [">=7"]
   - package-ecosystem: github-actions
     directory: /
     schedule:
